@@ -1,4 +1,5 @@
 import adapter from '@sveltejs/adapter-cloudflare';
+
 import { vitePreprocess } from '@sveltejs/kit/vite';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -18,9 +19,6 @@ const config = {
 				exclude: ['<all>']
 			}
 		})
-	},
-	build: {
-		sourcemap: true // Config vite to generate sourcemap when bundling.
 	},
 };
 

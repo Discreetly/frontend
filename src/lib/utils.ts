@@ -1,14 +1,11 @@
 import type { Identity } from '@semaphore-protocol/identity';
 import type { MessageI, RoomI, ServerI } from 'discreetly-interfaces';
 import { randomBigInt, genId, str2BigInt } from 'discreetly-interfaces';
-import { RLNProver, type RLNFullProof, type MerkleProof } from 'rlnjs';
-import { poseidon1 } from 'poseidon-lite/poseidon1';
+import { type RLNFullProof, type MerkleProof } from 'rlnjs';
 import { Group } from '@semaphore-protocol/group';
+import { poseidon1 } from 'poseidon-lite/poseidon1';
 import { poseidon2 } from 'poseidon-lite/poseidon2';
-
-const wasmPath = '/rln/circuit.wasm';
-const zkeyPath = '/rln/final.zkey';
-const prover: RLNProver = new RLNProver(wasmPath, zkeyPath);
+import prover from './prover';
 
 interface proofInputsI {
 	rlnIdentifier: bigint;
