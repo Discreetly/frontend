@@ -3,7 +3,7 @@
 	import type { RoomI, MessageI } from 'discreetly-interfaces';
 	import { io } from 'socket.io-client';
 	import { onDestroy } from 'svelte';
-	import { genProof } from '$lib/utils';
+	import { genProof } from '$lib/prover';
 	import { Identity } from '@semaphore-protocol/identity';
 
 	export let room: RoomI;
