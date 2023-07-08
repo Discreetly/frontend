@@ -8,6 +8,7 @@
 	import type { ServerI } from 'discreetly-interfaces';
 	import { fetchServer } from '$lib/utils';
 
+	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
 	};
