@@ -15,9 +15,10 @@
 
 	function addCode(code: string) {
 		const url = String('http://' + $serverDataStore[$selectedServer].serverInfoEndpoint + '/join');
+		const idc = $identityStore.identity._commitment;
 		const data = JSON.stringify({
 			code: code,
-			idc: $identityStore.identity.getCommitment().toString()
+			idc: idc
 		});
 		console.log(data);
 		fetch(url, {
@@ -31,6 +32,13 @@
 			.then(async (response) => {
 				const result = await response.json();
 				console.log('INVITE CODE RESPONSE: ', result);
+				if (result.groupID) {
+					$identityStore.rooms[result.groupID] = idc;
+					accepted = true;
+				} else {
+					code = '';
+					alert('Invalid invite code');
+				}
 			})
 			.catch((err) => {
 				console.error(err);
@@ -49,7 +57,6 @@
 				if (event.key === 'Enter') {
 					event.preventDefault();
 					addCode(code);
-					code = '';
 				} else if (event.key === ' ' || event.key === '-') {
 					event.preventDefault();
 					if (code.length > 0 && code[code.length - 1] !== '-') {
