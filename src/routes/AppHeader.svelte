@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { serverDataStore, selectedServer, serverListStore, identityStore } from '$lib/stores';
 	import type { IdentityStoreI } from '$lib/types';
 	import IdentityDropdown from './IdentityDropdown.svelte';
@@ -6,6 +7,7 @@
 	function deleteIdentity() {
 		console.log('deleting identity');
 		$identityStore = { identity: null, rooms: {} } as IdentityStoreI;
+		goto('/');
 	}
 </script>
 
@@ -13,11 +15,20 @@
 	<nav class="navbar fixed-top navbar-dark bg-dark navbar-expand-lg">
 		<div class="container-fluid d-flex align-content-between">
 			<div class="d-flex">
-				<a class="navbar-brand d-none d-md-block" href="/">Discreetly</a>
+				<div class="navbar-nav">
+					<a class="navbar-brand d-none d-md-block" href="/">Discreetly</a>
+					<li class="nav-item d-none d-lg-block">
+						<a href="/about" class="nav-link">About</a>
+					</li>
+				</div>
+
 				<div class="collapse navbar-collapse" id="navbarText">
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<a class="navbar-brand d-block d-md-none" href="/">Discreetly</a>
 						<IdentityDropdown />
+						<li class="nav-item d-block d-lg-none">
+							<a href="/about" class="nav-link">About</a>
+						</li>
 					</ul>
 				</div>
 			</div>
