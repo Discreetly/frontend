@@ -1,6 +1,12 @@
 <script lang="ts">
-	import { serverDataStore, selectedServer, serverListStore } from '$lib/stores';
+	import { serverDataStore, selectedServer, serverListStore, identityStore } from '$lib/stores';
+	import type { IdentityStoreI } from '$lib/types';
+	import IdentityDropdown from './IdentityDropdown.svelte';
 	export let setSelectedServer: (server: number) => void;
+	function deleteIdentity() {
+		console.log('deleting identity');
+		$identityStore = { identity: null, rooms: {} } as IdentityStoreI;
+	}
 </script>
 
 <header>
@@ -11,18 +17,7 @@
 				<div class="collapse navbar-collapse" id="navbarText">
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<a class="navbar-brand d-block d-md-none" href="/">Discreetly</a>
-						<li class="nav-item">
-							<a href="/" class="nav-link">Home</a>
-						</li>
-						<li class="nav-item">
-							<a href="/chat" class="nav-link">Chat</a>
-						</li>
-						<li class="nav-item d-block d-lg-none">
-							<a href="/signup" class="nav-link">Signup</a>
-						</li>
-						<li class="nav-item d-block d-lg-none">
-							<a href="/login" class="nav-link">Login</a>
-						</li>
+						<IdentityDropdown />
 					</ul>
 				</div>
 			</div>
@@ -63,12 +58,7 @@
 			{/if}
 			<div>
 				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-					<li class="nav-item d-none d-lg-block">
-						<a href="/signup" class="nav-link">Signup</a>
-					</li>
-					<li class="nav-item d-none d-lg-block">
-						<a href="/login" class="nav-link">Login</a>
-					</li>
+					<IdentityDropdown hide={true} />
 				</ul>
 				<button
 					class="navbar-toggler"
@@ -85,6 +75,30 @@
 		</div>
 	</nav>
 </header>
+<div class="modal fade" id="deleteIdentity" tabindex="-1">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Delete Identity???</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+			</div>
+			<div class="modal-body">
+				<p>Are you ABSOLUTELY sure you want to delete your identity?</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+					>Take me back to safety</button
+				>
+				<button
+					type="button"
+					class="btn btn-danger"
+					on:click={() => deleteIdentity()}
+					data-bs-dismiss="modal">Delete Identity</button
+				>
+			</div>
+		</div>
+	</div>
+</div>
 
 <style>
 	.navbar-dark .navbar-brand {

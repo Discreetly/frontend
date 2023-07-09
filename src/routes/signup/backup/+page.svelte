@@ -4,7 +4,7 @@
 		{
 			link: '/chat',
 			text: 'Start Chatting ➡',
-			class: 'btn-primary'
+			cls: 'btn-primary'
 		}
 	];
 </script>

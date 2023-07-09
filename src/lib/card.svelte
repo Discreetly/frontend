@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { ButtonI } from './types';
 	import Button from './button.svelte';
+	import type { ButtonI } from './types';
 	export let title: string;
 	export let buttons: ButtonI[] = [];
 </script>
@@ -12,7 +12,7 @@
 	</div>
 	<div class="d-inline-flex gap-5 my-3">
 		{#each buttons as button}
-			<Button {button} />
+			<Button link={button.link} cls={button.cls} text={button.text} />
 		{/each}
 	</div>
 </div>

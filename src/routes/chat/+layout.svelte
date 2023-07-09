@@ -48,7 +48,9 @@
 			<RoomList {selectRoom} />
 		{:else}
 			<div class="col-12">
-				<div class="alert alert-info" role="alert">Loading Room List...</div>
+				<div class="spinner-border text-danger" role="status">
+					<span class="visually-hidden">Loading Room List...</span>
+				</div>
 			</div>
 		{/if}
 

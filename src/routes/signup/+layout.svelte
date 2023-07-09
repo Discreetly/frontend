@@ -13,7 +13,15 @@
 			class:active={!$page.route.id?.match(/gates|ceremony|backup/g)}
 			class:complete={$page.route.id?.match(/gates|ceremony|backup/g)}
 			aria-current="page"
-			href="/signup">Sign Up</a
+			href="/signup">About Discreetly</a
+		>
+	</li>
+	<li class="nav-item">
+		<a
+			class="nav-link"
+			href="/signup/ceremony"
+			class:complete={$page.route.id?.match(/gates|backup/g)}
+			class:active={$page.route.id?.match(/ceremony/g)}>Create Identity</a
 		>
 	</li>
 	<li class="nav-item">
@@ -21,17 +29,10 @@
 			class="nav-link"
 			href="/signup/gates"
 			class:active={$page.route.id?.match(/gates/g)}
-			class:complete={$page.route.id?.match(/ceremony|backup/g)}>Choose Communities</a
+			class:complete={$page.route.id?.match(/backup/g)}>Choose Communities</a
 		>
 	</li>
-	<li class="nav-item">
-		<a
-			class="nav-link"
-			href="/signup/ceremony"
-			class:complete={$page.route.id?.match(/backup/g)}
-			class:active={$page.route.id?.match(/ceremony/g)}>Create Identity</a
-		>
-	</li>
+
 	<li class="nav-item">
 		<a class="nav-link" href="/signup/backup" class:active={$page.route.id?.match(/backup/g)}
 			>Backup Identity</a

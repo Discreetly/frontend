@@ -9,6 +9,7 @@
   --steel-white: hsl(185, 28%, 95%);
   --steel-very-light: hsl(185, 28%, 88%);
   --steel-light: hsl(185, 18%, 66%);
+  --steel-light-bright: hsl(185, 45%, 66%);
   --steel-bright: hsl(185, 75%, 33%);
   --steel-bright-rg: 21, 137, 147;
   --steel-dark: hsl(185, 18%, 33%);
@@ -171,4 +172,16 @@ input:focus-visible,
 textarea:focus-visible {
   outline: none;
   box-shadow: 0 0 0 0.15em var(--steel-bright);
+}
+
+.link-dark-bg {
+  color: var(--steel-light);
+}
+
+.link-dark-bg:hover {
+  color: var(--steel-white);
+}
+
+.obnoxious {
+  color: var(--orangered) !important;
 }

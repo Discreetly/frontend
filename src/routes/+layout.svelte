@@ -33,17 +33,11 @@
 			$selectedServer = $serverListStore[0];
 		}
 	});
-
-	// TODO THIS IS ONLY FOR DEVELOPMENT AND SHOULD BE REMOVED AFTER SIGNUP IS SETUP
-	if (!$identityStore['_nullifier']) {
-		console.log('MAKING UP SECRETS');
-		$identityStore = new Identity();
-	}
 </script>
 
 <div class="d-flex flex-column align-content-between">
 	<AppHeader {setSelectedServer} />
-	<main class="container-fluid align-items-center align-self-stretch">
+	<main class="container-fluid pt-2 align-items-center align-self-stretch">
 		<slot />
 	</main>
 	<AppFooter />

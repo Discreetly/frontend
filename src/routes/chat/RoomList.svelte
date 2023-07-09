@@ -7,9 +7,12 @@
 	export let selectRoom: (roomId: RoomI['id']) => any;
 
 	function getMembers(room: RoomI): string {
-		let total: number | string = '0';
-		total = room.membership?.identityCommitments?.length || '?';
-		return total.toString();
+		let total = 0;
+		total = room.membership?.identityCommitments?.length || 0;
+		if (!(total > 0)) {
+			return 'Cooming soon...';
+		}
+		return String(total.toString() + ' members');
 	}
 </script>
 
@@ -24,7 +27,7 @@
 						<!-- svelte-ignore a11y-no-static-element-interactions -->
 						<div class="d-flex justify-content-between align-items-center">
 							<h5 class="flex-grow-1">{room.name}</h5>
-							<div class="px-3">{getMembers(room)} Members</div>
+							<div class="px-3">{getMembers(room)}</div>
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
 							<!-- svelte-ignore a11y-no-static-element-interactions -->
 							<div

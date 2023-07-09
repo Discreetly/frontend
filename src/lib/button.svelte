@@ -1,14 +1,9 @@
 <script lang="ts">
-	import type { ButtonI } from './types';
-	export let button: ButtonI;
+	export let link: string;
+	export let cls: string | undefined = 'btn-primary';
+	export let text: string | undefined = '';
 </script>
 
-<a
-	href={button.link}
-	class="btn btn-lg px-4 d-inline-flex align-items-center {button.class
-		? button.class
-		: 'btn-primary'}"
-	type="button"
->
-	{button.text}
+<a href={link} class="btn btn-lg px-4 d-inline-flex align-items-center {cls}" type="button">
+	<slot>{text}</slot>
 </a>
