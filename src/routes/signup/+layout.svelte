@@ -3,6 +3,7 @@
 	import { identityStore, selectedServer, serverDataStore } from '$lib/stores';
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 	import { Identity } from '@semaphore-protocol/identity';
+	import { goto } from '$app/navigation';
 	// TODO Check if Identity is created
 	// TODO Check if Gates exist
 
