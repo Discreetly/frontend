@@ -1,8 +1,5 @@
-<script lang="ts">
+<script>
+	import { ProgressRadial } from '@skeletonlabs/skeleton';
 </script>
 
-<div class="col">
-	<div class="spinner-border text-danger" role="status">
-		<span class="visually-hidden">Loading...</span>
-	</div>
-</div>
+<ProgressRadial ... stroke={100} meter="stroke-primary-500" track="stroke-primary-500/30" />

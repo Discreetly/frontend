@@ -1,19 +1,13 @@
 <script lang="ts">
-	import RoomList from './RoomList.svelte';
-	import ChatRoom from './ChatRoom.svelte';
+	import Chat from './Chat.svelte';
 	import type { RoomGroupI, RoomI } from 'discreetly-interfaces';
 	import { serverDataStore, selectedServer } from '$lib/stores';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 
-	let room: RoomI;
 	let loaded: Boolean = false;
 
-	function selectRoom(id: RoomI['id']) {
-		$serverDataStore[$selectedServer].selectedRoom = id;
-		setRoom(id as string);
-	}
-
 	function setRoom(id: string) {
+		let room: RoomI;
 		const rooms = $serverDataStore[$selectedServer].roomGroups;
 		const temp_room = rooms
 			.map((group: RoomGroupI) => group.rooms)
@@ -21,7 +15,7 @@
 			.find((room: RoomI) => room.id === id);
 
 		if (temp_room) {
-			console.debug('Setting Room to Selected', temp_room.name);
+			console.debug('Setting Room to', temp_room.name);
 			room = temp_room;
 		} else if ($serverDataStore[$selectedServer].roomGroups[0]) {
 			console.debug('Setting Room to Default');
@@ -34,30 +28,22 @@
 				membership: { identityCommitments: [0n] }
 			};
 		}
+		$serverDataStore[$selectedServer].selectedRoom = room.id;
 	}
 
-	onMount(() => {
-		setRoom($serverDataStore[$selectedServer].selectedRoom as string);
+	onMount(async () => {
+		while (!$serverDataStore[$selectedServer]) {
+			await tick();
+		}
+		setRoom($serverDataStore[$selectedServer].selectedRoom);
 		loaded = true;
 	});
 </script>
 
-<div class="container-fluid mt-2">
-	<div class="row">
-		{#if $serverDataStore[$selectedServer] && loaded}
-			<RoomList {selectRoom} />
-		{:else}
-			<div class="col-12">
-				<div class="spinner-border text-danger" role="status">
-					<span class="visually-hidden">Loading Room List...</span>
-				</div>
-			</div>
-		{/if}
-
-		{#if room && loaded}
-			<ChatRoom {room} />
-		{:else}
-			<slot />
-		{/if}
-	</div>
+<div>
+	{#if loaded}
+		<Chat {setRoom} />
+	{:else}
+		<slot />
+	{/if}
 </div>

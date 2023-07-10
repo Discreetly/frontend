@@ -1,50 +1,50 @@
 <script lang="ts">
-	import '../app.css';
+	import { ProgressRadial, autoModeWatcher } from '@skeletonlabs/skeleton';
+	import { AppShell } from '@skeletonlabs/skeleton';
+	import { Modal } from '@skeletonlabs/skeleton';
+	import '../theme.postcss';
+	import '@skeletonlabs/skeleton/styles/skeleton.css';
+	import '../app.postcss';
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
 	import AppFooter from './AppFooter.svelte';
-	import { identityStore, serverListStore, serverDataStore, selectedServer } from '$lib/stores';
-	import { Identity } from '@semaphore-protocol/identity';
+	import { serverListStore, serverDataStore, selectedServer } from '$lib/stores';
 	import type { ServerI } from 'discreetly-interfaces';
 	import { fetchServer } from '$lib/utils';
+	import type { ServerListI } from '$lib/types';
 
 	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
 	};
 
-	function setSelectedServer(server: number) {
-		console.debug('setting selected server');
-		selectedServer.set(server);
-	}
-
 	onMount(async () => {
-		$serverListStore.forEach((server: string) => {
+		$serverListStore.forEach((server: ServerListI) => {
 			console.log('fetching server data');
-			fetchServer(server).then((data) => {
+			fetchServer(server.url).then((data) => {
 				console.log('setting server data');
-				console.log(data);
-				console.log(server);
-				$serverDataStore[server] = data as ServerI;
-				console.log($serverDataStore);
+				Object.assign($serverDataStore[server.url], data as ServerI);
 			});
 		});
 		if ($selectedServer.name == undefined) {
-			$selectedServer = $serverListStore[0];
+			$selectedServer = $serverListStore[0].url;
 		}
 	});
 </script>
 
-<div class="d-flex flex-column align-content-between">
-	<AppHeader {setSelectedServer} />
-	<main class="container-fluid pt-2 align-items-center align-self-stretch">
-		<slot />
-	</main>
-	<AppFooter />
-</div>
-
-<style>
-	main {
-		margin-top: calc(52px);
-	}
-</style>
+<svelte:head
+	>{@html `
+			<script>
+				${autoModeWatcher.toString()} autoModeWatcher();
+			</script>
+			`}</svelte:head
+>
+<Modal />
+<AppShell slotPageContent="my-6 mx-3">
+	<svelte:fragment slot="header"><AppHeader /></svelte:fragment>
+	<!-- <svelte:fragment slot="sidebarLeft">Sidebar Left</svelte:fragment> -->
+	<slot class="m-4">
+		<ProgressRadial />
+	</slot>
+	<svelte:fragment slot="footer"><AppFooter /></svelte:fragment>
+</AppShell>

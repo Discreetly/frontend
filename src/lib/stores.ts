@@ -1,8 +1,12 @@
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
+import type { ServerListI } from '$lib/types';
 
 // This is just a list of endpoints of servers to connect to, no other information, this is mainly for bootstraping the app
-export const serverListStore = storable(['http://localhost:3001/api/'], 'servers');
+export const serverListStore = storable(
+	[{ name: 'Localhost', url: 'http://localhost:3001/api/' } as ServerListI],
+	'servers'
+);
 
 // This is what gets populated after querying the serverListStore, with the server's information, public rooms available, etc.
 export const serverDataStore = storable({}, 'serverData');

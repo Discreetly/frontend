@@ -1,13 +1,25 @@
-<div class="container-fluid">
-	<footer class="py-3 my-4">
-		<ul class="nav justify-content-center border-bottom pb-3 mb-3">
-			<li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li>
-			<li class="nav-item">
-				<a href="/signup" class="nav-link px-2 text-body-secondary">Signup</a>
-			</li>
-			<li class="nav-item"><a href="/chat" class="nav-link px-2 text-body-secondary">Chat</a></li>
-			<li class="nav-item"><a href="/about" class="nav-link px-2 text-body-secondary">About</a></li>
-		</ul>
-		<p class="text-center text-body-secondary">© 2023 Privacy & Scaling Explorations</p>
-	</footer>
-</div>
+<script lang="ts">
+	import { identityStore } from '$lib/stores';
+	import { AppBar } from '@skeletonlabs/skeleton';
+</script>
+
+<AppBar padding="p-3">
+	<svelte:fragment slot="lead">
+		<a href="/">Home</a>
+		{#if $identityStore.identity != undefined && $identityStore.identity != null}
+			<a href="/chat">Chat</a>
+		{:else}
+			<a href="/signup">Sign Up</a>
+		{/if}
+		<a href="/about">About</a>
+	</svelte:fragment>
+	<svelte:fragment slot="trail">
+		<p>© 2023 Privacy & Scaling Explorations</p>
+	</svelte:fragment>
+</AppBar>
+
+<style>
+	a {
+		margin-right: 1.5rem;
+	}
+</style>

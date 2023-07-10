@@ -1,5 +1,9 @@
-<script>
+<script lang="ts">
+	import { goto } from '$app/navigation';
 	import { identityStore } from '$lib/stores';
+	import type { IdentityStoreI } from '$lib/types';
+	import { modalStore } from '@skeletonlabs/skeleton';
+	import type { ModalSettings } from '@skeletonlabs/skeleton';
 
 	let identityExists = false;
 	$: if ($identityStore.identity == undefined) {
@@ -11,45 +15,41 @@
 	}
 
 	export let hide = false;
+
+	const modal: ModalSettings = {
+		type: 'confirm',
+		// Data
+		title: 'Please Confirm',
+		body: 'Are you sure you wish to delete your identity? This is permanent',
+		// TRUE if confirm pressed, FALSE if cancel pressed
+		response: (r: boolean) => {
+			if (r) {
+				deleteIdentity();
+			}
+		}
+	};
+
+	function deleteIdentity() {
+		console.log('deleting identity');
+		$identityStore = { identity: null, rooms: {} } as IdentityStoreI;
+		goto('/');
+	}
 </script>
 
 {#if identityExists}
-	<li
-		class="nav-item dropdown"
-		class:d-none={hide}
-		class:d-lg-block={hide}
-		class:d-block={!hide}
-		class:d-lg-none={!hide}
-	>
-		<a
-			class="nav-link dropdown-toggle"
-			href="#"
-			id="navbarDropdown"
-			role="button"
-			data-bs-toggle="dropdown"
-			aria-expanded="false"
-		>
-			Identity
-		</a>
-		<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-			<li class="nav-item">
-				<a href="/identity" class="dropdown-item">Manage Identity</a>
+	<li>
+		<a href="#" role="button" aria-expanded="false"> Identity </a>
+		<ul>
+			<li>
+				<a href="/identity">Manage Identity</a>
 			</li>
 			<li>
-				<button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#deleteIdentity"
-					>Delete Identity</button
-				>
+				<button on:click={() => modalStore.trigger(modal)}>Delete Identity</button>
 			</li>
 		</ul>
 	</li>
 {:else}
-	<li
-		class="nav-item"
-		class:d-none={hide}
-		class:d-lg-block={hide}
-		class:d-block={!hide}
-		class:d-lg-none={!hide}
-	>
-		<a href="/signup" class="nav-link">Signup</a>
+	<li>
+		<a href="/signup">Signup</a>
 	</li>
 {/if}

@@ -16,4 +16,9 @@ interface IdentityStoreI {
 	rooms: RoomIdentityI;
 }
 
-export type { ButtonI, IdentityStoreI };
+interface ServerListI {
+	name: string;
+	url: string;
+}
+
+export type { ButtonI, IdentityStoreI, ServerListI };
