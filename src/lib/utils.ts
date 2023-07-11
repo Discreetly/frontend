@@ -1,6 +1,5 @@
 import { randomBigInt, genId } from 'discreetly-interfaces';
 import type { ServerI, ServerListI } from 'discreetly-interfaces';
-import { serverListStore, serverDataStore, selectedServer } from './stores';
 
 async function fetchServer(server_url: string): Promise<ServerI | void> {
 	console.debug(`Fetching server ${server_url}`);

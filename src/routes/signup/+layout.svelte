@@ -4,12 +4,14 @@
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 	import { Identity } from '@semaphore-protocol/identity';
 	import { goto } from '$app/navigation';
+	import type { RoomI } from 'discreetly-interfaces';
 	// TODO Check if Identity is created
 	// TODO Check if Gates exist
 
 	let identityExists = false;
 	let code = '';
 	let accepted = false;
+	let acceptedRoomNames: string[] = [];
 
 	$: if ($identityStore.identity == undefined) {
 		identityExists = false;
@@ -23,6 +25,7 @@
 		console.log('Creating identity');
 		if (!identityExists || regenerate) {
 			$identityStore.identity = new Identity();
+			$identityStore.rooms = {};
 			return 'created';
 		} else {
 			console.log('Identity already exists');
@@ -49,11 +52,14 @@
 			.then(async (response) => {
 				const result = await response.json();
 				console.log('INVITE CODE RESPONSE: ', result);
-				if (result.groupID) {
-					$identityStore.rooms[result.groupID] = idc;
+				if (result.status == 'valid' || result.status == 'already-added') {
+					result.rooms.forEach((r: RoomI) => {
+						$identityStore.rooms[r.id] = idc;
+						acceptedRoomNames = [...acceptedRoomNames, r.name];
+					});
 					accepted = true;
-				} else {
 					code = '';
+				} else {
 					alert('Invalid invite code');
 				}
 			})
@@ -101,8 +107,9 @@
 					<a href="/about" class="btn btn-sm variant-soft-tertiary ms-2 mt-2">Read More Here</a>
 				</p>
 			</div>
+			<svelte:fragment slot="navigation" />
 		</Step>
-		<Step>
+		<Step locked={!identityExists}>
 			<svelte:fragment slot="header"><div class="text-center">Create Identity</div></svelte:fragment
 			>
 			<div class="grid place-content-center">
@@ -123,7 +130,7 @@
 				{/if}
 			</div>
 		</Step>
-		<Step>
+		<Step locked={!accepted}>
 			<svelte:fragment slot="header"
 				><div class="text-center">Join Communities</div></svelte:fragment
 			>
@@ -175,7 +182,21 @@
 							}
 						}}
 					/>
+					<button
+						class="btn variant-ghost-success"
+						type="button"
+						disabled={!code}
+						on:click={() => addCode(code)}>Submit</button
+					>
 				</label>
+				{#if acceptedRoomNames.length > 0}
+					<p class="text-center mt-2">You've been added to:</p>
+					<div class="my-2">
+						{#each acceptedRoomNames as name}
+							<ins class="ins border-y border-success-800">{name}</ins>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		</Step>
 		<Step>

@@ -16,7 +16,7 @@
 		there is no undo.
 	</p>
 	<p class="text-justify my-3">
-		Read more about <a class="link" href="https://rate-limiting-nullifier.github.io/rln-docs/"
+		Read more about <a class="anchor" href="https://rate-limiting-nullifier.github.io/rln-docs/"
 			>RLN</a
 		>.
 	</p>
