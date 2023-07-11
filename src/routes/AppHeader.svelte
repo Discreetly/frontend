@@ -6,15 +6,17 @@
 
 <AppBar>
 	<svelte:fragment slot="lead">
-		<h1 class="h4">
+		<h1 class="h4 text-secondary-500">
 			<a href="/">Discreetly</a>
 		</h1>
 	</svelte:fragment>
 	{#if $identityStore.identity != undefined && $identityStore.identity != null}
 		<a href="/chat" class="me-2">Chat</a>
 	{/if}
-	<a href="/about">About</a>
+	<a href="/about" class="me-2">About</a>
+
 	<svelte:fragment slot="trail">
+		<div class="me-2 text-secondary-500">Alpha Version!</div>
 		{#if $identityStore.identity != undefined && $identityStore.identity != null}
 			<a href="/identity">Identity</a>
 		{:else}
