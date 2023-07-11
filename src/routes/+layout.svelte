@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { autoModeWatcher } from '@skeletonlabs/skeleton';
-	import { AppShell } from '@skeletonlabs/skeleton';
 	import { Modal } from '@skeletonlabs/skeleton';
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
@@ -11,7 +10,7 @@
 	import Loading from '$lib/loading.svelte';
 	import { serverListStore, serverDataStore, selectedServer } from '$lib/stores';
 	import type { ServerI } from 'discreetly-interfaces';
-	import { fetchServer } from '$lib/utils';
+	import { fetchServer, updateServers } from '$lib/utils';
 	import type { ServerListI } from '$lib/types';
 
 	// Hack to get BigInt <-> JSON compatibility
@@ -20,17 +19,7 @@
 	};
 
 	onMount(async () => {
-		$serverListStore.forEach((server: ServerListI) => {
-			console.log('fetching server data');
-			fetchServer(server.url).then((data) => {
-				console.log('setting server data');
-				if ($serverDataStore[server.url]) {
-					Object.assign($serverDataStore[server.url], data as ServerI);
-				} else {
-					$serverDataStore[server.url] = data as ServerI;
-				}
-			});
-		});
+		$serverDataStore = updateServers($serverListStore, $serverDataStore);
 		if ($selectedServer.name == undefined) {
 			$selectedServer = $serverListStore[0].url;
 		}

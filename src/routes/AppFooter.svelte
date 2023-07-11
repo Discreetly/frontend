@@ -3,7 +3,7 @@
 	import { AppBar } from '@skeletonlabs/skeleton';
 </script>
 
-<AppBar padding="p-3">
+<AppBar padding="py-3 px-8">
 	<svelte:fragment slot="lead">
 		<a href="/">Home</a>
 		{#if $identityStore.identity != undefined && $identityStore.identity != null}
@@ -14,7 +14,7 @@
 		<a href="/about">About</a>
 	</svelte:fragment>
 	<svelte:fragment slot="trail">
-		<p>© 2023 Privacy & Scaling Explorations</p>
+		<p><a href="/testing" style="margin:0 !important">© 2023 Privacy & Scaling Explorations</a></p>
 	</svelte:fragment>
 </AppBar>
 
