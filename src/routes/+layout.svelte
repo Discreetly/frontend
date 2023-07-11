@@ -45,11 +45,38 @@
 			`}</svelte:head
 >
 <Modal />
-<AppShell slotPageContent="my-6 mx-3">
-	<svelte:fragment slot="header"><AppHeader /></svelte:fragment>
-	<!-- <svelte:fragment slot="sidebarLeft">Sidebar Left</svelte:fragment> -->
-	<slot class="m-4">
-		<Loading />
-	</slot>
-	<svelte:fragment slot="footer"><AppFooter /></svelte:fragment>
-</AppShell>
+<app id="app">
+	<div id="header">
+		<AppHeader />
+	</div>
+	<div id="main">
+		<slot>
+			<Loading />
+		</slot>
+	</div>
+	<div id="footer">
+		<AppFooter />
+	</div>
+</app>
+
+<style>
+	#app {
+		height: 100vh;
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: auto 1fr auto;
+		grid-template-areas: 'head' 'main' 'foot';
+	}
+	#app > #header {
+		grid-area: head;
+	}
+
+	#app > #main {
+		grid-area: main;
+		height: 100%;
+	}
+
+	#app > #footer {
+		grid-area: foot;
+	}
+</style>

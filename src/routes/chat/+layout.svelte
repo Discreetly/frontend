@@ -40,10 +40,8 @@
 	});
 </script>
 
-<div>
-	{#if loaded}
-		<Chat {setRoom} />
-	{:else}
-		<slot />
-	{/if}
-</div>
+{#if loaded}
+	<Chat {setRoom} />
+{:else}
+	<slot />
+{/if}
