@@ -1,5 +1,5 @@
 <script>
-	import { ProgressRadial } from '@skeletonlabs/skeleton';
+	import Loading from '$lib/loading.svelte';
 </script>
 
-<ProgressRadial ... stroke={100} meter="stroke-primary-500" track="stroke-primary-500/30" />
+<Loading />

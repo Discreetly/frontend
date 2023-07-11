@@ -2,7 +2,7 @@
 	import { identityStore } from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { ProgressRadial } from '@skeletonlabs/skeleton';
+	import Loading from '$lib/loading.svelte';
 
 	onMount(() => {
 		if ($identityStore.identity == undefined || $identityStore.identity == null) {
@@ -13,4 +13,4 @@
 	});
 </script>
 
-<ProgressRadial ... stroke={100} meter="stroke-primary-500" track="stroke-primary-500/30" />
+<Loading />

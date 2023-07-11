@@ -22,6 +22,7 @@ interface proofInputsI {
 }
 
 async function genProof(room: RoomI, message: string, identity: Identity): Promise<MessageI> {
+	console.log(room, message, identity);
 	const userMessageLimit = BigInt(1);
 	const messageHash: bigint = getMessageHash(message);
 	const group = new Group(room.id, 20, room.membership?.identityCommitments);
@@ -42,7 +43,7 @@ async function genProof(room: RoomI, message: string, identity: Identity): Promi
 		const msg: MessageI = {
 			id: proof.snarkProof.publicSignals.nullifier.toString(),
 			message: message,
-			room: BigInt(proof.snarkProof.publicSignals.externalNullifier),
+			room: room.id,
 			proof
 		};
 		return msg;

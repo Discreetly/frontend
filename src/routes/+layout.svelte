@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ProgressRadial, autoModeWatcher } from '@skeletonlabs/skeleton';
+	import { autoModeWatcher } from '@skeletonlabs/skeleton';
 	import { AppShell } from '@skeletonlabs/skeleton';
 	import { Modal } from '@skeletonlabs/skeleton';
 	import '../theme.postcss';
@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
 	import AppFooter from './AppFooter.svelte';
+	import Loading from '$lib/loading.svelte';
 	import { serverListStore, serverDataStore, selectedServer } from '$lib/stores';
 	import type { ServerI } from 'discreetly-interfaces';
 	import { fetchServer } from '$lib/utils';
@@ -23,7 +24,11 @@
 			console.log('fetching server data');
 			fetchServer(server.url).then((data) => {
 				console.log('setting server data');
-				Object.assign($serverDataStore[server.url], data as ServerI);
+				if ($serverDataStore[server.url]) {
+					Object.assign($serverDataStore[server.url], data as ServerI);
+				} else {
+					$serverDataStore[server.url] = data as ServerI;
+				}
 			});
 		});
 		if ($selectedServer.name == undefined) {
@@ -44,7 +49,7 @@
 	<svelte:fragment slot="header"><AppHeader /></svelte:fragment>
 	<!-- <svelte:fragment slot="sidebarLeft">Sidebar Left</svelte:fragment> -->
 	<slot class="m-4">
-		<ProgressRadial />
+		<Loading />
 	</slot>
 	<svelte:fragment slot="footer"><AppFooter /></svelte:fragment>
 </AppShell>

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import { identityStore, selectedServer, serverDataStore } from '$lib/stores';
+	import Loading from '$lib/loading.svelte';
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 	import { Identity } from '@semaphore-protocol/identity';
 	import { goto } from '$app/navigation';
@@ -174,3 +174,6 @@
 		// TODO
 	</Step>
 </Stepper>
+<slot>
+	<Loading />
+</slot>

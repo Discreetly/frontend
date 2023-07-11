@@ -18,12 +18,12 @@
 		.map((group: RoomGroupI) => group.rooms)
 		.flat()
 		.find((room: RoomI) => room.id === selectedRoom);
-	$: roomMessageStore = $messageStore[selectedRoom];
 	$: () => {
 		if (!$messageStore[selectedRoom]) {
 			$messageStore[selectedRoom] = { messages: [] };
 		}
 	};
+	$: roomMessageStore = $messageStore[selectedRoom];
 
 	function getMembers(room: RoomI): string {
 		let total = 0;
@@ -34,59 +34,6 @@
 		return String(total.toString() + ' members');
 	}
 
-	const socketURL: string = $serverDataStore[$selectedServer].messageHandlerSocket || '';
-
-	const socket = io(socketURL);
-
-	socket.on('connect', () => {
-		connected = true;
-		const engine = socket.io.engine;
-
-		engine.once('upgrade', () => {
-			console.debug('Upgraded connection to', engine.transport.name);
-		});
-
-		engine.on('close', (reason) => {
-			console.debug('socket-io-transport-closed', reason);
-		});
-
-		socket.emit('joiningRoom', room?.id);
-	});
-
-	socket.on('disconnected', () => {
-		connected = false;
-		console.debug('disconnected');
-	});
-
-	socket.on('connect_error', (err) => {
-		console.debug('chat connection error', err.message);
-	});
-
-	socket.on('connect_timeout', (err) => {
-		console.debug('chat connection timeout', err.message);
-	});
-
-	socket.on('error', (err) => {
-		console.debug('chat websocket error', err.message);
-	});
-
-	socket.on('messageBroadcast', (data: MessageI) => {
-		if (!$messageStore[data.room]) {
-			$messageStore[data.room] = { messages: [] };
-		}
-		$messageStore[data.room].messages = [data, ...$messageStore[data.room].messages];
-		$messageStore[data.room].messages = $messageStore[data.room].messages.slice(0, 500);
-		scrollChatBottom();
-	});
-
-	function sendMessage() {
-		const identity = new Identity($identityStore.toString());
-		genProof(room, messageText, identity).then((msg) => {
-			socket.emit('validateMessage', msg);
-		});
-		scrollChatBottom();
-	}
-
 	let elemChat: HTMLElement;
 
 	// For some reason, eslint thinks ScrollBehavior is undefined...
@@ -95,6 +42,19 @@
 		setTimeout(() => {
 			elemChat.scrollTo({ top: elemChat.scrollHeight, behavior });
 		}, 1);
+	}
+
+	const socketURL: string = $serverDataStore[$selectedServer].messageHandlerSocket || '';
+
+	const socket = io(socketURL);
+
+	function sendMessage() {
+		const identity = new Identity($identityStore.toString());
+		genProof(room, messageText, identity).then((msg) => {
+			socket.emit('validateMessage', msg);
+			console.debug('Sending message: ', msg);
+		});
+		scrollChatBottom();
 	}
 
 	function getEpochTimestamp(epoch?: number | bigint): string {
@@ -115,6 +75,48 @@
 
 	onMount(() => {
 		scrollChatBottom('instant');
+		socket.on('connect', () => {
+			connected = true;
+			const engine = socket.io.engine;
+
+			engine.once('upgrade', () => {
+				console.debug('Upgraded connection to', engine.transport.name);
+			});
+
+			engine.on('close', (reason) => {
+				console.debug('socket-io-transport-closed', reason);
+			});
+
+			socket.emit('joiningRoom', room?.id);
+		});
+
+		socket.on('disconnected', () => {
+			connected = false;
+			console.debug('disconnected');
+		});
+
+		socket.on('connect_error', (err) => {
+			console.debug('chat connection error', err.message);
+		});
+
+		socket.on('connect_timeout', (err) => {
+			console.debug('chat connection timeout', err.message);
+		});
+
+		socket.on('error', (err) => {
+			console.debug('chat websocket error', err.message);
+		});
+
+		socket.on('messageBroadcast', (data: MessageI) => {
+			console.debug('Received Message: ', data);
+			if (!$messageStore[data.room]) {
+				console.debug('Creating room in message store', data.room);
+				$messageStore[data.room] = { messages: [] };
+			}
+			$messageStore[data.room].messages = [data, ...$messageStore[data.room].messages];
+			$messageStore[data.room].messages = $messageStore[data.room].messages.slice(0, 500);
+			scrollChatBottom();
+		});
 	});
 	onDestroy(() => {
 		socket.emit('leavingRoom', room?.id);
@@ -168,17 +170,21 @@
 		<div class="grid grid-row-[1fr_auto]">
 			<!-- Conversation -->
 			<section bind:this={elemChat} class="max-h-[1000px] p-4 overflow-y-auto space-y-4">
-				{#each roomMessageStore.messages.reverse() as bubble}
-					<div class="grid grid-cols-[1fr_auto] gap-2">
-						<div class="card p-4 rounded-tr-none space-y-2">
-							<header class="flex justify-between items-center">
-								<small class="text-primary-500 opacity-50">nullifier {bubble.id}</small>
-								<small class="opacity-50 text-primary-500">{getEpochTimestamp(bubble.epoch)}</small>
-							</header>
-							<p class="text-primary-500">{bubble.message}</p>
+				{#if roomMessageStore && roomMessageStore.messages}
+					{#each roomMessageStore.messages.reverse() as bubble}
+						<div class="grid grid-cols-[1fr_auto] gap-2">
+							<div class="card p-4 rounded-tr-none space-y-2">
+								<header class="flex justify-between items-center">
+									<small class="text-primary-500 opacity-50">nullifier {bubble.id}</small>
+									<small class="opacity-50 text-primary-500"
+										>{getEpochTimestamp(bubble.epoch)}</small
+									>
+								</header>
+								<p class="text-primary-500">{bubble.message}</p>
+							</div>
 						</div>
-					</div>
-				{/each}
+					{/each}
+				{/if}
 			</section>
 			<!-- Prompt -->
 			<section class="border-t border-surface-500/30 p-2 !border-dashed">
