@@ -5,13 +5,13 @@
 	import { Identity } from '@semaphore-protocol/identity';
 	import { goto } from '$app/navigation';
 	import type { RoomI } from 'discreetly-interfaces';
-	// TODO Check if Identity is created
-	// TODO Check if Gates exist
+	import BackupIdentity from '../identity/BackupIdentity.svelte';
 
 	let identityExists = false;
 	let code = '';
 	let accepted = false;
 	let acceptedRoomNames: string[] = [];
+	let backedUp = false;
 
 	$: if ($identityStore.identity == undefined) {
 		identityExists = false;
@@ -54,7 +54,13 @@
 				console.log('INVITE CODE RESPONSE: ', result);
 				if (result.status == 'valid' || result.status == 'already-added') {
 					result.rooms.forEach((r: RoomI) => {
-						$identityStore.rooms[r.id] = idc;
+						if (!$identityStore.rooms.hasOwnProperty($selectedServer)) {
+							$identityStore.rooms[$selectedServer] = [];
+						}
+						$identityStore.rooms[$selectedServer] = [
+							...$identityStore.rooms[$selectedServer],
+							r.id
+						];
 						acceptedRoomNames = [...acceptedRoomNames, r.name];
 					});
 					accepted = true;
@@ -199,11 +205,19 @@
 				{/if}
 			</div>
 		</Step>
-		<Step>
+		<Step locked={!backedUp}>
 			<svelte:fragment slot="header"
 				><div class="text-center">Backup your identity</div></svelte:fragment
 			>
-			<div class="grid place-content-center">// TODO</div>
+			<div class="grid place-content-center">
+				<a
+					class="btn variant-ghost-success"
+					href={'data:text/json;charset=utf-8,' +
+						encodeURIComponent(JSON.stringify($identityStore))}
+					download="identity.json"
+					on:click={() => (backedUp = true)}>JSON</a
+				>
+			</div>
 		</Step>
 	</Stepper>
 	<slot>

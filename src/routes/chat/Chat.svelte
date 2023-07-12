@@ -6,12 +6,14 @@
 	import { io } from 'socket.io-client';
 	import { genProof } from '$lib/prover';
 	import { Identity } from '@semaphore-protocol/identity';
+	import RateLimiter from '$lib/rateLimit';
 
 	export let setRoom: (id: RoomI['id']) => any;
 	let messageText = '';
-	let sendButtonText = 'Send';
 	let connected: boolean = false;
+	let rateManager: RateLimiter;
 	let currentEpoch: number = 0;
+	let messagesLeft: number = 0;
 	$: server = $serverDataStore[$selectedServer];
 	$: roomGroups = server.roomGroups;
 	$: selectedRoom = server.selectedRoom;
@@ -25,6 +27,7 @@
 		}
 	};
 	$: roomMessageStore = $messageStore[selectedRoom];
+	$: sendButtonText = messagesLeft > 0 ? 'Send (' + messagesLeft + ' left)' : 'X';
 
 	function getMembers(room: RoomI): string {
 		let total = 0;
@@ -50,31 +53,29 @@
 	const socket = io(socketURL);
 
 	function sendMessage() {
+		if (!connected) {
+			console.debug('Not connected to chat server');
+			return;
+		}
+		if (messageText.length === 0) {
+			console.debug('Message is empty');
+			return;
+		}
 		const identity = new Identity($identityStore.toString());
+		const messageID = rateManager.useMessage();
+		if (messageID == -1) {
+			console.debug('Rate limit exceeded');
+			return;
+		} else {
+			messagesLeft = messageID;
+		}
 		genProof(room, messageText, identity).then((msg) => {
 			socket.emit('validateMessage', msg);
 			console.debug('Sending message: ', msg);
 			messageText = '';
 		});
+
 		scrollChatBottom();
-	}
-
-	function getEpochTimestamp(epoch?: number | bigint): string {
-		const time = epoch ? Number(epoch) * room.rateLimit : new Date();
-		return new Date(time).toLocaleString('en-US', {
-			hour: 'numeric',
-			minute: 'numeric',
-			hour12: true
-		});
-	}
-
-	function getEpochFromTimestamp(timestamp: string | number): {
-		epoch: number;
-		timestamp: string | number;
-	} {
-		timestamp = timestamp ? new Date(timestamp).toString() : Date.now().toString();
-		const epoch = Math.floor(Number(timestamp) / room.rateLimit);
-		return { epoch, timestamp };
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {
@@ -85,6 +86,7 @@
 	}
 
 	onMount(() => {
+		rateManager = new RateLimiter(1, room.rateLimit);
 		scrollChatBottom('instant');
 		socket.on('connect', () => {
 			connected = true;
@@ -129,7 +131,8 @@
 			scrollChatBottom();
 		});
 		setInterval(() => {
-			currentEpoch = getEpochFromTimestamp();
+			currentEpoch = rateManager.getCurrentEpoch();
+			messagesLeft = rateManager.getRemainingMessages();
 		}, 1000);
 	});
 	onDestroy(() => {
@@ -146,8 +149,8 @@
 			<select
 				class="select text-primary-500"
 				on:change={(event) => {
-					console.log('Setting server to: ', event.target.value);
-					$selectedServer = event.target.value;
+					console.log('Setting server to: ', event.target?.value);
+					$selectedServer = event.target?.value;
 				}}
 			>
 				{#each Object.entries($serverDataStore) as [key, s]}
@@ -162,7 +165,7 @@
 				class="select text-primary-500"
 				size="8"
 				on:change={(event) => {
-					setRoom(event.target.value);
+					setRoom(event.target?.value);
 				}}
 			>
 				{#each roomGroups as group}
@@ -186,17 +189,19 @@
 			class="border-b border-surface-500/30 px-5 py-3 flex flex-row justify-between place-items-center"
 		>
 			<h2 class="h5 text-primary-500">{room?.name}</h2>
-			<small>Epoch: {currentEpoch.epoch}</small>
+			<small>Epoch: {currentEpoch}</small>
 		</header>
 		<!-- Conversation -->
 		<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
 			{#if roomMessageStore && roomMessageStore.messages}
 				{#each roomMessageStore.messages.reverse() as bubble}
-					<div class="grid grid-cols-[1fr_auto] gap-2">
-						<div class="card p-4 rounded-tr-none space-y-2">
+					<div class="flex">
+						<div class="card p-4 space-y-2">
 							<header class="flex justify-between items-center">
-								<small class="text-primary-500 opacity-50">nullifier {bubble.id}</small>
-								<small class="opacity-50 text-primary-500">{getEpochTimestamp(bubble.epoch)}</small>
+								<small class="opacity-50 text-primary-500"
+									>{rateManager.getTimestampFromEpoch(bubble.epoch)}</small
+								>
+								<small class="opacity-50 text-primary-500">epoch: {bubble.epoch}</small>
 							</header>
 							<p class="text-primary-500">{bubble.message}</p>
 						</div>
@@ -220,7 +225,7 @@
 					class={messageText ? 'variant-filled-primary' : 'input-group-shim'}
 					on:click={sendMessage}
 				>
-					Send
+					{sendButtonText}
 				</button>
 			</div>
 		</section>

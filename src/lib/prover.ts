@@ -21,9 +21,15 @@ interface proofInputsI {
 	epoch: bigint;
 }
 
-async function genProof(room: RoomI, message: string, identity: Identity): Promise<MessageI> {
+async function genProof(
+	room: RoomI,
+	message: string,
+	identity: Identity,
+	messageId: bigint | number = 0,
+	messageLimit: bigint | number = 1
+): Promise<MessageI> {
 	console.log(room, message, identity);
-	const userMessageLimit = BigInt(1);
+	const userMessageLimit = BigInt(messageLimit);
 	const messageHash: bigint = getMessageHash(message);
 	const group = new Group(room.id, 20, room.membership?.identityCommitments);
 	const rateCommitment: bigint = getRateCommitmentHash(identity.getCommitment(), userMessageLimit);
@@ -32,7 +38,7 @@ async function genProof(room: RoomI, message: string, identity: Identity): Promi
 		rlnIdentifier: BigInt(room.id),
 		identitySecret: identity.getSecret(),
 		userMessageLimit: userMessageLimit,
-		messageId: BigInt(0),
+		messageId: BigInt(messageId),
 		merkleProof: group.generateMerkleProof(group.indexOf(rateCommitment)),
 		x: messageHash,
 		epoch: BigInt(Date.now().toString())

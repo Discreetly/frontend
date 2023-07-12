@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { identityStore } from '$lib/stores';
 	import DeleteIdentity from './DeleteIdentity.svelte';
+	import BackupIdentity from './BackupIdentity.svelte';
+	import RestoreIdentity from './RestoreIdentity.svelte';
 	import { Identity } from '@semaphore-protocol/identity';
 
 	let identityExists = false;
@@ -31,6 +33,8 @@
 	<button on:click={() => createIdentity()} class="btn variant-filled-success" type="button">
 		Generate Identity
 	</button>
+	<RestoreIdentity />
 {:else}
+	<BackupIdentity />
 	<DeleteIdentity />
 {/if}

@@ -10,7 +10,6 @@
 	function deleteIdentity() {
 		console.log('DELETING IDENTITY');
 		$identityStore = { identity: null, rooms: {} } as IdentityStoreI;
-		goto('/');
 	}
 
 	onMount(() => {
@@ -29,14 +28,17 @@
 		<h3 class="h4">Delete Your Identity</h3>
 	</header>
 	<section class="px-4 pt-4">
-		<input type="checkbox" id="checkbox" class="mx-2" />
-		<span class="ms-2 text-primary-500">Confirm deletion</span>
+		<input type="checkbox" id="checkbox" class="mx-2 p-1" />
+		<span class="ms-2 text-error-500"
+			>I promise I backed up my identity, or I really want to destroy it.</span
+		>
 	</section>
-	<footer class="card-footer">
+	<footer class="card-footer float-right">
 		<button
+			id="delete-identity"
 			on:click={deleteIdentity}
 			disabled={isButtonDisabled}
-			class="btn variant-filled-error mt-8 text-sm font-bold text-warning-100"
+			class="btn btn-sm variant-ghost-error mt-8 text-sm font-bold text-warning-100"
 			>Delete Identity</button
 		>
 	</footer>
