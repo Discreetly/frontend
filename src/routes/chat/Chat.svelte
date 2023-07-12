@@ -28,6 +28,8 @@
 	};
 	$: roomMessageStore = $messageStore[selectedRoom];
 	$: sendButtonText = messagesLeft > 0 ? 'Send (' + messagesLeft + ' left)' : 'X';
+	$: inRoom = $identityStore.rooms.hasOwnProperty(selectedRoom);
+	$: canSendMessage = inRoom && connected;
 
 	function getMembers(room: RoomI): string {
 		let total = 0;
@@ -214,15 +216,24 @@
 			<div class="input-group input-group-divider grid-cols-[1fr_auto] rounded-container-token">
 				<textarea
 					bind:value={messageText}
-					class="bg-transparent p-2 text-primary-400"
+					class="p-2 text-primary-400 border"
+					class:bg-surface-900={!canSendMessage}
+					class:bg-surface-500={canSendMessage}
 					name="prompt"
 					id="prompt"
-					placeholder="Write a message..."
+					placeholder={canSendMessage
+						? 'Write a message...'
+						: connected
+						? 'Not a member of this room'
+						: 'Connecting...'}
 					rows="1"
 					on:keydown={onPromptKeydown}
+					disabled={!connected || !inRoom}
 				/>
 				<button
-					class={messageText ? 'variant-filled-primary' : 'input-group-shim'}
+					class:hidden={!canSendMessage}
+					class={canSendMessage && messageText ? 'variant-ghost-primary' : 'variant-ghost-surface'}
+					disabled={!canSendMessage}
 					on:click={sendMessage}
 				>
 					{sendButtonText}
