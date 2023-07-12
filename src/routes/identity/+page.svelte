@@ -27,14 +27,18 @@
 </script>
 
 {#if !identityExists}
-	<div class="mb-6">
-		<span class="badge variant-ghost-secondary text-sm">Identity Not Found</span>
+	<div class="mb-8 text-center">
+		<span class="badge variant-ghost-secondary text-sm px-4 py-2">Identity Not Found</span>
 	</div>
-	<button on:click={() => createIdentity()} class="btn variant-filled-success" type="button">
-		Generate Identity
-	</button>
-	<RestoreIdentity />
-{:else}
-	<BackupIdentity />
-	<DeleteIdentity />
 {/if}
+<div class="grid grid-flow-rows gap-5 my-5 max-w-md mx-auto">
+	{#if !identityExists}
+		<button on:click={() => createIdentity()} class="btn variant-filled-success" type="button">
+			Generate Identity
+		</button>
+		<RestoreIdentity />
+	{:else}
+		<BackupIdentity />
+		<DeleteIdentity />
+	{/if}
+</div>

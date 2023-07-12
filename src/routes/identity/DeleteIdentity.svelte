@@ -33,7 +33,7 @@
 			>I promise I backed up my identity, or I really want to destroy it.</span
 		>
 	</section>
-	<footer class="card-footer float-right">
+	<footer class="card-footer text-center">
 		<button
 			id="delete-identity"
 			on:click={deleteIdentity}
