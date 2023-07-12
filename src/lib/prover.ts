@@ -33,7 +33,6 @@ async function genProof(
 	const messageHash: bigint = getMessageHash(message);
 	const group = new Group(room.id, 20, room.membership?.identityCommitments);
 	const rateCommitment: bigint = getRateCommitmentHash(identity.getCommitment(), userMessageLimit);
-	group.addMember(rateCommitment); // FIXME: This is just a hack to add the user to the group for testing
 	const proofInputs: proofInputsI = {
 		rlnIdentifier: BigInt(room.id),
 		identitySecret: identity.getSecret(),
