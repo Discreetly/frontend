@@ -149,13 +149,20 @@
 						placeholder="Invite Code"
 						bind:value={code}
 						on:keydown={(event) => {
+							const input = event.target;
 							if (event.key === 'Enter') {
 								event.preventDefault();
 								addCode(code);
 							} else if ([' ', '-'].includes(event.key)) {
 								event.preventDefault();
 								if (code.length > 0 && code[code.length - 1] !== '-') {
-									code += '-';
+									// inserts a - where the cursor is
+									code =
+										code.slice(0, input.selectionStart) + '-' + code.slice(input.selectionStart);
+									const _cursor_position = input.selectionStart;
+									setTimeout(function () {
+										input.selectionStart = input.selectionEnd = _cursor_position + 1;
+									}, 0);
 								}
 							} else if (
 								[

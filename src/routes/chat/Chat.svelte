@@ -124,14 +124,19 @@
 
 		socket.on('messageBroadcast', (data: MessageI) => {
 			console.debug('Received Message: ', data);
-			if (!$messageStore[data.room]) {
-				console.debug('Creating room in message store', data.room);
-				$messageStore[data.room] = { messages: [] };
+			const roomID = data.room?.toString();
+			if (roomID) {
+				if (!$messageStore[roomID]) {
+					console.debug('Creating room in message store', roomID);
+					$messageStore[roomID] = { messages: [] };
+				}
+				$messageStore[roomID].messages = [data, ...$messageStore[roomID].messages.reverse()];
+				$messageStore[roomID].messages = $messageStore[roomID].messages.slice(0, 500);
+				console.log($messageStore[roomID].messages.slice(0, 5));
+				scrollChatBottom();
 			}
-			$messageStore[data.room].messages = [data, ...$messageStore[data.room].messages];
-			$messageStore[data.room].messages = $messageStore[data.room].messages.slice(0, 500);
-			scrollChatBottom();
 		});
+
 		setInterval(() => {
 			currentEpoch = rateManager.getCurrentEpoch();
 			messagesLeft = rateManager.getRemainingMessages();
@@ -143,7 +148,7 @@
 	});
 </script>
 
-<section id="chat-wrapper" class="bg-surface-50-900-token">
+<section id="chat-wrapper" class="bg-surface-100-800-token">
 	<!-- Navigation -->
 	<div id="sidebar" class="hidden lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 		<!-- Header -->
@@ -198,7 +203,7 @@
 			{#if roomMessageStore && roomMessageStore.messages}
 				{#each roomMessageStore.messages.reverse() as bubble}
 					<div class="flex">
-						<div class="card p-4 space-y-2">
+						<div class="card p-4 space-y-2 bg-surface-200-700-token">
 							<header class="flex justify-between items-center">
 								<small class="opacity-50 text-primary-500"
 									>{rateManager.getTimestampFromEpoch(bubble.epoch)}</small

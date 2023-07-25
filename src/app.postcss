@@ -1,9 +1,22 @@
 /* Write your global styles here, in PostCSS syntax */
+@font-face {
+font-family: "Space Grotesk";
+src: url("/fonts/Space_Grotesk/SpaceGrotesk-VariableFont_wght.ttf") format("truetype");
+}
 
+@font-face {
+	font-family: "Space Mono";
+	src: url("/fonts/Space_Mono/SpaceMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+font-family: "Nippo";
+src: url("/fonts/Nippo/Nippo-Variable.ttf") format("truetype");
+}
 @tailwind base;
 :root {
-	--blackish: rgba(0, 0, 0, 0.98);
-	--gray-dark: #212121;
+	--blackish: #202626;
+	--gray-dark: #292f2f;
 	--gray-light: rgba(242, 242, 242, 0.6);
 	--white: rgba(255, 255, 255, 1);
 	--whitish: rgb(225, 225, 225);
@@ -42,3 +55,11 @@
 @tailwind components;
 
 @tailwind utilities;
+
+.dark body {
+  background: rgb(var(--color-surface-700));
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6 {
+	font-weight: 350;
+}

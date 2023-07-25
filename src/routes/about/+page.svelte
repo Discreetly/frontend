@@ -1,5 +1,5 @@
 <div class="mx-auto mt-10 max-w-[80ch]">
-	<h2 class="h2 underline decoration-double underline-offset-4 p-5">&nbsp;Discreetly&nbsp;</h2>
+	<img src="/logo-text.png" alt="discreetly" class="max-h-20 mb-5" />
 	<h5 class="italic mb-4 mt-1">A new take on anonymous communication.</h5>
 	<p class="text-justify my-3">
 		This feels like a mostly familiar chat application, with random numbers as usernames, but I

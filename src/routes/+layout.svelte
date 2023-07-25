@@ -9,9 +9,7 @@
 	import AppFooter from './AppFooter.svelte';
 	import Loading from '$lib/loading.svelte';
 	import { serverListStore, serverDataStore, selectedServer } from '$lib/stores';
-	import type { ServerI } from 'discreetly-interfaces';
-	import { fetchServer, updateServers } from '$lib/utils';
-	import type { ServerListI } from '$lib/types';
+	import { updateServers } from '$lib/utils';
 
 	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {

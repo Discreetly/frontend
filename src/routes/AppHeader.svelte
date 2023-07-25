@@ -4,10 +4,10 @@
 	import { identityStore } from '$lib/stores';
 </script>
 
-<AppBar>
+<AppBar background="bg-surface-50-800-token">
 	<svelte:fragment slot="lead">
 		<h1 class="h4 text-secondary-500">
-			<a href="/">Discreetly</a>
+			<a href="/"><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a>
 		</h1>
 	</svelte:fragment>
 	{#if $identityStore.identity != undefined && $identityStore.identity != null}
