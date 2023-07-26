@@ -29,12 +29,13 @@ async function genProof(
 	messageLimit: bigint | number = 1
 ): Promise<MessageI> {
 	console.log(room, message, identity);
+	const RLN_IDENIFIER = BigInt(room.id);
 	const userMessageLimit = BigInt(messageLimit);
 	const messageHash: bigint = getMessageHash(message);
-	const group = new Group(room.id, 20, room.membership?.identityCommitments);
+	const group = new Group(RLN_IDENIFIER, 20, room.membership?.identityCommitments);
 	const rateCommitment: bigint = getRateCommitmentHash(identity.getCommitment(), userMessageLimit);
 	const proofInputs: proofInputsI = {
-		rlnIdentifier: BigInt(room.id),
+		rlnIdentifier: RLN_IDENIFIER,
 		identitySecret: identity.getSecret(),
 		userMessageLimit: userMessageLimit,
 		messageId: BigInt(messageId),
@@ -48,7 +49,7 @@ async function genProof(
 		const msg: MessageI = {
 			id: proof.snarkProof.publicSignals.nullifier.toString(),
 			message: message,
-			room: room.id,
+			room: RLN_IDENIFIER,
 			proof
 		};
 		return msg;
