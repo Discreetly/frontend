@@ -1,5 +1,7 @@
 import { randomBigInt, genId } from 'discreetly-interfaces';
 import type { ServerI, ServerListI } from 'discreetly-interfaces';
+import { serverDataStore, serverListStore } from './stores';
+import { get } from 'svelte/store';
 
 async function fetchServer(server_url: string): Promise<ServerI | void> {
 	console.debug(`Fetching server ${server_url}`);
@@ -18,16 +20,17 @@ async function fetchServer(server_url: string): Promise<ServerI | void> {
 		});
 }
 
-function updateServers(
-	serverListStore: [],
-	serverDataStore: { [key: string]: ServerI }
-): { [key: string]: ServerI } {
-	serverListStore.forEach((server: ServerListI) => {
+function updateServers(): { [key: string]: ServerI } {
+	if (get(serverListStore).length < 1) {
+		console.error('serverListStore is empty');
+		serverListStore.set([{ name: 'Localhost', url: 'http://localhost:3001/api/' } as ServerListI]);
+	}
+	get(serverListStore).forEach((server: ServerListI) => {
 		console.log('fetching server data');
 		fetchServer(server.url).then((data) => {
 			console.log('setting server data');
-			if (serverDataStore[server.url]) {
-				Object.assign(serverDataStore[server.url], data as ServerI);
+			if (get(serverDataStore)[server.url]) {
+				Object.assign($serverDataStore[server.url], data as ServerI);
 			} else {
 				serverDataStore[server.url] = data as ServerI;
 			}

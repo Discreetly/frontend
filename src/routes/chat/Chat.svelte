@@ -1,12 +1,20 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import { Avatar, ListBox } from '@skeletonlabs/skeleton';
-	import type { RoomGroupI, RoomI, MessageI } from 'discreetly-interfaces';
-	import { identityStore, selectedServer, messageStore, serverDataStore } from '$lib/stores';
+	import { Modal, modalStore } from '@skeletonlabs/skeleton';
+	import type { ModalSettings } from '@skeletonlabs/skeleton';
+	import type { RoomI, MessageI } from 'discreetly-interfaces';
+	import {
+		identityStore,
+		selectedServer,
+		messageStore,
+		serverDataStore,
+		serverListStore
+	} from '$lib/stores';
 	import { io } from 'socket.io-client';
 	import { genProof } from '$lib/prover';
 	import { Identity } from '@semaphore-protocol/identity';
 	import RateLimiter from '$lib/rateLimit';
+	import { updateServers } from '$lib/utils';
 
 	export let setRoom: (id: RoomI['id']) => any;
 	let messageText = '';
@@ -15,30 +23,18 @@
 	let currentEpoch: number = 0;
 	let messagesLeft: number = 0;
 	$: server = $serverDataStore[$selectedServer];
-	$: roomGroups = server.roomGroups;
 	$: selectedRoom = server.selectedRoom;
-	$: room = $serverDataStore[$selectedServer].roomGroups
-		.map((group: RoomGroupI) => group.rooms)
-		.flat()
-		.find((room: RoomI) => room.id === selectedRoom);
+	$: rooms = $serverDataStore[$selectedServer].rooms;
+	$: room = $serverDataStore[$selectedServer].rooms.find((room: RoomI) => room.id === selectedRoom);
 	$: () => {
 		if (!$messageStore[selectedRoom]) {
 			$messageStore[selectedRoom] = { messages: [] };
 		}
 	};
-	$: roomMessageStore = $messageStore[selectedRoom];
+
 	$: sendButtonText = messagesLeft > 0 ? 'Send (' + messagesLeft + ' left)' : 'X';
 	$: inRoom = $identityStore.rooms.hasOwnProperty(selectedRoom);
 	$: canSendMessage = inRoom && connected;
-
-	function getMembers(room: RoomI): string {
-		let total = 0;
-		total = room.membership?.identityCommitments?.length || 0;
-		if (!(total > 0)) {
-			return 'Cooming soon...';
-		}
-		return String(total.toString() + ' members');
-	}
 
 	let elemChat: HTMLElement;
 
@@ -87,6 +83,26 @@
 		}
 	}
 
+	const addServerModal: ModalSettings = {
+		type: 'prompt',
+		// Data
+		title: 'Enter Server Address',
+		body: 'Provide the server address.',
+		// Populates the input value and attributes
+		value: 'http://discreetly.chat/',
+		valueAttr: { type: 'url', required: true },
+		// Returns the updated response value
+		response: (r: string) => {
+			console.log('response:', r);
+			if ($serverListStore.includes(r)) {
+				console.warn('Server already exists');
+				return;
+			}
+			$serverListStore.push({ url: r, name: 'LOADING...' + r });
+			$serverDataStore = updateServers($serverListStore, $serverDataStore);
+		}
+	};
+
 	onMount(() => {
 		rateManager = new RateLimiter(1, room.rateLimit);
 		scrollChatBottom('instant');
@@ -130,9 +146,10 @@
 					console.debug('Creating room in message store', roomID);
 					$messageStore[roomID] = { messages: [] };
 				}
-				$messageStore[roomID].messages = [data, ...$messageStore[roomID].messages.reverse()];
-				$messageStore[roomID].messages = $messageStore[roomID].messages.slice(0, 500);
-				console.log($messageStore[roomID].messages.slice(0, 5));
+				$messageStore[roomID].messages = [data, ...$messageStore[roomID].messages.reverse()].slice(
+					0,
+					500
+				);
 				scrollChatBottom();
 			}
 		});
@@ -152,7 +169,7 @@
 	<!-- Navigation -->
 	<div id="sidebar" class="hidden lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 		<!-- Header -->
-		<header class="border-b border-surface-500/30 p-4">
+		<header class="border-b border-surface-500/30 p-4 flex flex-row">
 			<select
 				class="select text-primary-500"
 				on:change={(event) => {
@@ -165,6 +182,13 @@
 				{/each}
 				<option value={'http://localhost:3001/api/'}>TESTING LOCALHOST</option>
 			</select>
+			<button
+				type="button"
+				class="btn btn-sm variant-ghost-primary ms-2"
+				on:click={() => {
+					modalStore.trigger(addServerModal);
+				}}>+</button
+			>
 		</header>
 		<!-- List -->
 		<div class="p-4 space-y-4 overflow-y-auto">
@@ -175,14 +199,12 @@
 					setRoom(event.target?.value);
 				}}
 			>
-				{#each roomGroups as group}
-					{#each group.rooms as room}
-						{#if room.id == selectedRoom}
-							<option value={room.id} selected>{room.name}</option>
-						{:else}
-							<option value={room.id}>{room.name}</option>
-						{/if}
-					{/each}
+				{#each rooms as room}
+					{#if room.id == selectedRoom}
+						<option value={room.id} selected>{room.name}</option>
+					{:else}
+						<option value={room.id}>{room.name}</option>
+					{/if}
 				{/each}
 			</select>
 		</div>
@@ -200,8 +222,8 @@
 		</header>
 		<!-- Conversation -->
 		<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
-			{#if roomMessageStore && roomMessageStore.messages}
-				{#each roomMessageStore.messages.reverse() as bubble}
+			{#if $messageStore[selectedRoom]}
+				{#each $messageStore[selectedRoom].messages.reverse() as bubble}
 					<div class="flex">
 						<div class="card p-4 space-y-2 bg-surface-200-700-token">
 							<header class="flex justify-between items-center">

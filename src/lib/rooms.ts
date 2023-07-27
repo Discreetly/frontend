@@ -1,15 +1,10 @@
-import type { RoomGroupI } from 'discreetly-interfaces';
-export const roomGroups: RoomGroupI[] = [
+import type { RoomI } from 'discreetly-interfaces';
+export const rooms: RoomI[] = [
 	{
-		name: 'Loading...',
-		rooms: [
-			{
-				id: BigInt(0),
-				name: 'Loading Rooms',
-				membership: {
-					identityCommitments: [BigInt(0)]
-				}
-			}
-		]
+		id: BigInt(0),
+		name: 'Loading Rooms',
+		membership: {
+			identityCommitments: [BigInt(0)]
+		}
 	}
 ];

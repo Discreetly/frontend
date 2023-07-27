@@ -1,5 +1,5 @@
 import type { Identity } from '@semaphore-protocol/identity';
-import { rooms } from '../../../server/config/rooms';
+
 interface ButtonI {
 	link: string;
 	cls: string;

@@ -44,7 +44,7 @@
 	"dependencies": {
 		"@semaphore-protocol/group": "^3.10.1",
 		"@semaphore-protocol/identity": "^3.10.1",
-		"discreetly-interfaces": "^0.1.5",
+		"discreetly-interfaces": "^0.1.14",
 		"poseidon-lite": "^0.2.0",
 		"qr-scanner": "^1.4.2",
 		"qrcode": "^1.5.3",
