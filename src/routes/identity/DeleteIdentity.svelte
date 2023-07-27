@@ -8,7 +8,7 @@
 	let isButtonDisabled = true;
 
 	function deleteIdentity() {
-		console.log('DELETING IDENTITY');
+		console.warn('DELETING IDENTITY');
 		$identityStore = { identity: null, rooms: {} } as IdentityStoreI;
 	}
 

@@ -8,10 +8,8 @@
 	let identityExists = false;
 	$: if ($identityStore.identity == undefined) {
 		identityExists = false;
-		console.debug('identity does not exist');
 	} else {
 		identityExists = true;
-		console.debug('identity exists');
 	}
 
 	function createIdentity(regenerate = false) {
@@ -20,7 +18,7 @@
 			$identityStore.identity = new Identity();
 			return 'created';
 		} else {
-			console.log('Identity already exists');
+			console.warn('Identity already exists');
 			return 'exists';
 		}
 	}

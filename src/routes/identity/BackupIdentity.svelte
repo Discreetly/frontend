@@ -2,20 +2,29 @@
 	import { identityStore } from '$lib/stores';
 	import Loading from '$lib/loading.svelte';
 	import QRCode from 'qrcode';
+	import { Identity } from '@semaphore-protocol/identity';
 
 	let loading: boolean = false;
 	let imageUrl: string | undefined = undefined;
+
+	function getIdentityBackup() {
+		const idBackup = $identityStore.identity as Identity;
+		return idBackup.toString();
+	}
 
 	function generateQR() {
 		loading = true;
 		const opts = {
 			type: 'image/jpeg',
+			errorCorrectionLevel: 'M',
+			mode: 'Alphanumeric',
 			color: {
-				dark: '#ffffff',
-				light: '#202626'
+				dark: '#202626',
+				light: '#ffffff'
 			}
 		};
-		QRCode.toDataURL(JSON.stringify($identityStore), opts).then((response) => {
+
+		QRCode.toDataURL(getIdentityBackup(), opts).then((response) => {
 			imageUrl = response;
 		});
 		setTimeout(() => {
@@ -28,7 +37,7 @@
 <h4 class="h4">Backup Your Identity</h4>
 <a
 	class="btn variant-ghost-success"
-	href={'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify($identityStore))}
+	href={'data:text/json;charset=utf-8,' + encodeURIComponent(getIdentityBackup())}
 	download="identity.json">JSON</a
 >
 <a class="btn variant-ghost-success" on:click={generateQR}>QR Code</a>
