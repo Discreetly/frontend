@@ -8,7 +8,7 @@
 	import AppHeader from './AppHeader.svelte';
 	import AppFooter from './AppFooter.svelte';
 	import Loading from '$lib/loading.svelte';
-	import { serverListStore, serverDataStore, selectedServer } from '$lib/stores';
+	import { serverListStore, selectedServer } from '$lib/stores';
 	import { updateServers } from '$lib/utils';
 
 	// Hack to get BigInt <-> JSON compatibility
@@ -17,7 +17,7 @@
 	};
 
 	onMount(async () => {
-		$serverDataStore = updateServers($serverListStore, $serverDataStore);
+		updateServers();
 		if ($selectedServer.name == undefined) {
 			$selectedServer = $serverListStore[0].url;
 		}

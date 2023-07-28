@@ -29,11 +29,16 @@ function updateServers(): { [key: string]: ServerI } {
 		console.log('fetching server data');
 		fetchServer(server.url).then((data) => {
 			console.log('setting server data');
-			if (get(serverDataStore)[server.url]) {
-				Object.assign($serverDataStore[server.url], data as ServerI);
+			const temp = get(serverDataStore);
+			if (temp[server.url]) {
+				Object.assign(temp[server.url], data as ServerI);
 			} else {
-				serverDataStore[server.url] = data as ServerI;
+				temp[server.url] = data as ServerI;
 			}
+			temp[server.url].selectedRoom = temp[server.url].rooms[0]
+				? temp[server.url].rooms[0].roomId
+				: '';
+			serverDataStore.set(temp);
 		});
 	});
 	return serverDataStore;

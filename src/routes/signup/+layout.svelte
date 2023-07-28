@@ -6,6 +6,7 @@
 	import { goto } from '$app/navigation';
 	import type { RoomI } from 'discreetly-interfaces';
 	import BackupIdentity from '../identity/BackupIdentity.svelte';
+	import RestoreIdentity from '../identity/RestoreIdentity.svelte';
 
 	let identityExists = false;
 	let code = '';
@@ -40,7 +41,7 @@
 			code: code,
 			idc: idc
 		});
-		console.log(data);
+		console.debug(data);
 		fetch(url, {
 			method: 'POST',
 			headers: {
@@ -53,16 +54,38 @@
 				const result = await response.json();
 				console.log('INVITE CODE RESPONSE: ', result);
 				if (result.status == 'valid' || result.status == 'already-added') {
-					result.rooms.forEach((r: RoomI) => {
-						if (!$identityStore.rooms.hasOwnProperty($selectedServer)) {
-							$identityStore.rooms[$selectedServer] = [];
-						}
-						$identityStore.rooms[$selectedServer] = [
-							...$identityStore.rooms[$selectedServer],
-							r.id
-						];
-						acceptedRoomNames = [...acceptedRoomNames, r.name];
+					const rooms: RoomI[] = [];
+					result.roomIds.forEach((roomId: string) => {
+						console.log(
+							'Fetching room: ',
+							$serverDataStore[$selectedServer].serverInfoEndpoint + '/api/room/' + roomId
+						);
+						fetch(
+							'http://' +
+								$serverDataStore[$selectedServer].serverInfoEndpoint +
+								'/api/room/' +
+								roomId
+						)
+							.then(async (response) => {
+								console.log(response);
+								const result = await response.json();
+								rooms.push(result);
+							})
+							.catch((err) => {
+								console.error(err);
+							});
 					});
+					// rooms.forEach((r: RoomI) => {
+					// 	if (!$identityStore.rooms.hasOwnProperty($selectedServer)) {
+					// 		$identityStore.rooms[$selectedServer] = [];
+					// 	}
+					// 	$identityStore.rooms[$selectedServer] = [
+					// 		...$identityStore.rooms[$selectedServer],
+					// 		r.id
+					// 	];
+					// 	acceptedRoomNames = [...acceptedRoomNames, r.name];
+					// });
+					$serverDataStore[$selectedServer].rooms = rooms;
 					accepted = true;
 					code = '';
 				} else {
@@ -84,7 +107,7 @@
 	>
 		<Step>
 			<svelte:fragment slot="header"
-				><div class="text-center">About Discreetly</div></svelte:fragment
+				><div class="h3 text-center">About Discreetly</div></svelte:fragment
 			>
 			<h5 class="text-center h4 my-7">This app is a little different from what you're used to.</h5>
 			<div class="grid place-content-center text-justify text-lg mb-10">
@@ -116,13 +139,19 @@
 			<svelte:fragment slot="navigation" />
 		</Step>
 		<Step locked={!identityExists}>
-			<svelte:fragment slot="header"><div class="text-center">Create Identity</div></svelte:fragment
+			<svelte:fragment slot="header"
+				><div class="h3 text-center">Create Identity</div></svelte:fragment
 			>
-			<div class="grid place-content-center">
+			<div class="grid place-content-center gap-5">
 				{#if !identityExists}
-					<button on:click={() => createIdentity()} class="btn variant-ghost-success" type="button">
+					<button
+						on:click={() => createIdentity()}
+						class="btn variant-filled-success"
+						type="button"
+					>
 						Generate Identity
 					</button>
+					<RestoreIdentity />
 				{:else}
 					<div class="d-flex justify-content-between gap-2">
 						<button
@@ -138,7 +167,7 @@
 		</Step>
 		<Step locked={!accepted}>
 			<svelte:fragment slot="header"
-				><div class="text-center">Join Communities</div></svelte:fragment
+				><div class="h3 text-center">Join Communities</div></svelte:fragment
 			>
 			<div class="grid place-content-center">
 				<label class="label">
@@ -214,7 +243,7 @@
 		</Step>
 		<Step locked={!backedUp}>
 			<svelte:fragment slot="header"
-				><div class="text-center">Backup your identity</div></svelte:fragment
+				><div class="h3 text-center">Backup your identity</div></svelte:fragment
 			>
 			<div class="grid place-content-center">
 				<a

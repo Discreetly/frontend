@@ -9,7 +9,7 @@
 	function setRoom(id: string) {
 		let room: RoomI;
 		const rooms = $serverDataStore[$selectedServer].rooms;
-		const temp_room = rooms.find((room: RoomI) => room.id === id);
+		const temp_room = rooms.find((room: RoomI) => room.roomId === id);
 
 		if (temp_room) {
 			console.debug('Setting Room to', temp_room.name);
@@ -20,12 +20,13 @@
 		} else {
 			console.debug('Loading Rooms Still');
 			room = {
-				id: '0',
+				roomId: '0',
 				name: 'Rooms Not Loaded',
 				membership: { identityCommitments: [0n] }
 			};
 		}
-		$serverDataStore[$selectedServer].selectedRoom = room.id;
+		console.log('Setting Room to', room.name);
+		Object.assign($serverDataStore[$selectedServer], { selectedRoom: room.roomId });
 	}
 
 	onMount(async () => {

@@ -25,7 +25,9 @@
 	$: server = $serverDataStore[$selectedServer];
 	$: selectedRoom = server.selectedRoom;
 	$: rooms = $serverDataStore[$selectedServer].rooms;
-	$: room = $serverDataStore[$selectedServer].rooms.find((room: RoomI) => room.id === selectedRoom);
+	$: room = $serverDataStore[$selectedServer].rooms.find(
+		(room: RoomI) => room.roomId === selectedRoom
+	);
 	$: () => {
 		if (!$messageStore[selectedRoom]) {
 			$messageStore[selectedRoom] = { messages: [] };
@@ -99,7 +101,7 @@
 				return;
 			}
 			$serverListStore.push({ url: r, name: 'LOADING...' + r });
-			$serverDataStore = updateServers($serverListStore, $serverDataStore);
+			$serverDataStore = updateServers();
 		}
 	};
 
@@ -118,7 +120,7 @@
 				console.debug('socket-io-transport-closed', reason);
 			});
 
-			socket.emit('joiningRoom', room?.id);
+			socket.emit('joiningRoom', room?.roomId);
 		});
 
 		socket.on('disconnected', () => {
@@ -140,13 +142,13 @@
 
 		socket.on('messageBroadcast', (data: MessageI) => {
 			console.debug('Received Message: ', data);
-			const roomID = data.room?.toString();
-			if (roomID) {
-				if (!$messageStore[roomID]) {
-					console.debug('Creating room in message store', roomID);
-					$messageStore[roomID] = { messages: [] };
+			const roomId = data.room?.toString();
+			if (roomId) {
+				if (!$messageStore[roomId]) {
+					console.debug('Creating room in message store', roomId);
+					$messageStore[roomId] = { messages: [] };
 				}
-				$messageStore[roomID].messages = [data, ...$messageStore[roomID].messages.reverse()].slice(
+				$messageStore[roomId].messages = [data, ...$messageStore[roomId].messages.reverse()].slice(
 					0,
 					500
 				);
@@ -160,7 +162,7 @@
 		}, 1000);
 	});
 	onDestroy(() => {
-		socket.emit('leavingRoom', room?.id);
+		socket.emit('leavingRoom', room?.roomId);
 		socket.disconnect();
 	});
 </script>
@@ -200,10 +202,10 @@
 				}}
 			>
 				{#each rooms as room}
-					{#if room.id == selectedRoom}
-						<option value={room.id} selected>{room.name}</option>
+					{#if room.roomId == selectedRoom}
+						<option value={room.roomId} selected>{room.name}</option>
 					{:else}
-						<option value={room.id}>{room.name}</option>
+						<option value={room.roomId}>{room.name}</option>
 					{/if}
 				{/each}
 			</select>
