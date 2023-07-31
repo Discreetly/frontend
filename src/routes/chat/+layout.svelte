@@ -20,6 +20,7 @@
 		} else {
 			console.debug('Loading Rooms Still');
 			room = {
+				id: '0',
 				roomId: '0',
 				name: 'Rooms Not Loaded',
 				membership: { identityCommitments: [0n] }

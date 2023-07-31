@@ -106,7 +106,7 @@
 	};
 
 	onMount(() => {
-		rateManager = new RateLimiter(1, room.rateLimit);
+		rateManager = new RateLimiter(room.userMessageLimit, room.rateLimit);
 		scrollChatBottom('instant');
 		socket.on('connect', () => {
 			connected = true;
@@ -142,7 +142,7 @@
 
 		socket.on('messageBroadcast', (data: MessageI) => {
 			console.debug('Received Message: ', data);
-			const roomId = data.room?.toString();
+			const roomId = data.roomId?.toString();
 			if (roomId) {
 				if (!$messageStore[roomId]) {
 					console.debug('Creating room in message store', roomId);
@@ -203,9 +203,9 @@
 			>
 				{#each rooms as room}
 					{#if room.roomId == selectedRoom}
-						<option value={room.roomId} selected>{room.name}</option>
+						<option value={room.roomId} title={room.roomid} selected>{room.name}</option>
 					{:else}
-						<option value={room.roomId}>{room.name}</option>
+						<option value={room.roomId} title={room.roomid}>{room.name}</option>
 					{/if}
 				{/each}
 			</select>
@@ -219,8 +219,8 @@
 		<header
 			class="border-b border-surface-500/30 px-5 py-3 flex flex-row justify-between place-items-center"
 		>
-			<h2 class="h5 text-primary-500">{room?.name}</h2>
-			<small>Epoch: {currentEpoch}</small>
+			<h2 class="h5 text-primary-500" title={room.roomid}>{room?.name}</h2>
+			<small title={room.roomid}>Epoch: {currentEpoch}</small>
 		</header>
 		<!-- Conversation -->
 		<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
