@@ -35,7 +35,7 @@
 	};
 
 	$: sendButtonText = messagesLeft > 0 ? 'Send (' + messagesLeft + ' left)' : 'X';
-	$: inRoom = $identityStore.rooms.hasOwnProperty(selectedRoom);
+	$: inRoom = true; // TODO fix this: $identityStore.rooms.hasOwnProperty(selectedRoom);
 	$: canSendMessage = inRoom && connected;
 
 	let elemChat: HTMLElement;
@@ -48,7 +48,7 @@
 		}, 1);
 	}
 
-	const socketURL: string = $serverDataStore[$selectedServer].messageHandlerSocket || '';
+	const socketURL: string = $selectedServer || '';
 
 	const socket = io(socketURL);
 
@@ -182,7 +182,7 @@
 				{#each Object.entries($serverDataStore) as [key, s]}
 					<option value={key}>{s.name}</option>
 				{/each}
-				<option value={'http://localhost:3001/api/'}>TESTING LOCALHOST</option>
+				<option value={'http://localhost:3001/'}>TESTING LOCALHOST</option>
 			</select>
 			<button
 				type="button"

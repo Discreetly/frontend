@@ -1,15 +1,22 @@
 <script lang="ts">
-	import { identityStore } from '$lib/stores';
+	import { identityStore, selectedServer } from '$lib/stores';
 	import DeleteIdentity from './DeleteIdentity.svelte';
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
 	import { Identity } from '@semaphore-protocol/identity';
+	import Join from '../signup/Join.svelte';
+	import { updateRooms } from '$lib/utils';
 
 	let identityExists = false;
 	$: if ($identityStore.identity == undefined) {
 		identityExists = false;
 	} else {
 		identityExists = true;
+	}
+
+	function refreshRooms() {
+		console.log('Refreshing rooms');
+		updateRooms($selectedServer);
 	}
 
 	function createIdentity(regenerate = false) {
@@ -38,5 +45,11 @@
 	{:else}
 		<BackupIdentity />
 		<DeleteIdentity />
+		<h4 class="h4 mt-4">Join More Rooms</h4>
+		<Join />
+
+		<div>
+			<div class="btn" on:click={refreshRooms}>Refresh Rooms</div>
+		</div>
 	{/if}
 </div>

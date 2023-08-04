@@ -7,11 +7,10 @@
 	import type { RoomI } from 'discreetly-interfaces';
 	import BackupIdentity from '../identity/BackupIdentity.svelte';
 	import RestoreIdentity from '../identity/RestoreIdentity.svelte';
+	import Join from './Join.svelte';
 
 	let identityExists = false;
-	let code = '';
 	let accepted = false;
-	let acceptedRoomNames: string[] = [];
 	let backedUp = false;
 
 	$: if ($identityStore.identity == undefined) {
@@ -32,69 +31,6 @@
 			console.log('Identity already exists');
 			return 'exists';
 		}
-	}
-
-	function addCode(code: string) {
-		const url = String('http://' + $serverDataStore[$selectedServer].serverInfoEndpoint + '/join');
-		const idc = $identityStore.identity._commitment;
-		const data = JSON.stringify({
-			code: code,
-			idc: idc
-		});
-		console.debug(data);
-		fetch(url, {
-			method: 'POST',
-			headers: {
-				'Access-Control-Allow-Origin': 'http://localhost:*',
-				'Content-Type': 'application/json'
-			},
-			body: data
-		})
-			.then(async (response) => {
-				const result = await response.json();
-				console.log('INVITE CODE RESPONSE: ', result);
-				if (result.status == 'valid' || result.status == 'already-added') {
-					const rooms: RoomI[] = [];
-					result.roomIds.forEach((roomId: string) => {
-						console.log(
-							'Fetching room: ',
-							$serverDataStore[$selectedServer].serverInfoEndpoint + '/api/room/' + roomId
-						);
-						fetch(
-							'http://' +
-								$serverDataStore[$selectedServer].serverInfoEndpoint +
-								'/api/room/' +
-								roomId
-						)
-							.then(async (response) => {
-								console.log(response);
-								const result = await response.json();
-								rooms.push(result);
-							})
-							.catch((err) => {
-								console.error(err);
-							});
-					});
-					// rooms.forEach((r: RoomI) => {
-					// 	if (!$identityStore.rooms.hasOwnProperty($selectedServer)) {
-					// 		$identityStore.rooms[$selectedServer] = [];
-					// 	}
-					// 	$identityStore.rooms[$selectedServer] = [
-					// 		...$identityStore.rooms[$selectedServer],
-					// 		r.id
-					// 	];
-					// 	acceptedRoomNames = [...acceptedRoomNames, r.name];
-					// });
-					$serverDataStore[$selectedServer].rooms = rooms;
-					accepted = true;
-					code = '';
-				} else {
-					alert('Invalid invite code');
-				}
-			})
-			.catch((err) => {
-				console.error(err);
-			});
 	}
 </script>
 
@@ -169,77 +105,7 @@
 			<svelte:fragment slot="header"
 				><div class="h3 text-center">Join Communities</div></svelte:fragment
 			>
-			<div class="grid place-content-center">
-				<label class="label">
-					<span>Invite Code</span>
-					<input
-						class="input max-w-md"
-						type="text"
-						placeholder="Invite Code"
-						bind:value={code}
-						on:keydown={(event) => {
-							const input = event.target;
-							if (event.key === 'Enter') {
-								event.preventDefault();
-								addCode(code);
-							} else if ([' ', '-'].includes(event.key)) {
-								event.preventDefault();
-								if (code.length > 0 && code[code.length - 1] !== '-') {
-									// inserts a - where the cursor is
-									code =
-										code.slice(0, input.selectionStart) + '-' + code.slice(input.selectionStart);
-									const _cursor_position = input.selectionStart;
-									setTimeout(function () {
-										input.selectionStart = input.selectionEnd = _cursor_position + 1;
-									}, 0);
-								}
-							} else if (
-								[
-									'`',
-									'=',
-									'+',
-									'[',
-									']',
-									'\\',
-									';',
-									"'",
-									',',
-									'.',
-									'/',
-									'?',
-									'1',
-									'2',
-									'3',
-									'4',
-									'5',
-									'6',
-									'7',
-									'8',
-									'9',
-									'0'
-								].includes(event.key)
-							) {
-								// This just helps prevent typos
-								event.preventDefault();
-							}
-						}}
-					/>
-					<button
-						class="btn variant-ghost-success"
-						type="button"
-						disabled={!code}
-						on:click={() => addCode(code)}>Submit</button
-					>
-				</label>
-				{#if acceptedRoomNames.length > 0}
-					<p class="text-center mt-2">You've been added to:</p>
-					<div class="my-2">
-						{#each acceptedRoomNames as name}
-							<ins class="ins border-y border-success-800">{name}</ins>
-						{/each}
-					</div>
-				{/if}
-			</div>
+			<Join />
 		</Step>
 		<Step locked={!backedUp}>
 			<svelte:fragment slot="header"
