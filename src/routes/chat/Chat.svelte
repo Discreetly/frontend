@@ -220,9 +220,9 @@
 		<!-- Header -->
 		<header
 			class="border-b border-surface-500/30 px-5 py-3 flex flex-row justify-between place-items-center"
-		>
-			<h2 class="h5 text-primary-500" title={room.roomId ? room.roomId : ''}>{room?.name}</h2>
-			<small title={room.roomId ? room.roomId : ''}>Epoch: {currentEpoch}</small>
+		> 
+			<h2 class="h5 text-primary-500" title={room?.roomId ? room.roomId : ''}>{room?.name}</h2>
+			<small title={room?.roomId ? room.roomId : ''}>Epoch: {currentEpoch}</small>
 		</header>
 		<!-- Conversation -->
 		<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
