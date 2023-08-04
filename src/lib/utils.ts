@@ -1,27 +1,11 @@
 import type { RoomI, ServerI } from 'discreetly-interfaces';
 import { identityStore, serverDataStore, serverListStore } from './stores';
 import { get } from 'svelte/store';
+import { getIdentityRoomIds, getRoomById, getServerData } from '../services/server';
 
 interface ServerListI {
 	name: string;
 	url: string;
-}
-
-async function fetchServer(server_url: string): Promise<ServerI | void> {
-	console.debug(`Fetching server ${server_url}`);
-	return fetch(server_url, {
-		method: 'GET',
-		headers: {
-			'Access-Control-Allow-Origin': '*'
-		}
-	})
-		.then(async (response): Promise<ServerI> => {
-			const serverData: ServerI = await response.json();
-			return serverData;
-		})
-		.catch((err) => {
-			console.error(err);
-		});
 }
 
 export async function updateServers(): Promise<{ [key: string]: ServerI }> {
@@ -42,7 +26,7 @@ export async function updateServers(): Promise<{ [key: string]: ServerI }> {
 	await Promise.all(
 		serverList.map(async (server: ServerListI) => {
 			console.log(`Fetching server data from ${server.url}`);
-			const data = await fetchServer(server.url);
+			const data = await getServerData(server.url);
 			console.log(`Setting server data for ${server.url}`);
 			if (data) {
 				newServerData[server.url] = { ...data };
@@ -78,33 +62,21 @@ export async function updateRooms(
 	if (roomIds.length < 1) {
 		const idc = get(identityStore).identity._commitment;
 		console.log(idc);
-		fetch(selectedServer + 'api/rooms/' + idc).then((response) => {
-			console.log(response);
-			response.json().then((data) => {
-				console.log(data);
-				roomIds = data;
-			});
-		});
+		roomIds = await getIdentityRoomIds(selectedServer, idc);
 	}
-	roomIds.forEach((roomId: string) => {
-		const roomUrl = selectedServer + 'api/room/' + roomId;
-		console.log('Fetching room: ', roomUrl);
-		fetch(roomUrl)
-			.then(async (response) => {
-				console.log(response);
-				const result = await response.json();
-				rooms.push(result);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
-	});
+	for (const roomId of roomIds) {
+		const result = await getRoomById(selectedServer, roomId);
+		rooms.push(result);
+	}
 	rooms.forEach((r: RoomI) => {
 		acceptedRoomNames = [...acceptedRoomNames, r.name];
 	});
 	serverDataStore.update(() => {
 		const serverData = get(serverDataStore);
-		serverData[selectedServer].rooms = rooms;
+		serverData[selectedServer] = {
+			...serverData[selectedServer],
+			rooms
+		};
 		return serverData;
 	});
 	return acceptedRoomNames;

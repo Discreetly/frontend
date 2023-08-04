@@ -1,43 +1,25 @@
 <script lang="ts">
 	import { identityStore, selectedServer, serverDataStore } from '$lib/stores';
 	import { updateRooms } from '$lib/utils';
+	import { postAddCode } from '../../services/server';
 
 	let code = '';
 	let acceptedRoomNames: string[] = [];
 
-	function addCode(code: string) {
+	async function addCode(newCode: string) {
 		console.log($selectedServer);
-		const url = String($selectedServer + 'join');
+		const url = String($selectedServer);
 		const idc = $identityStore.identity._commitment;
-		console.log(url);
-		const data = JSON.stringify({
-			code: code,
-			idc: idc
-		});
-		console.debug(data);
-		fetch(url, {
-			method: 'POST',
-			headers: {
-				'Access-Control-Allow-Origin': '*',
-				'Content-Type': 'application/json'
-			},
-			body: data
-		})
-			.then(async (response) => {
-				const result = await response.json();
-				console.log('INVITE CODE RESPONSE: ', result);
-				if (result.status == 'valid' || result.status == 'already-added') {
-					updateRooms($selectedServer, result.roomIds).then((roomNames) => {
-						acceptedRoomNames = roomNames;
-					});
-					code = '';
-				} else {
-					alert('Invalid invite code');
-				}
-			})
-			.catch((err) => {
-				console.error(err);
+		const result = await postAddCode($selectedServer, { code: newCode, idc });
+		console.log('INVITE CODE RESPONSE: ', result);
+		if (result.status == 'valid' || result.status == 'already-added') {
+			updateRooms($selectedServer, result.roomIds).then((roomNames) => {
+				acceptedRoomNames = roomNames;
 			});
+			code = '';
+		} else {
+			alert('Invalid invite code');
+		}
 	}
 </script>
 
