@@ -11,6 +11,11 @@ export const serverDataStore = storable({}, 'serverData');
 // JUST an index to the serverDataStore, so we can keep track of which server we're currently connected to
 export const selectedServer = storable({}, 'selectedServer');
 
+export const roomsStore = storable({
+	selectedRoom: undefined,
+	roomsData: {}
+}, 'roomsStore');
+
 // Session store (removed after the session is cleared) of the last 500 messages or so of each room the user participates in; rooms they don't have selected will not be updated
 export const messageStore = sessionable({}, 'messages');
 

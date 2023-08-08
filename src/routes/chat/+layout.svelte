@@ -31,10 +31,10 @@
 	}
 
 	onMount(async () => {
-		while (!$serverDataStore[$selectedServer]) {
-			await tick();
-		}
-		setRoom($serverDataStore[$selectedServer].selectedRoom);
+		// while (!$serverDataStore[$selectedServer]) {
+		// 	await tick();
+		// }
+		// setRoom($serverDataStore[$selectedServer].selectedRoom);
 		loaded = true;
 	});
 </script>

@@ -5,29 +5,37 @@
 	import type { RoomI, MessageI } from 'discreetly-interfaces';
 	import {
 		identityStore,
-		selectedServer,
+		// selectedServer,
 		messageStore,
 		serverDataStore,
-		serverListStore
+		serverListStore,
+		roomsStore
 	} from '$lib/stores';
 	import { io } from 'socket.io-client';
 	import { genProof } from '$lib/prover';
 	import { Identity } from '@semaphore-protocol/identity';
 	import RateLimiter from '$lib/rateLimit';
-	import { updateServers } from '$lib/utils';
+	import { getRoomsForServer, getSelectedServer, updateServers } from '$lib/utils';
 
 	export let setRoom: (id: RoomI['id']) => any;
+	console.log({ $roomsStore });
+	console.log({ $serverDataStore: Object.entries($serverDataStore) });
 	let messageText = '';
 	let connected: boolean = false;
 	let rateManager: RateLimiter;
 	let currentEpoch: number = 0;
 	let messagesLeft: number = 0;
-	$: server = $serverDataStore[$selectedServer];
-	$: selectedRoom = server.selectedRoom;
-	$: rooms = $serverDataStore[$selectedServer].rooms;
-	$: room = $serverDataStore[$selectedServer].rooms.find(
-		(room: RoomI) => room.roomId === selectedRoom
-	);
+	$: selectedServer = getSelectedServer();
+	$: selectedRoom = $roomsStore.selectedRoom; // selected room ID
+	$: room = $roomsStore.roomsData[selectedRoom];
+	$: rooms = getRoomsForServer(selectedServer);
+	console.log({ rooms });
+	// $: server = $serverDataStore[$selectedServer];
+	// $: selectedRoom = server.selectedRoom;
+	// $: rooms = $serverDataStore[$selectedServer].rooms;
+	// $: room = $serverDataStore[$selectedServer].rooms.find(
+	// 	(room: RoomI) => room.roomId === selectedRoom
+	// );
 	$: () => {
 		if (!$messageStore[selectedRoom]) {
 			$messageStore[selectedRoom] = { messages: [] };
@@ -48,7 +56,8 @@
 		}, 1);
 	}
 
-	const socketURL: string = $selectedServer || '';
+	// const socketURL: string = selectedServer || 'https://server.discreetly.chat/';
+	const socketURL: string = selectedServer || 'http://localhost:3001/api/';
 
 	const socket = io(socketURL);
 
@@ -176,13 +185,13 @@
 				class="select text-primary-500"
 				on:change={(event) => {
 					console.log('Setting server to: ', event.target?.value);
-					$selectedServer = event.target?.value;
+					selectedServer = event.target?.value;
 				}}
 			>
 				{#each Object.entries($serverDataStore) as [key, s]}
 					<option value={key}>{s.name}</option>
 				{/each}
-				<option value={'http://localhost:3001/'}>TESTING LOCALHOST</option>
+				<!-- <option value={'http://localhost:3001/'}>TESTING LOCALHOST</option> -->
 			</select>
 			<button
 				type="button"

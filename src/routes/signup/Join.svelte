@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { identityStore, selectedServer, serverDataStore } from '$lib/stores';
-	import { updateRooms } from '$lib/utils';
+	import { setRooms } from '$lib/utils';
 	import { postAddCode } from '../../services/server';
 
 	let code = '';
@@ -13,9 +13,10 @@
 		const result = await postAddCode($selectedServer, { code: newCode, idc });
 		console.log('INVITE CODE RESPONSE: ', result);
 		if (result.status == 'valid' || result.status == 'already-added') {
-			updateRooms($selectedServer, result.roomIds).then((roomNames) => {
-				acceptedRoomNames = roomNames;
-			});
+			acceptedRoomNames = await setRooms($selectedServer, result.roomIds);
+			// updateRooms($selectedServer, result.roomIds).then((roomNames) => { // TODO remove this call
+				// acceptedRoomNames = roomNames;
+			// });
 			code = '';
 		} else {
 			alert('Invalid invite code');
