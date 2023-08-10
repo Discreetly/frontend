@@ -14,9 +14,18 @@
 	import { genProof } from '$lib/prover';
 	import { Identity } from '@semaphore-protocol/identity';
 	import RateLimiter from '$lib/rateLimit';
-	import { getRoomsForServer, getServerForSelectedRoom, updateServers } from '$lib/utils';
+	import {
+		getRoomsForServer,
+		getServerForSelectedRoom,
+		updateServers,
+		setSelectedRoomId
+	} from '$lib/utils';
 
-	export let setRoom: (id: RoomI['id']) => any;
+	const setRoom = (roomId: string) => {
+		if (roomId) {
+			setSelectedRoomId(roomId);
+		}
+	};
 	let messageText = '';
 	let connected: boolean = false;
 	let rateManager: RateLimiter;

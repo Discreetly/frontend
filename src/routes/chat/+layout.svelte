@@ -1,46 +1,15 @@
 <script lang="ts">
 	import Chat from './Chat.svelte';
-	import type { RoomI } from 'discreetly-interfaces';
-	import { serverDataStore, selectedServer } from '$lib/stores';
-	import { onMount, tick } from 'svelte';
+	import { serverDataStore } from '$lib/stores';
+	import { updateServers } from '$lib/utils';
 
-	let loaded: Boolean = false;
-
-	function setRoom(id: string) {
-		let room: RoomI;
-		const rooms = $serverDataStore[$selectedServer].rooms;
-		const temp_room = rooms.find((room: RoomI) => room.roomId === id);
-
-		if (temp_room) {
-			console.debug('Setting Room to', temp_room.name);
-			room = temp_room;
-		} else if ($serverDataStore[$selectedServer].rooms[0]) {
-			console.debug('Setting Room to Default');
-			room = $serverDataStore[$selectedServer].rooms[0];
-		} else {
-			console.debug('Loading Rooms Still');
-			room = {
-				id: '0',
-				roomId: '0',
-				name: 'Rooms Not Loaded',
-				membership: { identityCommitments: [0n] }
-			};
-		}
-		console.log('Setting Room to', room.name);
-		Object.assign($serverDataStore[$selectedServer], { selectedRoom: room.roomId });
+	if (!Object.keys($serverDataStore).length) {
+		updateServers();
 	}
-
-	onMount(async () => {
-		// while (!$serverDataStore[$selectedServer]) {
-		// 	await tick();
-		// }
-		// setRoom($serverDataStore[$selectedServer].selectedRoom);
-		loaded = true;
-	});
 </script>
 
-{#if loaded}
-	<Chat {setRoom} />
+{#if Object.keys($serverDataStore).length}
+	<Chat />
 {:else}
 	<slot />
 {/if}

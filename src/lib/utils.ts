@@ -23,7 +23,6 @@ export async function updateServers(): Promise<{ [key: string]: ServerI }> {
 	}
 
 	const newServerData: { [key: string]: ServerI } = {};
-	// const oldServerData = get(serverDataStore);
 
 	await Promise.all(
 		serverList.map(async (server: ServerListI) => {
@@ -66,7 +65,21 @@ export async function setRooms(
 			roomsData
 		};
 	});
-	return rooms.map((r: RoomI) => r.name); //todo take this out of this funciton
+	// Todo: take this out of this funciton. Probably worth having a seperate
+	// function to 'get the accepted rooms'.
+	return rooms.map((r: RoomI) => r.name);
+}
+
+export async function setSelectedRoomId(
+	selectedRoomId: string
+): Promise<void> {
+	roomsStore.update(() => {
+		const roomsStoreData = get(roomsStore);
+		return {
+			...roomsStoreData,
+			selectedRoomId,
+		};
+	});
 }
 
 // Todo: this function is never called now from my understanding.  There is still a use in
