@@ -12,7 +12,7 @@ export const serverDataStore = storable({}, 'serverData');
 export const selectedServer = storable({}, 'selectedServer');
 
 export const roomsStore = storable({
-	selectedRoom: undefined,
+	selectedRoomId: undefined,
 	roomsData: {}
 }, 'roomsStore');
 

@@ -62,13 +62,15 @@ export async function setRooms(
 			};
 		}
 		return {
-			selectedRoom: rooms[0].roomId,
+			selectedRoomId: rooms[0].roomId,
 			roomsData
 		};
 	});
 	return rooms.map((r: RoomI) => r.name); //todo take this out of this funciton
 }
 
+// Todo: this function is never called now from my understanding.  There is still a use in
+// page.svelte but I'm not sure it ever gets called. Maybe it should be removed?
 export async function updateRooms(
 	selectedServer: string,
 	roomIds: string[] = []
@@ -98,9 +100,9 @@ export async function updateRooms(
 	return acceptedRoomNames;
 }
 
-export function getSelectedServer(): any {
+export function getServerForSelectedRoom(): any {
 	const roomsStoreData = get(roomsStore);
-	const selectedServer = roomsStoreData.roomsData[roomsStoreData.selectedRoom]?.server;
+	const selectedServer = roomsStoreData.roomsData[roomsStoreData.selectedRoomId]?.server;
 	return selectedServer;
 }
 

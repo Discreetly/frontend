@@ -14,9 +14,6 @@
 		console.log('INVITE CODE RESPONSE: ', result);
 		if (result.status == 'valid' || result.status == 'already-added') {
 			acceptedRoomNames = await setRooms($selectedServer, result.roomIds);
-			// updateRooms($selectedServer, result.roomIds).then((roomNames) => { // TODO remove this call
-				// acceptedRoomNames = roomNames;
-			// });
 			code = '';
 		} else {
 			alert('Invalid invite code');
