@@ -5,32 +5,43 @@
 	import type { RoomI, MessageI } from 'discreetly-interfaces';
 	import {
 		identityStore,
-		selectedServer,
 		messageStore,
 		serverDataStore,
-		serverListStore
+		serverListStore,
+		roomsStore
 	} from '$lib/stores';
 	import { io } from 'socket.io-client';
 	import { genProof } from '$lib/prover';
 	import { Identity } from '@semaphore-protocol/identity';
 	import RateLimiter from '$lib/rateLimit';
-	import { updateServers } from '$lib/utils';
+	import {
+		getRoomsForServer,
+		getServerForSelectedRoom,
+		updateServers,
+		setSelectedRoomId
+	} from '$lib/utils';
 
-	export let setRoom: (id: RoomI['id']) => any;
+	const setRoom = (roomId: string) => {
+		if (roomId) {
+			setSelectedRoomId(roomId);
+		}
+	};
 	let messageText = '';
 	let connected: boolean = false;
 	let rateManager: RateLimiter;
 	let currentEpoch: number = 0;
 	let messagesLeft: number = 0;
-	$: server = $serverDataStore[$selectedServer];
-	$: selectedRoom = server.selectedRoom;
-	$: rooms = $serverDataStore[$selectedServer].rooms;
-	$: room = $serverDataStore[$selectedServer].rooms.find(
-		(room: RoomI) => room.roomId === selectedRoom
-	);
+
+	const selectedRoomsServer = getServerForSelectedRoom();
+	let serverSelection = selectedRoomsServer;
+
+	$: selectedRoomId = $roomsStore.selectedRoomId; 
+	$: selectedRoomData = $roomsStore.roomsData[selectedRoomId];
+	$: roomListForServer = getRoomsForServer(serverSelection);
+
 	$: () => {
-		if (!$messageStore[selectedRoom]) {
-			$messageStore[selectedRoom] = { messages: [] };
+		if (!$messageStore[selectedRoomId]) {
+			$messageStore[selectedRoomId] = { messages: [] };
 		}
 	};
 
@@ -48,8 +59,8 @@
 		}, 1);
 	}
 
-	const socketURL: string = $selectedServer || '';
-
+	const socketURL: string = selectedRoomsServer;
+	
 	const socket = io(socketURL);
 
 	function sendMessage() {
@@ -69,7 +80,7 @@
 		} else {
 			messagesLeft = messageID;
 		}
-		genProof(room, messageText, identity).then((msg) => {
+		genProof(selectedRoomData, messageText, identity).then((msg) => {
 			socket.emit('validateMessage', msg);
 			console.debug('Sending message: ', msg);
 			messageText = '';
@@ -106,7 +117,7 @@
 	};
 
 	onMount(() => {
-		rateManager = new RateLimiter(room.userMessageLimit, room.rateLimit);
+		rateManager = new RateLimiter(selectedRoomData.userMessageLimit, selectedRoomData.rateLimit);
 		scrollChatBottom('instant');
 		socket.on('connect', () => {
 			connected = true;
@@ -120,7 +131,7 @@
 				console.debug('socket-io-transport-closed', reason);
 			});
 
-			socket.emit('joiningRoom', room?.roomId);
+			socket.emit('joiningRoom', selectedRoomData?.roomId);
 		});
 
 		socket.on('disconnected', () => {
@@ -162,7 +173,7 @@
 		}, 1000);
 	});
 	onDestroy(() => {
-		socket.emit('leavingRoom', room?.roomId);
+		socket.emit('leavingRoom', selectedRoomData?.roomId);
 		socket.disconnect();
 	});
 </script>
@@ -174,15 +185,15 @@
 		<header class="border-b border-surface-500/30 p-4 flex flex-row">
 			<select
 				class="select text-primary-500"
+				bind:value={serverSelection}
 				on:change={(event) => {
 					console.log('Setting server to: ', event.target?.value);
-					$selectedServer = event.target?.value;
+					serverSelection = event.target?.value;
 				}}
 			>
 				{#each Object.entries($serverDataStore) as [key, s]}
 					<option value={key}>{s.name}</option>
 				{/each}
-				<option value={'http://localhost:3001/'}>TESTING LOCALHOST</option>
 			</select>
 			<button
 				type="button"
@@ -201,8 +212,8 @@
 					setRoom(event.target?.value);
 				}}
 			>
-				{#each rooms as room}
-					{#if room.roomId == selectedRoom}
+				{#each roomListForServer as room}
+					{#if room.roomId == selectedRoomId}
 						<option value={room.roomId} title={room.roomId ? room.roomId : ''} selected
 							>{room.name}</option
 						>
@@ -221,13 +232,13 @@
 		<header
 			class="border-b border-surface-500/30 px-5 py-3 flex flex-row justify-between place-items-center"
 		> 
-			<h2 class="h5 text-primary-500" title={room?.roomId ? room.roomId : ''}>{room?.name}</h2>
-			<small title={room?.roomId ? room.roomId : ''}>Epoch: {currentEpoch}</small>
+			<h2 class="h5 text-primary-500" title={selectedRoomData?.roomId ? selectedRoomData.roomId : ''}>{selectedRoomData?.name}</h2>
+			<small title={selectedRoomData?.roomId ? selectedRoomData.roomId : ''}>Epoch: {currentEpoch}</small>
 		</header>
 		<!-- Conversation -->
 		<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
-			{#if $messageStore[selectedRoom]}
-				{#each $messageStore[selectedRoom].messages.reverse() as bubble}
+			{#if $messageStore[selectedRoomId]}
+				{#each $messageStore[selectedRoomId].messages.reverse() as bubble}
 					<div class="flex">
 						<div class="card p-4 space-y-2 bg-surface-200-700-token">
 							<header class="flex justify-between items-center">
