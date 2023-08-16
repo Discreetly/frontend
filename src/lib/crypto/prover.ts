@@ -5,6 +5,7 @@ import getRateCommitmentHash from './rateCommitmentHasher';
 import type { Identity } from '@semaphore-protocol/identity';
 import type { MessageI, RoomI } from 'discreetly-interfaces';
 import type { RLNFullProof, MerkleProof } from 'rlnjs';
+import { getMerkleProof } from '../services/bandada';
 
 const wasmPath = '/rln/circuit.wasm';
 const zkeyPath = '/rln/final.zkey';
@@ -29,17 +30,35 @@ async function genProof(
 	messageLimit: bigint | number = 1
 ): Promise<MessageI> {
 	console.log(room, message, identity);
-	const RLN_IDENIFIER = BigInt(room.id);
+	const RLN_IDENIFIER = BigInt(room.roomId);
 	const userMessageLimit = BigInt(messageLimit);
 	const messageHash: bigint = getMessageHash(message);
-	const group = new Group(RLN_IDENIFIER, 20, room.membership?.identityCommitments);
 	const rateCommitment: bigint = getRateCommitmentHash(identity.getCommitment(), userMessageLimit);
+	let group: Group;
+	let merkleProof: MerkleProof;
+	switch (room.membershipType) {
+		case 'identities':
+			const identities = await getRoomIdentities(room.roomId);
+			group = new Group(RLN_IDENIFIER, 20, identities);
+			merkleProof = group.generateMerkleProof(group.indexOf(rateCommitment));
+			break;
+		case 'bandada':
+			if (room.bandadaAddress === undefined) throw new Error('Bandada address not defined');
+			merkleProof = await getMerkleProof(room.bandadaAddress, rateCommitment);
+			throw new Error('Bandada not implemented yet');
+		case 'rln-contract':
+			//TODO
+			throw new Error('RLN contracts not implemented yet');
+		default:
+			throw new Error('Invalid room membership type');
+	}
+
 	const proofInputs: proofInputsI = {
 		rlnIdentifier: RLN_IDENIFIER,
 		identitySecret: identity.getSecret(),
 		userMessageLimit: userMessageLimit,
 		messageId: BigInt(messageId),
-		merkleProof: group.generateMerkleProof(group.indexOf(rateCommitment)),
+		merkleProof: merkleProof,
 		x: messageHash,
 		epoch: BigInt(Date.now().toString())
 	};
@@ -49,7 +68,7 @@ async function genProof(
 		const msg: MessageI = {
 			id: proof.snarkProof.publicSignals.nullifier.toString(),
 			message: message,
-			room: RLN_IDENIFIER,
+			roomId: RLN_IDENIFIER,
 			proof
 		};
 		return msg;

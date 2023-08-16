@@ -5,9 +5,9 @@
 		serverDataStore,
 		selectedServer,
 		identityStore
-	} from '$lib/stores';
+	} from '$lib/data/stores';
 	import { updateServers } from '$lib/utils';
-	import { genProof } from '$lib/prover';
+	import { genProof } from '$lib/crypto/prover';
 	import { io } from 'socket.io-client';
 	import BackupIdentity from '../identity/BackupIdentity.svelte';
 	import DeleteIdentity from '../identity/DeleteIdentity.svelte';

@@ -1,23 +1,22 @@
 import type { RoomI, ServerI } from 'discreetly-interfaces';
-import { identityStore, serverDataStore, serverListStore, roomsStore } from './stores';
+import { identityStore, serverDataStore, serverListStore, roomsStore } from './data/stores';
 import { get } from 'svelte/store';
-import { getIdentityRoomIds, getRoomById, getServerData } from '../services/server';
+import { getIdentityRoomIds, getRoomById, getServerData } from './services/server';
+import type { ServerListI } from './types';
 
 const defaultServers = [
 	{ name: 'Discreetly Server', url: 'https://server.discreetly.chat/' },
 	{ name: 'Localhost', url: 'http://localhost:3001/api/' } as ServerListI
-]
-
-interface ServerListI {
-	name: string;
-	url: string;
-}
+];
 
 export async function updateServers(): Promise<{ [key: string]: ServerI }> {
 	const serverList = get(serverListStore);
 
 	// If the server list is empty or doesn't have the discreetly server, add the default servers
-	if (serverList.length < 1 || !serverList.find((s) => s.name === 'Discreetly Server')) {
+	if (
+		serverList.length < 1 ||
+		!serverList.find((s: ServerListI) => s.name === 'Discreetly Server')
+	) {
 		console.error('serverListStore is empty');
 		serverListStore.set(defaultServers);
 	}
@@ -43,15 +42,13 @@ export async function updateServers(): Promise<{ [key: string]: ServerI }> {
 	return newServerData;
 }
 
-export async function setRooms(
-	server: string,
-	roomIds: string[] = []
-): Promise<string[]> {
+export async function setRooms(server: string, roomIds: string[] = []): Promise<string[]> {
 	const rooms: RoomI[] = [];
 	for (const roomId of roomIds) {
 		const result = await getRoomById(server, roomId);
 		rooms.push(result);
 	}
+
 	roomsStore.update(() => {
 		const { roomsData } = get(roomsStore);
 		for (const room of rooms) {
@@ -65,25 +62,21 @@ export async function setRooms(
 			roomsData
 		};
 	});
-	// Todo: take this out of this funciton. Probably worth having a seperate
+	// Todo: take this out of this function. Probably worth having a seperate
 	// function to 'get the accepted rooms'.
 	return rooms.map((r: RoomI) => r.name);
 }
 
-export async function setSelectedRoomId(
-	selectedRoomId: string
-): Promise<void> {
+export async function setSelectedRoomId(selectedRoomId: string): Promise<void> {
 	roomsStore.update(() => {
 		const roomsStoreData = get(roomsStore);
 		return {
 			...roomsStoreData,
-			selectedRoomId,
+			selectedRoomId
 		};
 	});
 }
 
-// Todo: this function is never called now from my understanding.  There is still a use in
-// page.svelte but I'm not sure it ever gets called. Maybe it should be removed?
 export async function updateRooms(
 	selectedServer: string,
 	roomIds: string[] = []
@@ -95,6 +88,7 @@ export async function updateRooms(
 		console.log(idc);
 		roomIds = await getIdentityRoomIds(selectedServer, idc);
 	}
+	console.log(roomIds);
 	for (const roomId of roomIds) {
 		const result = await getRoomById(selectedServer, roomId);
 		rooms.push(result);
@@ -111,6 +105,18 @@ export async function updateRooms(
 		return serverData;
 	});
 	return acceptedRoomNames;
+}
+
+export async function updateSingleRoom(selectedServer: string, roomId: string) {
+	const room = await getRoomById(selectedServer, roomId);
+	serverDataStore.update(() => {
+		const serverData = get(serverDataStore);
+		serverData[selectedServer] = {
+			...serverData[selectedServer],
+			rooms: [room]
+		};
+		return serverData;
+	});
 }
 
 export function getServerForSelectedRoom(): any {

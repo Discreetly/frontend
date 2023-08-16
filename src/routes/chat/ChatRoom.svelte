@@ -1,6 +1,4 @@
 <script lang="ts">
-	import ChatRoom from './ChatRoom.svelte';
-
 	import Sidebar from './Sidebar.svelte';
 
 	import { onMount, onDestroy } from 'svelte';
@@ -182,29 +180,75 @@
 	});
 </script>
 
-<section id="chat-wrapper" class="bg-surface-100-800-token">
-	<!-- Navigation -->
-	<Sidebar />
-	<!-- Chat -->
-	<ChatRoom />
-</section>
+<div id="chat" class="grid grid-rows-[auto_1fr_auto]">
+	<!-- Header -->
+	<header
+		class="border-b border-surface-500/30 px-5 py-3 flex flex-row justify-between place-items-center"
+	>
+		<h2
+			class="h5 text-primary-500"
+			title={selectedRoomData?.roomId ? selectedRoomData.roomId.toString() : ''}
+		>
+			{selectedRoomData?.name}
+		</h2>
+		<small title={selectedRoomData?.roomId ? selectedRoomData.roomId.toString() : ''}
+			>Epoch: {currentEpoch}</small
+		>
+	</header>
+	<!-- Conversation -->
+	<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
+		{#if $messageStore[selectedRoomId]}
+			{#each $messageStore[selectedRoomId].messages.reverse() as bubble}
+				<div class="flex">
+					<div class="card p-4 space-y-2 bg-surface-200-700-token">
+						<header class="flex justify-between items-center">
+							<small class="opacity-50 text-primary-500"
+								>{rateManager.getTimestampFromEpoch(bubble.epoch)}</small
+							>
+							<small class="opacity-50 text-primary-500">epoch: {bubble.epoch}</small>
+						</header>
+						<p class="text-primary-500">{bubble.message}</p>
+					</div>
+				</div>
+			{/each}
+		{/if}
+	</section>
+	<!-- Prompt -->
+	<section class="border-t border-surface-500/30 p-4 !border-dashed">
+		<div class="input-group input-group-divider grid-cols-[1fr_auto] rounded-container-token">
+			<textarea
+				bind:value={messageText}
+				class="p-2 text-primary-400 border"
+				class:bg-surface-900={!canSendMessage}
+				class:bg-surface-500={canSendMessage}
+				name="prompt"
+				id="prompt"
+				placeholder={canSendMessage
+					? 'Write a message...'
+					: connected
+					? 'Not a member of this room'
+					: 'Connecting...'}
+				rows="1"
+				on:keydown={onPromptKeydown}
+				disabled={!connected || !inRoom}
+			/>
+			<button
+				class:hidden={!canSendMessage}
+				class={canSendMessage && messageText ? 'variant-ghost-primary' : 'variant-ghost-surface'}
+				disabled={!canSendMessage}
+				on:click={sendMessage}
+			>
+				{sendButtonText}
+			</button>
+		</div>
+	</section>
+</div>
 
 <style>
-	#chat-wrapper {
-		height: 100%;
-		display: grid;
-		grid-template-columns: minmax(25%, 200px) 1fr;
-		grid-template-rows: auto;
-		grid-template-areas: 'sidebar chat';
-	}
-	#sidebar {
-		grid-area: sidebar;
-	}
 	#chat {
 		max-height: calc(100vh - 101px);
 		grid-area: chat;
 	}
-
 	#conversation {
 		overflow: scroll;
 	}

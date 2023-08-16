@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
-	import { identityStore } from '$lib/stores';
+	import { identityStore } from '$lib/data/stores';
 </script>
 
 <AppBar background="bg-surface-50-800-token">

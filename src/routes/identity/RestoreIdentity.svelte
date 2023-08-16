@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { identityStore } from '$lib/stores';
+	import { identityStore } from '$lib/data/stores';
 	import { Identity } from '@semaphore-protocol/identity';
 	import QrScanner from 'qr-scanner';
 	import { FileDropzone } from '@skeletonlabs/skeleton';

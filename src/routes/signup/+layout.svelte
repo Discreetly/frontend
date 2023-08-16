@@ -1,17 +1,13 @@
 <script lang="ts">
-	import { identityStore, selectedServer, serverDataStore } from '$lib/stores';
-	import Loading from '$lib/loading.svelte';
+	import { identityStore, signUpStatusStore } from '$lib/data/stores';
+	import Loading from '$lib/components/loading.svelte';
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 	import { Identity } from '@semaphore-protocol/identity';
 	import { goto } from '$app/navigation';
-	import type { RoomI } from 'discreetly-interfaces';
-	import BackupIdentity from '../identity/BackupIdentity.svelte';
 	import RestoreIdentity from '../identity/RestoreIdentity.svelte';
 	import Join from './Join.svelte';
 
 	let identityExists = false;
-	let accepted = false;
-	let backedUp = false;
 
 	$: if ($identityStore.identity == undefined) {
 		identityExists = false;
@@ -25,7 +21,6 @@
 		console.log('Creating identity');
 		if (!identityExists || regenerate) {
 			$identityStore.identity = new Identity();
-			$identityStore.rooms = {};
 			return 'created';
 		} else {
 			console.log('Identity already exists');
@@ -38,7 +33,7 @@
 	<Stepper
 		class="max-w-3xl mx-auto mt-16"
 		on:complete={() => {
-			goto('/');
+			goto('/chat');
 		}}
 	>
 		<Step>
@@ -101,13 +96,13 @@
 				{/if}
 			</div>
 		</Step>
-		<Step locked={!accepted}>
+		<Step locked={!$signUpStatusStore.accepted}>
 			<svelte:fragment slot="header"
 				><div class="h3 text-center">Join Communities</div></svelte:fragment
 			>
 			<Join />
 		</Step>
-		<Step locked={!backedUp}>
+		<Step locked={!$signUpStatusStore.backedUp}>
 			<svelte:fragment slot="header"
 				><div class="h3 text-center">Backup your identity</div></svelte:fragment
 			>
@@ -117,7 +112,7 @@
 					href={'data:text/json;charset=utf-8,' +
 						encodeURIComponent(JSON.stringify($identityStore))}
 					download="identity.json"
-					on:click={() => (backedUp = true)}>JSON</a
+					on:click={() => ($signUpStatusStore.backedUp = true)}>JSON</a
 				>
 			</div>
 		</Step>

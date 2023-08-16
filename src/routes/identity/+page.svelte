@@ -1,17 +1,28 @@
 <script lang="ts">
-	import { identityStore, selectedServer } from '$lib/stores';
+	import { identityStore, selectedServer, serverListStore } from '$lib/data/stores';
 	import DeleteIdentity from './DeleteIdentity.svelte';
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
 	import { Identity } from '@semaphore-protocol/identity';
 	import Join from '../signup/Join.svelte';
 	import { updateRooms } from '$lib/utils';
+	import type { ServerListI } from '$lib/types';
+	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
+
+	$: serverList = $serverListStore as ServerListI[];
 
 	let identityExists = false;
 	$: if ($identityStore.identity == undefined) {
 		identityExists = false;
 	} else {
 		identityExists = true;
+	}
+
+	function selectServer(event: Event) {
+		const target = event.target as HTMLInputElement;
+		console.log('Selected server', target.value);
+		console.log(target.value);
+		$selectedServer = target.value;
 	}
 
 	function refreshRooms() {
@@ -47,9 +58,23 @@
 		<DeleteIdentity />
 		<h4 class="h4 mt-4">Join More Rooms</h4>
 		<Join />
-
+		<h4 class="h4 mt-4">Refresh Rooms</h4>
+		<RadioGroup
+			active="variant-filled-success"
+			display="flex-col"
+			hover="hover:variant-soft-primary"
+		>
+			{#each serverList as server}
+				<RadioItem
+					on:change={selectServer}
+					bind:group={$selectedServer}
+					name="server"
+					value={server.url}>{server.name}</RadioItem
+				>
+			{/each}
+		</RadioGroup>
 		<div>
-			<div class="btn" on:click={refreshRooms}>Refresh Rooms</div>
+			<div class="btn variant-filled-success btn-sm" on:click={refreshRooms}>Refresh Rooms</div>
 		</div>
 	{/if}
 </div>

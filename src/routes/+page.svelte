@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { identityStore } from '$lib/stores';
+	import { identityStore } from '$lib/data/stores';
 	import { onMount } from 'svelte';
-	import Loading from '$lib/loading.svelte';
+	import Loading from '$lib/components/loading.svelte';
 
 	let identityExists: boolean | null = null;
 

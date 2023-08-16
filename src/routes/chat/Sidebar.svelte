@@ -1,8 +1,4 @@
 <script lang="ts">
-	import ChatRoom from './ChatRoom.svelte';
-
-	import Sidebar from './Sidebar.svelte';
-
 	import { onMount, onDestroy } from 'svelte';
 	import { Modal, modalStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
@@ -182,30 +178,55 @@
 	});
 </script>
 
-<section id="chat-wrapper" class="bg-surface-100-800-token">
-	<!-- Navigation -->
-	<Sidebar />
-	<!-- Chat -->
-	<ChatRoom />
-</section>
+<div id="sidebar" class="hidden lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
+	<!-- Header -->
+	<header class="border-b border-surface-500/30 p-4 flex flex-row">
+		<select
+			class="select text-primary-500"
+			bind:value={serverSelection}
+			on:change={(event) => {
+				console.log('Setting server to: ', event.target?.value);
+				serverSelection = event.target?.value;
+			}}
+		>
+			{#each Object.entries($serverDataStore) as [key, s]}
+				<option value={key}>{s.name}</option>
+			{/each}
+		</select>
+		<button
+			type="button"
+			class="btn btn-sm variant-ghost-primary ms-2"
+			on:click={() => {
+				modalStore.trigger(addServerModal);
+			}}>+</button
+		>
+	</header>
+	<!-- List -->
+	<div class="p-4 space-y-4 overflow-y-auto">
+		<select
+			class="select text-primary-500"
+			size="8"
+			on:change={(event) => {
+				setRoom(event.target?.value);
+			}}
+		>
+			{#each roomListForServer as room}
+				{#if room.roomId == selectedRoomId}
+					<option value={room.roomId} title={room.roomId ? room.roomId.toString() : ''} selected
+						>{room.name}</option
+					>
+				{:else}
+					<option value={room.roomId}>{room.name}</option>
+				{/if}
+			{/each}
+		</select>
+	</div>
+	<!-- Footer -->
+	<!-- <footer class="border-t border-surface-500/30 p-4">(footer)</footer> -->
+</div>
 
 <style>
-	#chat-wrapper {
-		height: 100%;
-		display: grid;
-		grid-template-columns: minmax(25%, 200px) 1fr;
-		grid-template-rows: auto;
-		grid-template-areas: 'sidebar chat';
-	}
 	#sidebar {
 		grid-area: sidebar;
-	}
-	#chat {
-		max-height: calc(100vh - 101px);
-		grid-area: chat;
-	}
-
-	#conversation {
-		overflow: scroll;
 	}
 </style>

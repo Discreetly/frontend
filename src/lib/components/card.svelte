@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Button from './button.svelte';
-	import type { ButtonI } from './types';
+	import type { ButtonI } from '../types';
 	export let title: string;
 	export let buttons: ButtonI[] = [];
 </script>

@@ -1,15 +1,15 @@
 <script lang="ts">
-	import Chat from './Chat.svelte';
-	import { serverDataStore } from '$lib/stores';
+	import { serverDataStore } from '$lib/data/stores';
 	import { updateServers } from '$lib/utils';
+	import { onMount } from 'svelte';
 
-	if (!Object.keys($serverDataStore).length) {
-		updateServers();
-	}
+	onMount(() => {
+		if (!Object.keys($serverDataStore).length) {
+			updateServers();
+		}
+	});
 </script>
 
 {#if Object.keys($serverDataStore).length}
-	<Chat />
-{:else}
 	<slot />
 {/if}

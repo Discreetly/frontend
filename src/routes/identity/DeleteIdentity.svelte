@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { identityStore } from '$lib/stores';
+	import { identityStore } from '$lib/data/stores';
 	import type { IdentityStoreI } from '$lib/types';
 	import { onMount } from 'svelte';
 

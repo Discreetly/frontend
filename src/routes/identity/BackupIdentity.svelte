@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { identityStore } from '$lib/stores';
-	import Loading from '$lib/loading.svelte';
+	import { identityStore } from '$lib/data/stores';
+	import Loading from '$lib/components/loading.svelte';
 	import QRCode from 'qrcode';
 	import { Identity } from '@semaphore-protocol/identity';
 
