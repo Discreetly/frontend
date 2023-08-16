@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { serverDataStore } from '$lib/data/stores';
-	import { updateServers } from '$lib/utils';
+	import { serverStore } from '$lib/stores';
+	import { updateServers } from '$lib/stores/servers';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		if (!Object.keys($serverDataStore).length) {
+		if (!Object.keys($serverStore).length) {
 			updateServers();
 		}
 	});
 </script>
 
-{#if Object.keys($serverDataStore).length}
+{#if Object.keys($serverStore).length}
 	<slot />
 {/if}

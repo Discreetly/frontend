@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { identityStore } from '$lib/data/stores';
+	import { identityStore } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import Loading from '$lib/components/loading.svelte';
 

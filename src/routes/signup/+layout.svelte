@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { identityStore, signUpStatusStore } from '$lib/data/stores';
+	import { identityStore, signUpStatusStore } from '$lib/stores';
 	import Loading from '$lib/components/loading.svelte';
 	import { Stepper, Step } from '@skeletonlabs/skeleton';
 	import { Identity } from '@semaphore-protocol/identity';

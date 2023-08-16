@@ -8,8 +8,8 @@
 	import AppHeader from './AppHeader.svelte';
 	import AppFooter from './AppFooter.svelte';
 	import Loading from '$lib/components/loading.svelte';
-	import { serverListStore, selectedServer } from '$lib/data/stores';
-	import { updateServers } from '$lib/utils';
+	import { serverListStore, selectedServer } from '$lib/stores';
+	import { updateServers } from '$lib/stores/servers';
 
 	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {

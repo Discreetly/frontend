@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { identityStore } from '$lib/data/stores';
+	import { identityStore } from '$lib/stores';
 	import { AppBar } from '@skeletonlabs/skeleton';
 </script>
 

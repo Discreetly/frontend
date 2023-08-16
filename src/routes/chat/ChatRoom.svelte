@@ -1,49 +1,32 @@
 <script lang="ts">
-	import Sidebar from './Sidebar.svelte';
-
 	import { onMount, onDestroy } from 'svelte';
-	import { Modal, modalStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import type { RoomI, MessageI } from 'discreetly-interfaces';
+	import type { MessageI } from 'discreetly-interfaces';
 	import {
 		identityStore,
 		messageStore,
-		serverDataStore,
-		serverListStore,
-		roomsStore
-	} from '$lib/data/stores';
+		roomsStore,
+		selectedRoom,
+		selectedServer
+	} from '$lib/stores';
 	import { io } from 'socket.io-client';
+	import type { Socket } from 'socket.io-client';
 	import { genProof } from '$lib/crypto/prover';
 	import { Identity } from '@semaphore-protocol/identity';
-	import RateLimiter from '$lib/rateLimit';
-	import {
-		getRoomsForServer,
-		getServerForSelectedRoom,
-		updateServers,
-		setSelectedRoomId
-	} from '$lib/utils';
+	import RateLimiter from '$lib/utils/rateLimit';
+	import { __getRoomsForServer, __getServerForSelectedRoom, __setSelectedRoomId } from '$lib/utils';
 
-	const setRoom = (roomId: string) => {
-		if (roomId) {
-			setSelectedRoomId(roomId);
-		}
-	};
 	let messageText = '';
 	let connected: boolean = false;
 	let rateManager: RateLimiter;
 	let currentEpoch: number = 0;
 	let messagesLeft: number = 0;
-
-	const selectedRoomsServer = getServerForSelectedRoom();
-	let serverSelection = selectedRoomsServer;
-
-	$: selectedRoomId = $roomsStore.selectedRoomId;
-	$: selectedRoomData = $roomsStore.roomsData[selectedRoomId];
-	$: roomListForServer = getRoomsForServer(serverSelection) as RoomI[];
+	let socket: Socket;
+	$: selectedRoomId = $selectedRoom[$selectedServer];
+	$: selectedRoomData = $roomsStore[selectedRoomId];
 
 	$: () => {
 		if (!$messageStore[selectedRoomId]) {
-			$messageStore[selectedRoomId] = { messages: [] };
+			$messageStore[selectedRoomId] = [];
 		}
 	};
 
@@ -60,10 +43,6 @@
 			elemChat.scrollTo({ top: elemChat.scrollHeight, behavior });
 		}, 1);
 	}
-
-	const socketURL: string = selectedRoomsServer;
-
-	const socket = io(socketURL);
 
 	function sendMessage() {
 		if (!connected) {
@@ -98,28 +77,9 @@
 		}
 	}
 
-	const addServerModal: ModalSettings = {
-		type: 'prompt',
-		// Data
-		title: 'Enter Server Address',
-		body: 'Provide the server address.',
-		// Populates the input value and attributes
-		value: 'http://discreetly.chat/',
-		valueAttr: { type: 'url', required: true },
-		// Returns the updated response value
-		response: (r: string) => {
-			console.log('response:', r);
-			if ($serverListStore.includes(r)) {
-				console.warn('Server already exists');
-				return;
-			}
-			$serverListStore.push({ url: r, name: 'LOADING...' + r });
-			$serverDataStore = updateServers();
-		}
-	};
-
 	onMount(() => {
-		rateManager = new RateLimiter(selectedRoomData.userMessageLimit, selectedRoomData.rateLimit);
+		socket = io($selectedServer);
+		rateManager = new RateLimiter(selectedRoomData.userMessageLimit!, selectedRoomData.rateLimit!);
 		scrollChatBottom('instant');
 		socket.on('connect', () => {
 			connected = true;
@@ -159,12 +119,9 @@
 			if (roomId) {
 				if (!$messageStore[roomId]) {
 					console.debug('Creating room in message store', roomId);
-					$messageStore[roomId] = { messages: [] };
+					$messageStore[roomId] = [] as MessageI[];
 				}
-				$messageStore[roomId].messages = [data, ...$messageStore[roomId].messages.reverse()].slice(
-					0,
-					500
-				);
+				$messageStore[roomId] = [data, ...$messageStore[roomId].reverse()].slice(0, 500);
 				scrollChatBottom();
 			}
 		});
@@ -198,12 +155,12 @@
 	<!-- Conversation -->
 	<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
 		{#if $messageStore[selectedRoomId]}
-			{#each $messageStore[selectedRoomId].messages.reverse() as bubble}
+			{#each $messageStore[selectedRoomId].reverse() as bubble}
 				<div class="flex">
 					<div class="card p-4 space-y-2 bg-surface-200-700-token">
 						<header class="flex justify-between items-center">
 							<small class="opacity-50 text-primary-500"
-								>{rateManager.getTimestampFromEpoch(bubble.epoch)}</small
+								>{rateManager.getTimestampFromEpoch(Number(bubble.epoch))}</small
 							>
 							<small class="opacity-50 text-primary-500">epoch: {bubble.epoch}</small>
 						</header>

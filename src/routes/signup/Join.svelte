@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { identityStore, selectedServer, configStore } from '$lib/data/stores';
-	import { setRooms } from '$lib/utils';
+	import { identityStore, selectedServer, configStore } from '$lib/stores';
+	import { __setRooms } from '$lib/utils';
 	import { postInviteCode } from '$lib/services/server';
 	import type { JoinResponseI } from '$lib/types';
 
@@ -13,7 +13,7 @@
 		const result = (await postInviteCode($selectedServer, { code: newCode, idc })) as JoinResponseI;
 		console.log('INVITE CODE RESPONSE: ', result);
 		if (result.status == 'valid' || result.status == 'already-added') {
-			acceptedRoomNames = await setRooms($selectedServer, result.roomIds);
+			acceptedRoomNames = await __setRooms($selectedServer, result.roomIds);
 			code = '';
 			$configStore.signUpStatus.inviteAccepted = true;
 		} else {

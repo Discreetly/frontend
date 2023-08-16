@@ -1,4 +1,5 @@
 import type { Identity } from '@semaphore-protocol/identity';
+import type { RoomI as RI } from 'discreetly-interfaces';
 
 export interface ButtonI {
 	link: string;
@@ -8,14 +9,14 @@ export interface ButtonI {
 
 // For rooms where a user has a unique identity
 export interface RoomIdentityI {
-	[key: string]: Identity; // The key is the room id (bigint) as a string
+	[key: string]: Identity; // The key is the roomId (bigint) as a string
 }
 
 export interface IdentityStoreI {
 	identity: Identity;
 }
 
-export interface ServerListI {
+export interface ServerUrlI {
 	name: string;
 	url: string;
 }
@@ -40,4 +41,8 @@ export interface SignUpStatusI {
 export interface ConfigurationI {
 	signUpStatus: SignUpStatusI;
 	identityStore: IdentityStoreE;
+}
+
+export interface RoomI extends RI {
+	server?: string;
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { identityStore } from '$lib/data/stores';
+	import { identityStore } from '$lib/stores';
 	import { Identity } from '@semaphore-protocol/identity';
 	import QrScanner from 'qr-scanner';
 	import { FileDropzone } from '@skeletonlabs/skeleton';
@@ -18,7 +18,7 @@
 		console.log($identityStore.identity);
 		console.log(
 			'Identity restored from backup file with identity commitment:',
-			$identityStore.identity._commitment
+			$identityStore.identity.commitment
 		);
 	}
 

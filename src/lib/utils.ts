@@ -1,48 +1,11 @@
-import type { RoomI, ServerI } from 'discreetly-interfaces';
-import { identityStore, serverDataStore, serverListStore, roomsStore } from './data/stores';
+import type { RoomI } from '$lib/types';
+import { identityStore, serverStore, roomsStore } from '$lib/stores';
 import { get } from 'svelte/store';
-import { getIdentityRoomIds, getRoomById, getServerData } from './services/server';
-import type { ServerListI } from './types';
+import { getIdentityRoomIds, getRoomById } from '$lib/services/server';
 
-const defaultServers = [
-	{ name: 'Discreetly Server', url: 'https://server.discreetly.chat/' },
-	{ name: 'Localhost', url: 'http://localhost:3001/api/' } as ServerListI
-];
+// TODO! EVERYTHING IN THIS FILE SHOULD BE DEPRECATED AND MOVED TO PROPER LOCATIONS
 
-export async function updateServers(): Promise<{ [key: string]: ServerI }> {
-	const serverList = get(serverListStore);
-
-	// If the server list is empty or doesn't have the discreetly server, add the default servers
-	if (
-		serverList.length < 1 ||
-		!serverList.find((s: ServerListI) => s.name === 'Discreetly Server')
-	) {
-		console.error('serverListStore is empty');
-		serverListStore.set(defaultServers);
-	}
-
-	const newServerData: { [key: string]: ServerI } = {};
-
-	await Promise.all(
-		serverList.map(async (server: ServerListI) => {
-			console.log(`Fetching server data from ${server.url}`);
-			const data = await getServerData(server.url);
-			console.log(`Setting server data for ${server.url}`);
-			if (data) {
-				newServerData[server.url] = { ...data };
-			}
-		})
-	);
-
-	serverDataStore.update((store: { [key: string]: ServerI } = {}) => ({
-		...store,
-		...newServerData
-	}));
-
-	return newServerData;
-}
-
-export async function setRooms(server: string, roomIds: string[] = []): Promise<string[]> {
+export async function __setRooms(server: string, roomIds: string[] = []): Promise<string[]> {
 	const rooms: RoomI[] = [];
 	for (const roomId of roomIds) {
 		const result = await getRoomById(server, roomId);
@@ -67,7 +30,7 @@ export async function setRooms(server: string, roomIds: string[] = []): Promise<
 	return rooms.map((r: RoomI) => r.name);
 }
 
-export async function setSelectedRoomId(selectedRoomId: string): Promise<void> {
+export async function __setSelectedRoomId(selectedRoomId: string): Promise<void> {
 	roomsStore.update(() => {
 		const roomsStoreData = get(roomsStore);
 		return {
@@ -77,7 +40,7 @@ export async function setSelectedRoomId(selectedRoomId: string): Promise<void> {
 	});
 }
 
-export async function updateRooms(
+export async function __updateRooms(
 	selectedServer: string,
 	roomIds: string[] = []
 ): Promise<string[]> {
@@ -96,8 +59,8 @@ export async function updateRooms(
 	rooms.forEach((r: RoomI) => {
 		acceptedRoomNames = [...acceptedRoomNames, r.name];
 	});
-	serverDataStore.update(() => {
-		const serverData = get(serverDataStore);
+	serverStore.update(() => {
+		const serverData = get(serverStore);
 		serverData[selectedServer] = {
 			...serverData[selectedServer],
 			rooms
@@ -107,10 +70,10 @@ export async function updateRooms(
 	return acceptedRoomNames;
 }
 
-export async function updateSingleRoom(selectedServer: string, roomId: string) {
+export async function __updateSingleRoom(selectedServer: string, roomId: string) {
 	const room = await getRoomById(selectedServer, roomId);
-	serverDataStore.update(() => {
-		const serverData = get(serverDataStore);
+	serverStore.update(() => {
+		const serverData = get(serverStore);
 		serverData[selectedServer] = {
 			...serverData[selectedServer],
 			rooms: [room]
@@ -119,13 +82,13 @@ export async function updateSingleRoom(selectedServer: string, roomId: string) {
 	});
 }
 
-export function getServerForSelectedRoom(): any {
+export function __getServerForSelectedRoom(): any {
 	const roomsStoreData = get(roomsStore);
 	const selectedServer = roomsStoreData.roomsData[roomsStoreData.selectedRoomId]?.server;
 	return selectedServer;
 }
 
-export function getRoomsForServer(selectedServer: string): [] {
+export function __getRoomsForServer(selectedServer: string): [] {
 	const roomsStoreData = get(roomsStore);
 	const rooms: any = Object.values(roomsStoreData.roomsData);
 	return rooms.filter((room: any) => room.server === selectedServer);

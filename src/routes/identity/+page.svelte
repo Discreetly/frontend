@@ -1,15 +1,13 @@
 <script lang="ts">
-	import { identityStore, selectedServer, serverListStore } from '$lib/data/stores';
+	import { identityStore, selectedServer, serverStore } from '$lib/stores';
 	import DeleteIdentity from './DeleteIdentity.svelte';
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
 	import { Identity } from '@semaphore-protocol/identity';
 	import Join from '../signup/Join.svelte';
-	import { updateRooms } from '$lib/utils';
-	import type { ServerListI } from '$lib/types';
+	import { __updateRooms } from '$lib/utils';
 	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
-
-	$: serverList = $serverListStore as ServerListI[];
+	import { getServerList } from '$lib/stores/servers';
 
 	let identityExists = false;
 	$: if ($identityStore.identity == undefined) {
@@ -27,7 +25,7 @@
 
 	function refreshRooms() {
 		console.log('Refreshing rooms');
-		updateRooms($selectedServer);
+		__updateRooms($selectedServer);
 	}
 
 	function createIdentity(regenerate = false) {
@@ -64,12 +62,12 @@
 			display="flex-col"
 			hover="hover:variant-soft-primary"
 		>
-			{#each serverList as server}
+			{#each getServerList() as serverUrl}
 				<RadioItem
 					on:change={selectServer}
 					bind:group={$selectedServer}
 					name="server"
-					value={server.url}>{server.name}</RadioItem
+					value={$serverStore[serverUrl]}>{$serverStore[serverUrl].name}</RadioItem
 				>
 			{/each}
 		</RadioGroup>

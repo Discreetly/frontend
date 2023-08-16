@@ -2,18 +2,18 @@
 	import {
 		messageStore,
 		serverListStore,
-		serverDataStore,
+		serverStore,
 		selectedServer,
 		identityStore
-	} from '$lib/data/stores';
-	import { updateServers } from '$lib/utils';
+	} from '$lib/stores';
+	import { updateServers } from '$lib/stores/servers';
 	import { genProof } from '$lib/crypto/prover';
 	import { io } from 'socket.io-client';
 	import BackupIdentity from '../identity/BackupIdentity.svelte';
 	import DeleteIdentity from '../identity/DeleteIdentity.svelte';
 	import RestoreIdentity from '../identity/RestoreIdentity.svelte';
 	import { Identity } from '@semaphore-protocol/identity';
-	import RateLimiter from '$lib/rateLimit';
+	import RateLimiter from '$lib/utils/rateLimit';
 	import { onMount } from 'svelte';
 
 	let messageText = '';
@@ -51,7 +51,7 @@
 
 	function updateServerData() {
 		console.debug('UPDATING SERVERS');
-		$serverDataStore = updateServers();
+		$serverStore = updateServers();
 		if ($selectedServer.name == undefined) {
 			$selectedServer = $serverListStore[0].url;
 		}

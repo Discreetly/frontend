@@ -1,4 +1,6 @@
-import type { RoomI, ServerI } from 'discreetly-interfaces';
+import type { ServerI } from 'discreetly-interfaces';
+import type { RoomI } from '$lib/types';
+
 import { get, post } from './api';
 
 export async function getIdentityRoomIds(server: string, idCommitment: string): Promise<string[]> {

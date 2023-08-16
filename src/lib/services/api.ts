@@ -25,8 +25,7 @@ function joinUrlParts(parts: string[] | string): string {
 
 /**
  * @description - makes a get request to the api
- * @param {string} baseUrl - the base url of the api
- * @param {string} endpoint - the endpoint to be added to the base url
+ * @param {string[] | string} urlParts - the url parts to be joined to form the url
  * @returns {object} - the response from the api
  * @throws {Error} - if the request fails
  */
@@ -46,8 +45,7 @@ export async function get(urlParts: string[] | string): Promise<object> {
 
 /**
  * @description - makes a get request to the api
- * @param {string} baseUrl - the base url of the api
- * @param {string} endpoint - the endpoint to be added to the base url
+ * @param {string[] | string} urlParts - the url parts to be joined to form the url
  * @param {object} data - the data to be sent to the api
  * @returns {object} - the response from the api
  * @throws {Error} - if the request fails

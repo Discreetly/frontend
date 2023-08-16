@@ -3,9 +3,10 @@ import { Group } from '@semaphore-protocol/group';
 import getMessageHash from './messageHasher';
 import getRateCommitmentHash from './rateCommitmentHasher';
 import type { Identity } from '@semaphore-protocol/identity';
-import type { MessageI, RoomI } from 'discreetly-interfaces';
+import type { MessageI } from 'discreetly-interfaces';
+import type { RoomI } from '$lib/types';
 import type { RLNFullProof, MerkleProof } from 'rlnjs';
-import { getMerkleProof } from '../services/bandada';
+import { getMerkleProof } from '$lib//services/bandada';
 
 const wasmPath = '/rln/circuit.wasm';
 const zkeyPath = '/rln/final.zkey';

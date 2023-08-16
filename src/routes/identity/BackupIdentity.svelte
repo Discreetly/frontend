@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { identityStore } from '$lib/data/stores';
+	import { identityStore } from '$lib/stores';
 	import Loading from '$lib/components/loading.svelte';
 	import QRCode from 'qrcode';
-	import { Identity } from '@semaphore-protocol/identity';
+	import type { Identity } from '@semaphore-protocol/identity';
 
 	let loading: boolean = false;
 	let imageUrl: string | undefined = undefined;
