@@ -1,52 +1,19 @@
 <script lang="ts">
-	import { identityStore, selectedServer, serverStore } from '$lib/stores';
+	import { identityStore } from '$lib/stores';
 	import DeleteIdentity from './DeleteIdentity.svelte';
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
-	import { Identity } from '@semaphore-protocol/identity';
 	import Join from '../signup/3_Join.svelte';
-	import { __updateRooms } from '$lib/utils';
-	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
-	import { getServerList } from '$lib/stores/servers';
-
-	let identityExists = false;
-	$: if ($identityStore.identity == undefined) {
-		identityExists = false;
-	} else {
-		identityExists = true;
-	}
-
-	function selectServer(event: Event) {
-		const target = event.target as HTMLInputElement;
-		console.log('Selected server', target.value);
-		console.log(target.value);
-		$selectedServer = target.value;
-	}
-
-	function refreshRooms() {
-		console.log('Refreshing rooms');
-		__updateRooms($selectedServer);
-	}
-
-	function createIdentity(regenerate = false) {
-		console.log('Creating identity');
-		if (!identityExists || regenerate) {
-			$identityStore.identity = new Identity();
-			return 'created';
-		} else {
-			console.warn('Identity already exists');
-			return 'exists';
-		}
-	}
+	import { createIdentity } from '$lib/utils/';
 </script>
 
-{#if !identityExists}
+{#if !$identityStore.identity}
 	<div class="mb-8 text-center">
 		<span class="badge variant-ghost-secondary text-sm px-4 py-2">Identity Not Found</span>
 	</div>
 {/if}
 <div class="grid grid-flow-rows gap-5 my-5 max-w-md mx-auto">
-	{#if !identityExists}
+	{#if !$identityStore.identity}
 		<button on:click={() => createIdentity()} class="btn variant-filled-success" type="button">
 			Generate Identity
 		</button>

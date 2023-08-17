@@ -1,24 +1,19 @@
-import type { Identity } from '@semaphore-protocol/identity';
 import type { RoomI as RI } from 'discreetly-interfaces';
 
+interface IdentityStringsI {
+	_commitment: string;
+	_trapdoor: string;
+	_nullifier: string;
+	_secret: string;
+}
 export interface ButtonI {
 	link: string;
 	cls: string;
 	text: string;
 }
 
-// For rooms where a user has a unique identity
-export interface RoomIdentityI {
-	[key: string]: Identity; // The key is the roomId (bigint) as a string
-}
-
 export interface IdentityStoreI {
-	identity: Identity;
-}
-
-export interface ServerUrlI {
-	name: string;
-	url: string;
+	identity: IdentityStringsI;
 }
 
 export interface JoinResponseI {

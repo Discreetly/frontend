@@ -1,8 +1,14 @@
 import { get, type Writable } from 'svelte/store';
-import type { serverStoreI } from '.';
-import { serverStore, roomsStore } from '.';
+import type { serverStoreI } from '../stores';
+import { serverStore, roomsStore, selectedServer } from '../stores';
 import { getServerData } from '$lib/services/server';
 import type { RoomI } from '$lib/types';
+import { defaultServers } from '$lib/defaults';
+
+export function setDefaultServers(): void {
+	serverStore.set(defaultServers);
+	selectedServer.set(Object.keys(defaultServers)[0]);
+}
 
 export function getServerList(store: Writable<serverStoreI> = serverStore): string[] {
 	return Object.keys(get(store)) as string[];
@@ -22,7 +28,14 @@ export async function updateServer(
 	url: string,
 	store: Writable<serverStoreI> = serverStore
 ): Promise<void> {
-	console.log('updating server', url);
+	if (!url || url === '' || url === 'undefined') {
+		url = get(selectedServer);
+	}
+	if (!url || url === '' || url === 'undefined') {
+		url = Object.keys(get(serverStore))[0];
+		selectedServer.set(url);
+	}
+	console.log('Updating server', url);
 	const oldServerStore = get(store);
 	getServerData(url).then((newServerData) => {
 		const newServerStore = {

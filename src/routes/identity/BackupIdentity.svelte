@@ -2,13 +2,12 @@
 	import { identityStore } from '$lib/stores';
 	import Loading from '$lib/components/loading.svelte';
 	import QRCode from 'qrcode';
-	import type { Identity } from '@semaphore-protocol/identity';
 
 	let loading: boolean = false;
 	let imageUrl: string | undefined = undefined;
 
 	function getIdentityBackup() {
-		const idBackup = $identityStore.identity as Identity;
+		const idBackup = $identityStore.identity;
 		return idBackup.toString();
 	}
 

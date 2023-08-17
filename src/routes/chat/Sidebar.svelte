@@ -1,22 +1,8 @@
 <script lang="ts">
 	import { Modal, modalStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import type { RoomI } from 'discreetly-interfaces';
 	import { serverStore, selectedServer, selectedRoom } from '$lib/stores';
-
-	import { __getRoomsForServer, __getServerForSelectedRoom, __setSelectedRoomId } from '$lib/utils';
-	import { getServerList, getServerRooms, updateServer } from '$lib/stores/servers';
-
-	const setRoom = (roomId: string) => {
-		if (roomId) {
-			__setSelectedRoomId(roomId);
-		}
-	};
-
-	const selectedRoomsServer = __getServerForSelectedRoom();
-	let serverSelection = selectedRoomsServer;
-
-	$: roomListForServer = getServerRooms($selectedServer) as RoomI[];
+	import { getServerList, roomListForServer, updateServer } from '$lib/utils/';
 
 	const addServerModal: ModalSettings = {
 		type: 'prompt',
@@ -41,14 +27,7 @@
 <div id="sidebar" class="hidden lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 	<!-- Header -->
 	<header class="border-b border-surface-500/30 p-4 flex flex-row">
-		<select
-			class="select text-primary-500"
-			bind:value={serverSelection}
-			on:change={(event) => {
-				console.log('Setting server to: ', event.target?.value);
-				serverSelection = event.target?.value;
-			}}
-		>
+		<select class="select text-primary-500" bind:value={$selectedServer}>
 			{#each Object.entries($serverStore) as [key, s]}
 				<option value={key}>{s.name}</option>
 			{/each}
@@ -63,14 +42,8 @@
 	</header>
 	<!-- List -->
 	<div class="p-4 space-y-4 overflow-y-auto">
-		<select
-			class="select text-primary-500"
-			size="8"
-			on:change={(event) => {
-				setRoom(event.target?.value);
-			}}
-		>
-			{#each roomListForServer as room}
+		<select class="select text-primary-500" size="8" bind:value={$selectedRoom[$selectedServer]}>
+			{#each roomListForServer() as room}
 				{#if room.roomId == $selectedRoom[$selectedServer]}
 					<option value={room.roomId} title={room.roomId ? room.roomId.toString() : ''} selected
 						>{room.name}</option

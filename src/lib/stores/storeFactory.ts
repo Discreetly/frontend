@@ -7,8 +7,15 @@ export function storable<Type>(data: Type, localStorageKey: string): Writable<Ty
 	const { subscribe, set } = store;
 	const isBrowser = typeof window !== 'undefined';
 
-	if (isBrowser && localStorage[localStorageKey]) {
-		set(JSON.parse(localStorage[localStorageKey]) as Type);
+	if (isBrowser && localStorage[localStorageKey] !== undefined) {
+		const storedValue = localStorage.getItem(localStorageKey);
+		if (storedValue) {
+			try {
+				set(JSON.parse(storedValue) as Type);
+			} catch (e) {
+				console.warn(`Error reading local storage for key: ${localStorageKey}; ${e}`);
+			}
+		}
 	}
 
 	return {
@@ -36,8 +43,15 @@ export function sessionable<Type>(data: Type, sessionStorageKey: string): Writab
 	const { subscribe, set } = store;
 	const isBrowser = typeof window !== 'undefined';
 
-	if (isBrowser && sessionStorage[sessionStorageKey]) {
-		set(JSON.parse(sessionStorage[sessionStorageKey]) as Type);
+	if (isBrowser && sessionStorage[sessionStorageKey] !== undefined) {
+		const storedValue = sessionStorage.getItem(sessionStorageKey);
+		if (storedValue) {
+			try {
+				set(JSON.parse(storedValue) as Type);
+			} catch (e) {
+				console.warn(`Error reading local storage for key: ${sessionStorageKey}; ${e}`);
+			}
+		}
 	}
 
 	return {

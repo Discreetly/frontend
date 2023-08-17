@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { messageStore, serverStore, selectedServer, identityStore } from '$lib/stores';
-	import { getServerList, updateServer } from '$lib/stores/servers';
+	import { getServerList, updateServer } from '$lib/utils/servers';
 	import { genProof } from '$lib/crypto/prover';
 	import { io } from 'socket.io-client';
 	import BackupIdentity from '../identity/BackupIdentity.svelte';
