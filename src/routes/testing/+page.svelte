@@ -1,12 +1,6 @@
 <script lang="ts">
-	import {
-		messageStore,
-		serverListStore,
-		serverStore,
-		selectedServer,
-		identityStore
-	} from '$lib/stores';
-	import { updateServers } from '$lib/stores/servers';
+	import { messageStore, serverStore, selectedServer, identityStore } from '$lib/stores';
+	import { getServerList, updateServer } from '$lib/stores/servers';
 	import { genProof } from '$lib/crypto/prover';
 	import { io } from 'socket.io-client';
 	import BackupIdentity from '../identity/BackupIdentity.svelte';
@@ -15,6 +9,7 @@
 	import { Identity } from '@semaphore-protocol/identity';
 	import RateLimiter from '$lib/utils/rateLimit';
 	import { onMount } from 'svelte';
+	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 
 	let messageText = '';
 	let connected: boolean = false;
@@ -51,15 +46,12 @@
 
 	function updateServerData() {
 		console.debug('UPDATING SERVERS');
-		$serverStore = updateServers();
-		if ($selectedServer.name == undefined) {
-			$selectedServer = $serverListStore[0].url;
-		}
+		updateServer($selectedServer);
 	}
 
 	function deleteMessages() {
 		console.debug('DELETING MESSAGES');
-		$messageStore = [];
+		$messageStore = {};
 	}
 
 	onMount(() => {
@@ -85,5 +77,18 @@
 	<BackupIdentity />
 	<RestoreIdentity />
 	<DeleteIdentity />
-	<h3 class="h3">Send Test Message</h3>
+	<h4 class="h4 mt-4">Refresh Rooms</h4>
+	<RadioGroup active="variant-filled-success" display="flex-col" hover="hover:variant-soft-primary">
+		{#each getServerList() as serverUrl}
+			<RadioItem
+				on:change={selectServer}
+				bind:group={$selectedServer}
+				name="server"
+				value={$serverStore[serverUrl]}>{$serverStore[serverUrl].name}</RadioItem
+			>
+		{/each}
+	</RadioGroup>
+	<div>
+		<div class="btn variant-filled-success btn-sm" on:click={refreshRooms}>Refresh Rooms</div>
+	</div>
 </div>

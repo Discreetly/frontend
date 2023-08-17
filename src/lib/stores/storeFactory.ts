@@ -2,24 +2,25 @@
 import { writable, get } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 
-export function storable<T>(data: T, localStorageKey: string): Writable<T> {
-	const store = writable<T>(data);
+export function storable<Type>(data: Type, localStorageKey: string): Writable<Type> {
+	const store = writable<Type>(data);
 	const { subscribe, set } = store;
 	const isBrowser = typeof window !== 'undefined';
 
 	if (isBrowser && localStorage[localStorageKey]) {
-		set(JSON.parse(localStorage[localStorageKey]) as T);
+		set(JSON.parse(localStorage[localStorageKey]) as Type);
 	}
 
 	return {
 		subscribe,
-		set: (n: T) => {
+		set: (newValue: Type) => {
+			console.debug(localStorageKey, ':', newValue);
 			if (isBrowser) {
-				localStorage[localStorageKey] = JSON.stringify(n);
+				localStorage[localStorageKey] = JSON.stringify(newValue);
 			}
-			set(n);
+			set(newValue);
 		},
-		update: (callBack: (value: T) => T) => {
+		update: (callBack: (value: Type) => Type) => {
 			const updatedStore = callBack(get(store));
 
 			if (isBrowser) {
@@ -30,24 +31,24 @@ export function storable<T>(data: T, localStorageKey: string): Writable<T> {
 	};
 }
 
-export function sessionable<T>(data: T, sessionStorageKey: string): Writable<T> {
-	const store = writable<T>(data);
+export function sessionable<Type>(data: Type, sessionStorageKey: string): Writable<Type> {
+	const store = writable<Type>(data);
 	const { subscribe, set } = store;
 	const isBrowser = typeof window !== 'undefined';
 
 	if (isBrowser && sessionStorage[sessionStorageKey]) {
-		set(JSON.parse(sessionStorage[sessionStorageKey]) as T);
+		set(JSON.parse(sessionStorage[sessionStorageKey]) as Type);
 	}
 
 	return {
 		subscribe,
-		set: (n: T) => {
+		set: (newvalue: Type) => {
 			if (isBrowser) {
-				sessionStorage[sessionStorageKey] = JSON.stringify(n);
+				sessionStorage[sessionStorageKey] = JSON.stringify(newvalue);
 			}
-			set(n);
+			set(newvalue);
 		},
-		update: (callBack: (value: T) => T) => {
+		update: (callBack: (value: Type) => Type) => {
 			const updatedStore = callBack(get(store));
 
 			if (isBrowser) {

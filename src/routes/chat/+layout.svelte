@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { serverStore } from '$lib/stores';
-	import { updateServers } from '$lib/stores/servers';
+	import { updateServers } from '$lib/utils';
 	import { onMount } from 'svelte';
 
 	onMount(() => {

@@ -8,7 +8,7 @@
 
 	function deleteIdentity() {
 		console.warn('DELETING IDENTITY');
-		$identityStore = { identity: {} } as IdentityStoreI;
+		$identityStore = {} as IdentityStoreI;
 	}
 
 	onMount(() => {

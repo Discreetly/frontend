@@ -4,7 +4,7 @@
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
 	import { Identity } from '@semaphore-protocol/identity';
-	import Join from '../signup/Join.svelte';
+	import Join from '../signup/3_Join.svelte';
 	import { __updateRooms } from '$lib/utils';
 	import { RadioGroup, RadioItem } from '@skeletonlabs/skeleton';
 	import { getServerList } from '$lib/stores/servers';
@@ -56,23 +56,5 @@
 		<DeleteIdentity />
 		<h4 class="h4 mt-4">Join More Rooms</h4>
 		<Join />
-		<h4 class="h4 mt-4">Refresh Rooms</h4>
-		<RadioGroup
-			active="variant-filled-success"
-			display="flex-col"
-			hover="hover:variant-soft-primary"
-		>
-			{#each getServerList() as serverUrl}
-				<RadioItem
-					on:change={selectServer}
-					bind:group={$selectedServer}
-					name="server"
-					value={$serverStore[serverUrl]}>{$serverStore[serverUrl].name}</RadioItem
-				>
-			{/each}
-		</RadioGroup>
-		<div>
-			<div class="btn variant-filled-success btn-sm" on:click={refreshRooms}>Refresh Rooms</div>
-		</div>
 	{/if}
 </div>

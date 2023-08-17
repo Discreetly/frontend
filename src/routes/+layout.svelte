@@ -8,8 +8,9 @@
 	import AppHeader from './AppHeader.svelte';
 	import AppFooter from './AppFooter.svelte';
 	import Loading from '$lib/components/loading.svelte';
-	import { serverListStore, selectedServer } from '$lib/stores';
-	import { updateServers } from '$lib/stores/servers';
+	import { selectedServer } from '$lib/stores';
+	import { getServerList } from '$lib/stores/servers';
+	import { updateServer } from '$lib/stores/servers';
 
 	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {
@@ -17,10 +18,10 @@
 	};
 
 	onMount(async () => {
-		updateServers();
-		if ($selectedServer.name == undefined) {
-			$selectedServer = $serverListStore[0].url;
+		if ($selectedServer == undefined) {
+			$selectedServer = getServerList()[0];
 		}
+		updateServer($selectedServer);
 	});
 </script>
 

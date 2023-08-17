@@ -5,7 +5,7 @@ import { getServerData } from '$lib/services/server';
 import type { RoomI } from '$lib/types';
 
 export function getServerList(store: Writable<serverStoreI> = serverStore): string[] {
-	return Object.keys(get(store));
+	return Object.keys(get(store)) as string[];
 }
 
 export function getServerRooms(url: string, store: Writable<serverStoreI> = serverStore): RoomI[] {
@@ -22,6 +22,7 @@ export async function updateServer(
 	url: string,
 	store: Writable<serverStoreI> = serverStore
 ): Promise<void> {
+	console.log('updating server', url);
 	const oldServerStore = get(store);
 	getServerData(url).then((newServerData) => {
 		const newServerStore = {
