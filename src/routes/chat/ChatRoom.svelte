@@ -1,19 +1,12 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import type { MessageI } from 'discreetly-interfaces';
-	import {
-		identityStore,
-		messageStore,
-		roomsStore,
-		selectedRoom,
-		selectedServer
-	} from '$lib/stores';
+	import { messageStore, roomsStore, selectedRoom, selectedServer } from '$lib/stores';
 	import { io } from 'socket.io-client';
 	import type { Socket } from 'socket.io-client';
 	import { genProof } from '$lib/crypto/prover';
-	import { Identity } from '@semaphore-protocol/identity';
 	import RateLimiter from '$lib/utils/rateLimit';
-	import { __getRoomsForServer, __getServerForSelectedRoom, __setSelectedRoomId } from '$lib/utils';
+	import { getIdentity } from '$lib/utils/';
 
 	let messageText = '';
 	let connected: boolean = false;
@@ -53,7 +46,7 @@
 			console.debug('Message is empty');
 			return;
 		}
-		const identity = new Identity($identityStore.toString());
+		const identity = getIdentity();
 		const messageID = rateManager.useMessage();
 		if (messageID == -1) {
 			console.debug('Rate limit exceeded');

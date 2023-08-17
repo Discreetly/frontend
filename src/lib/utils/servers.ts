@@ -25,13 +25,13 @@ export function getServerRooms(url: string, store: Writable<serverStoreI> = serv
 }
 
 export async function updateServer(
-	url: string,
+	url: string = get(selectedServer),
 	store: Writable<serverStoreI> = serverStore
 ): Promise<void> {
-	if (!url || url === '' || url === 'undefined') {
+	if (!url) {
 		url = get(selectedServer);
 	}
-	if (!url || url === '' || url === 'undefined') {
+	if (!url) {
 		url = Object.keys(get(serverStore))[0];
 		selectedServer.set(url);
 	}

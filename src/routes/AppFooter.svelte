@@ -6,7 +6,7 @@
 <AppBar padding="py-3 px-8">
 	<svelte:fragment slot="lead">
 		<a href="/">Home</a>
-		{#if $identityStore.identity != undefined && $identityStore.identity != null}
+		{#if $identityStore != undefined && $identityStore != null}
 			<a href="/chat">Chat</a>
 		{:else}
 			<a href="/signup">Sign Up</a>

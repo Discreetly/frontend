@@ -1,15 +1,10 @@
 <script lang="ts">
-	import { identityStore } from '$lib/stores';
+	import { getIdentityBackup } from '$lib/utils/';
 	import Loading from '$lib/components/loading.svelte';
 	import QRCode from 'qrcode';
 
 	let loading: boolean = false;
 	let imageUrl: string | undefined = undefined;
-
-	function getIdentityBackup() {
-		const idBackup = $identityStore.identity;
-		return idBackup.toString();
-	}
 
 	function generateQR() {
 		loading = true;

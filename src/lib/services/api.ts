@@ -11,7 +11,7 @@
  * const parts = ['http://example.com/', '/path/', 'to/', '/resource'];
  * joinUrlParts(parts);  // Returns: 'http://example.com/path/to/resource'
  */
-function joinUrlParts(parts: string[] | string): string {
+function cleanURL(parts: string[] | string): string {
 	let url = '';
 	if (typeof parts == 'string') {
 		url = parts.replace(/\/\/+/g, '/'); // Replace any sequence of multiple slashes with a single slash
@@ -20,7 +20,11 @@ function joinUrlParts(parts: string[] | string): string {
 			.map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading and trailing slashes
 			.join('/'); // Join the parts with a single slash
 	}
-	return url;
+	if (url.startsWith('http://') || url.startsWith('https://')) {
+		return url;
+	} else {
+		return 'https://' + url;
+	}
 }
 
 /**
@@ -30,7 +34,7 @@ function joinUrlParts(parts: string[] | string): string {
  * @throws {Error} - if the request fails
  */
 export async function get(urlParts: string[] | string): Promise<object> {
-	const url = joinUrlParts(urlParts);
+	const url = cleanURL(urlParts);
 	const res = await fetch(url, {
 		method: 'GET',
 		headers: {
@@ -51,7 +55,7 @@ export async function get(urlParts: string[] | string): Promise<object> {
  * @throws {Error} - if the request fails
  */
 export async function post(urlParts: string[] | string, data: object): Promise<object> {
-	const url = joinUrlParts(urlParts);
+	const url = cleanURL(urlParts);
 	const res = await fetch(url, {
 		method: 'POST',
 		headers: {

@@ -1,11 +1,4 @@
 import type { RoomI as RI } from 'discreetly-interfaces';
-
-interface IdentityStringsI {
-	_commitment: string;
-	_trapdoor: string;
-	_nullifier: string;
-	_secret: string;
-}
 export interface ButtonI {
 	link: string;
 	cls: string;
@@ -13,7 +6,10 @@ export interface ButtonI {
 }
 
 export interface IdentityStoreI {
-	identity: IdentityStringsI;
+	_commitment: string;
+	_trapdoor: string;
+	_nullifier: string;
+	_secret: string;
 }
 
 export interface JoinResponseI {

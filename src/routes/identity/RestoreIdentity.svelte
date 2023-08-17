@@ -14,7 +14,7 @@
 	function restoreBackup(backup: any) {
 		console.debug('Attempting restore of identity from backup file...');
 		console.debug(backup);
-		$identityStore.identity = new Identity(JSON.stringify(backup));
+		$identityStore = new Identity(JSON.stringify(backup));
 		console.log($identityStore.identity);
 		console.log(
 			'Identity restored from backup file with identity commitment:',

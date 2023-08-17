@@ -19,13 +19,8 @@
 
 	onMount(async () => {
 		console.log('Starting Up Application');
-		if ($selectedServer == undefined) {
-			const firstServer = getServerList()[0];
-			if (firstServer) {
-				$selectedServer = firstServer;
-			} else {
-				setDefaultServers();
-			}
+		if (getServerList().length === 0) {
+			setDefaultServers();
 		}
 		updateServer($selectedServer);
 	});

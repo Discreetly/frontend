@@ -1,10 +1,11 @@
 import type { RoomI } from '$lib/types';
-import { identityStore, roomsStore, selectedServer, serverStore } from '$lib/stores';
+import { roomsStore, selectedServer, serverStore } from '$lib/stores';
 import { get } from 'svelte/store';
 import {
 	getIdentityRoomIds as getRoomIdsByIdentityCommitment,
 	getRoomById
 } from '$lib/services/server';
+import { getCommitment } from '.';
 
 export function roomListForServer(server: string = get(selectedServer)): RoomI[] {
 	const roomIds = get(serverStore)[server]?.rooms ?? [];
@@ -21,7 +22,7 @@ function updateRoomStore(rooms: RoomI[]) {
 
 async function getRoomIdsIfEmpty(server: string, roomIds: string[]): Promise<string[]> {
 	if (roomIds.length < 1) {
-		const idc = get(identityStore).identity._commitment;
+		const idc = getCommitment();
 		return await getRoomIdsByIdentityCommitment(server, idc);
 	}
 	return roomIds;

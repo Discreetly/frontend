@@ -2,14 +2,14 @@
 	import { identityStore, selectedServer, configStore } from '$lib/stores';
 	import { postInviteCode } from '$lib/services/server';
 	import type { JoinResponseI } from '$lib/types';
-	import { updateRooms } from '$lib/utils/';
+	import { getCommitment, updateRooms } from '$lib/utils/';
 
 	let code = '';
 	let acceptedRoomNames: string[] = [];
 
 	async function addCode(newCode: string) {
 		console.log($selectedServer);
-		const idc = $identityStore.identity._commitment;
+		const idc = getCommitment();
 		const result = (await postInviteCode($selectedServer, { code: newCode, idc })) as JoinResponseI;
 		console.log('INVITE CODE RESPONSE: ', result);
 		if (result.status == 'valid' || result.status == 'already-added') {
@@ -20,7 +20,6 @@
 			alert('Invalid invite code');
 		}
 	}
-
 	function inviteCodeKeyPress(event: KeyboardEvent) {
 		const input = event.target as HTMLInputElement | null;
 
