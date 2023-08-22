@@ -1,44 +1,12 @@
 <script lang="ts">
-	import { Modal, modalStore } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { serverStore, selectedServer, selectedRoom, currentRoomsStore } from '$lib/stores';
-	import { getServerList, updateServer } from '$lib/utils/';
-
-	const addServerModal: ModalSettings = {
-		type: 'prompt',
-		// Data
-		title: 'Enter Server Address',
-		body: 'Provide the server address.',
-		// Populates the input value and attributes
-		value: 'http://discreetly.chat/',
-		valueAttr: { type: 'url', required: true },
-		// Returns the updated response value
-		response: (r: string) => {
-			console.log('response:', r);
-			if (getServerList().includes(r)) {
-				console.warn('Server already exists');
-				return;
-			}
-			updateServer(r);
-		}
-	};
+	import SelectServer from '$lib/components/SelectServer.svelte';
+	import { selectedServer, selectedRoom, currentRoomsStore } from '$lib/stores';
 </script>
 
 <div id="sidebar" class="lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 	<!-- Header -->
-	<header class="border-b border-surface-500/30 p-4 flex flex-row">
-		<select class="select text-primary-500" bind:value={$selectedServer}>
-			{#each Object.entries($serverStore) as [key, s]}
-				<option value={key}>{s.name}</option>
-			{/each}
-		</select>
-		<button
-			type="button"
-			class="btn btn-sm variant-ghost-primary ms-2"
-			on:click={() => {
-				modalStore.trigger(addServerModal);
-			}}>+</button
-		>
+	<header class="border-b border-surface-500/30 p-4">
+		<SelectServer />
 	</header>
 	<!-- List -->
 	<div class="p-4 space-y-4 overflow-y-auto">

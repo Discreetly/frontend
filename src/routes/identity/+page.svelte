@@ -3,7 +3,7 @@
 	import DeleteIdentity from './DeleteIdentity.svelte';
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
-	import Join from '../signup/3_Join.svelte';
+	import Join from '$lib/components/Join.svelte';
 	import { createIdentity } from '$lib/utils/';
 	$: identityExists = !!$identityStore._commitment;
 </script>
