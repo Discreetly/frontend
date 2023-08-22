@@ -54,7 +54,7 @@
 		} else {
 			messagesLeft = messageID;
 		}
-		genProof(selectedRoomData, messageText, identity).then((msg) => {
+		genProof(selectedRoomData, messageText, identity, rateManager.getCurrentEpoch()).then((msg) => {
 			socket.emit('validateMessage', msg);
 			console.debug('Sending message: ', msg);
 			messageText = '';

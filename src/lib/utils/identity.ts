@@ -15,8 +15,8 @@ export function createIdentity(regenerate = false) {
 	}
 }
 
-export function getIdentity() {
-	return get(identityStore) as unknown as Identity;
+export function getIdentity(): IdentityStoreI {
+	return get(identityStore) as unknown as IdentityStoreI;
 }
 
 export function getCommitment() {

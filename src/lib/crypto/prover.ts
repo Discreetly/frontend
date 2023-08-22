@@ -2,7 +2,6 @@ import { RLNProver } from 'rlnjs';
 import { Group } from '@semaphore-protocol/group';
 import getMessageHash from './messageHasher';
 import getRateCommitmentHash from './rateCommitmentHasher';
-import type { Identity } from '@semaphore-protocol/identity';
 import type { MessageI } from 'discreetly-interfaces';
 import type { IdentityStoreI, RoomI } from '$lib/types';
 import type { RLNFullProof, MerkleProof } from 'rlnjs';
@@ -27,8 +26,9 @@ interface proofInputsI {
 }
 
 async function merkleProofFromRoom(roomId: string, RLN_IDENIFIER: bigint, rateCommitment: bigint) {
-	await updateRooms(get(selectedServer), [String(roomId)]);
 	const roomFromStore = get(roomsStore)[roomId];
+	console.log(roomFromStore.identities);
+	console.log(rateCommitment);
 	const identities = roomFromStore.identities ? roomFromStore.identities.map((i) => BigInt(i)) : [];
 	const group = new Group(RLN_IDENIFIER, 20, identities);
 	return group.generateMerkleProof(group.indexOf(rateCommitment));
@@ -38,29 +38,34 @@ async function genProof(
 	room: RoomI,
 	message: string,
 	identity: IdentityStoreI,
+	epoch: bigint | number,
 	messageId: bigint | number = 0,
 	messageLimit: bigint | number = 1
 ): Promise<MessageI> {
-	console.log(room, message, identity);
-	const RLN_IDENIFIER = BigInt(room.roomId);
+	const roomId = typeof room.roomId === 'bigint' ? room.roomId.toString() : String(room.roomId);
+	await updateRooms(get(selectedServer), [roomId]);
+	room = get(roomsStore)[roomId];
+	const RLN_IDENIFIER = BigInt(roomId);
 	const userMessageLimit = BigInt(messageLimit);
+	const identityCommitment = BigInt(identity._commitment);
 	const messageHash: bigint = getMessageHash(message);
 	console.log(identity);
-	const rateCommitment: bigint = getRateCommitmentHash(
-		BigInt(identity._commitment),
-		userMessageLimit
-	);
-	const roomId = typeof room.roomId === 'bigint' ? room.roomId.toString() : String(room.roomId);
+	// const rateCommitment: bigint = getRateCommitmentHash(
+	// 	BigInt(identity._commitment),
+	// 	userMessageLimit
+	// );
+
 	let merkleProof: MerkleProof;
+	console.log(room);
 	switch (room.membershipType) {
-		case 'identities':
-			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENIFIER, rateCommitment);
+		case 'IDENTITY_LIST':
+			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENIFIER, identityCommitment);
 			break;
-		case 'bandada':
+		case 'BANDADA_GROUP':
 			if (room.bandadaAddress === undefined) throw new Error('Bandada address not defined');
-			merkleProof = await getMerkleProof(room.bandadaAddress, rateCommitment);
+			merkleProof = await getMerkleProof(room.bandadaAddress, identityCommitment);
 			throw new Error('Bandada not implemented yet');
-		case 'rln-contract':
+		case 'CONTRACT':
 			//TODO
 			throw new Error('RLN contracts not implemented yet');
 		default:
@@ -74,7 +79,7 @@ async function genProof(
 		messageId: BigInt(messageId),
 		merkleProof: merkleProof,
 		x: messageHash,
-		epoch: BigInt(Date.now().toString())
+		epoch: BigInt(epoch)
 	};
 	//console.debug('PROOFINPUTS:', proofInputs);
 	return prover.generateProof(proofInputs).then((proof: RLNFullProof) => {
