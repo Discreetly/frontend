@@ -1,11 +1,17 @@
 <script lang="ts">
-	import { serverStore } from '$lib/stores';
-	import { updateServers } from '$lib/utils';
+	import { goto } from '$app/navigation';
+	import { identityStore, serverStore } from '$lib/stores';
+	import { updateServer } from '$lib/utils';
 	import { onMount } from 'svelte';
 
+	$: identityExists = !!$identityStore._commitment;
+
 	onMount(() => {
+		if (!identityExists) {
+			goto('/signup');
+		}
 		if (!Object.keys($serverStore).length) {
-			updateServers();
+			updateServer();
 		}
 	});
 </script>

@@ -2,6 +2,7 @@ import type { ConfigurationI, IdentityStoreI } from '$lib/types';
 import type { MessageI, ServerI } from 'discreetly-interfaces';
 import type { RoomI } from '$lib/types';
 import { storable, sessionable } from './storeFactory';
+import { writable, derived } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 
 export interface serverStoreI {
@@ -37,6 +38,12 @@ export const selectedServer = storable('' as string, 'selectedServer');
  */
 export const roomsStore = storable({} as roomStoreI, 'roomsStore');
 
+export const currentRoomsStore = derived(
+	[selectedServer, roomsStore],
+	([$selectedServer, $roomsStore]) => {
+		return Object.values($roomsStore).filter((r) => r.server === $selectedServer);
+	}
+);
 /**
  * @description The room ID of the currently selected room keyed by the server's URL
  */

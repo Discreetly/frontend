@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Modal, modalStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { serverStore, selectedServer, selectedRoom } from '$lib/stores';
-	import { getServerList, roomListForServer, updateServer } from '$lib/utils/';
+	import { serverStore, selectedServer, selectedRoom, currentRoomsStore } from '$lib/stores';
+	import { getServerList, updateServer } from '$lib/utils/';
 
 	const addServerModal: ModalSettings = {
 		type: 'prompt',
@@ -24,7 +24,7 @@
 	};
 </script>
 
-<div id="sidebar" class="hidden lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
+<div id="sidebar" class="lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 	<!-- Header -->
 	<header class="border-b border-surface-500/30 p-4 flex flex-row">
 		<select class="select text-primary-500" bind:value={$selectedServer}>
@@ -43,7 +43,8 @@
 	<!-- List -->
 	<div class="p-4 space-y-4 overflow-y-auto">
 		<select class="select text-primary-500" size="8" bind:value={$selectedRoom[$selectedServer]}>
-			{#each roomListForServer() as room}
+			{#each $currentRoomsStore as room}
+				{console.log(room)}
 				{#if room.roomId == $selectedRoom[$selectedServer]}
 					<option value={room.roomId} title={room.roomId ? room.roomId.toString() : ''} selected
 						>{room.name}</option

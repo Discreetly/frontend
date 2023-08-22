@@ -26,3 +26,7 @@ export function getCommitment() {
 export function getIdentityBackup() {
 	return getIdentity().toString();
 }
+
+export function doesIdentityExist(): boolean {
+	return !!get(identityStore)._commitment;
+}

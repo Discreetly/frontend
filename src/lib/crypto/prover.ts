@@ -4,9 +4,12 @@ import getMessageHash from './messageHasher';
 import getRateCommitmentHash from './rateCommitmentHasher';
 import type { Identity } from '@semaphore-protocol/identity';
 import type { MessageI } from 'discreetly-interfaces';
-import type { RoomI } from '$lib/types';
+import type { IdentityStoreI, RoomI } from '$lib/types';
 import type { RLNFullProof, MerkleProof } from 'rlnjs';
 import { getMerkleProof } from '$lib//services/bandada';
+import { updateRooms } from '$lib/utils';
+import { get } from 'svelte/store';
+import { selectedServer, roomsStore } from '$lib/stores';
 
 const wasmPath = '/rln/circuit.wasm';
 const zkeyPath = '/rln/final.zkey';
@@ -23,10 +26,18 @@ interface proofInputsI {
 	epoch: bigint;
 }
 
+async function merkleProofFromRoom(roomId: string, RLN_IDENIFIER: bigint, rateCommitment: bigint) {
+	await updateRooms(get(selectedServer), [String(roomId)]);
+	const roomFromStore = get(roomsStore)[roomId];
+	const identities = roomFromStore.identities ? roomFromStore.identities.map((i) => BigInt(i)) : [];
+	const group = new Group(RLN_IDENIFIER, 20, identities);
+	return group.generateMerkleProof(group.indexOf(rateCommitment));
+}
+
 async function genProof(
 	room: RoomI,
 	message: string,
-	identity: Identity,
+	identity: IdentityStoreI,
 	messageId: bigint | number = 0,
 	messageLimit: bigint | number = 1
 ): Promise<MessageI> {
@@ -34,14 +45,16 @@ async function genProof(
 	const RLN_IDENIFIER = BigInt(room.roomId);
 	const userMessageLimit = BigInt(messageLimit);
 	const messageHash: bigint = getMessageHash(message);
-	const rateCommitment: bigint = getRateCommitmentHash(identity.getCommitment(), userMessageLimit);
-	let group: Group;
+	console.log(identity);
+	const rateCommitment: bigint = getRateCommitmentHash(
+		BigInt(identity._commitment),
+		userMessageLimit
+	);
+	const roomId = typeof room.roomId === 'bigint' ? room.roomId.toString() : String(room.roomId);
 	let merkleProof: MerkleProof;
 	switch (room.membershipType) {
 		case 'identities':
-			const identities = await getRoomIdentities(room.roomId);
-			group = new Group(RLN_IDENIFIER, 20, identities);
-			merkleProof = group.generateMerkleProof(group.indexOf(rateCommitment));
+			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENIFIER, rateCommitment);
 			break;
 		case 'bandada':
 			if (room.bandadaAddress === undefined) throw new Error('Bandada address not defined');
@@ -56,7 +69,7 @@ async function genProof(
 
 	const proofInputs: proofInputsI = {
 		rlnIdentifier: RLN_IDENIFIER,
-		identitySecret: identity.getSecret(),
+		identitySecret: BigInt(identity._secret),
 		userMessageLimit: userMessageLimit,
 		messageId: BigInt(messageId),
 		merkleProof: merkleProof,

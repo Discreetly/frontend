@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { identityStore } from '$lib/stores';
 	import Button from '$lib/components/button.svelte';
-	import Loading from '$lib/components/loading.svelte';
+	import { identityStore } from '$lib/stores';
+	$: identityExists = !!$identityStore._commitment;
 </script>
 
 <div class="mx-auto mt-10 max-w-[80ch]">
 	<h2 class="h2 mb-5">Welcome to Discreetly!</h2>
-	{#if $identityStore == undefined || $identityStore == null}
+	{#if !identityExists}
 		<p class="mb-5">
 			If you have an <code class="code">invite code</code> head over to the <Button
 				link="/signup"
@@ -22,7 +22,7 @@
 			>
 		</p>
 	{:else}
-		chat button
+		<Button link="/chat" cls="variant-ghost-success" size="sm">Go Chat</Button>
 	{/if}
 	<slot />
 </div>

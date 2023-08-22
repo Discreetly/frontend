@@ -1,5 +1,5 @@
 import type { RoomI } from '$lib/types';
-import { roomsStore, selectedServer, serverStore } from '$lib/stores';
+import { roomsStore, selectedRoom, selectedServer, serverStore } from '$lib/stores';
 import { get } from 'svelte/store';
 import {
 	getIdentityRoomIds as getRoomIdsByIdentityCommitment,
@@ -11,12 +11,20 @@ export function roomListForServer(server: string = get(selectedServer)): RoomI[]
 	const roomIds = get(serverStore)[server]?.rooms ?? [];
 	return roomIds.map((roomId) => get(roomsStore)[roomId]);
 }
-
-function updateRoomStore(rooms: RoomI[]) {
+function updateRoomStore(rooms: RoomI[], serverURL: string = get(selectedServer)) {
+	// Get the current roomStore state
 	const tempRoomStore = get(roomsStore);
+
+	// Iterate through the rooms and update the roomStore
 	rooms.forEach((room) => {
-		tempRoomStore[String(room.roomId)] = room;
+		const roomId = String(room.roomId);
+		tempRoomStore[roomId] = { ...room, server: serverURL };
+		serverStore.update((store) => {
+			store[serverURL].rooms?.push(roomId);
+			return store;
+		});
 	});
+
 	roomsStore.set(tempRoomStore);
 }
 
@@ -48,6 +56,12 @@ export async function updateRooms(
 	roomIds = await getRoomIdsIfEmpty(server, roomIds);
 	const rooms = await fetchRoomsByIds(server, roomIds);
 	const acceptedRoomNames = extractRoomNames(rooms);
-	updateRoomStore(rooms);
+	updateRoomStore(rooms, server);
+	if (get(selectedRoom)[server] === undefined) {
+		selectedRoom.update((store) => {
+			store[server] = roomIds[0];
+			return store;
+		});
+	}
 	return acceptedRoomNames;
 }

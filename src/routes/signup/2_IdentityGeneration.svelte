@@ -2,10 +2,11 @@
 	import { identityStore } from '$lib/stores';
 	import { createIdentity } from '$lib/utils/';
 	import RestoreIdentity from '../identity/RestoreIdentity.svelte';
+	$: identityExists = !!$identityStore._commitment;
 </script>
 
 <div class="grid place-content-center gap-5">
-	{#if $identityStore._commitment == undefined}
+	{#if !identityExists}
 		<button on:click={() => createIdentity()} class="btn variant-filled-success" type="button">
 			Generate Identity
 		</button>
