@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { identityStore } from '$lib/stores';
 	import { AppBar } from '@skeletonlabs/skeleton';
+	$: identityExists = !!$identityStore._commitment;
 </script>
 
 <AppBar padding="py-3 px-8">
 	<svelte:fragment slot="lead">
 		<a href="/">Home</a>
-		{#if $identityStore.identity != undefined && $identityStore.identity != null}
+		{#if identityExists}
 			<a href="/chat">Chat</a>
 		{:else}
 			<a href="/signup">Sign Up</a>

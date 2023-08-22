@@ -1,15 +1,21 @@
 <script lang="ts">
-	import Chat from './Chat.svelte';
-	import { serverDataStore } from '$lib/stores';
-	import { updateServers } from '$lib/utils';
+	import { goto } from '$app/navigation';
+	import { identityStore, serverStore } from '$lib/stores';
+	import { updateServer } from '$lib/utils';
+	import { onMount } from 'svelte';
 
-	if (!Object.keys($serverDataStore).length) {
-		updateServers();
-	}
+	$: identityExists = !!$identityStore._commitment;
+
+	onMount(() => {
+		if (!identityExists) {
+			goto('/signup');
+		}
+		if (!Object.keys($serverStore).length) {
+			updateServer();
+		}
+	});
 </script>
 
-{#if Object.keys($serverDataStore).length}
-	<Chat />
-{:else}
+{#if Object.keys($serverStore).length}
 	<slot />
 {/if}

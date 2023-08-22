@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { identityStore } from '$lib/stores';
 	import type { IdentityStoreI } from '$lib/types';
 	import { onMount } from 'svelte';
@@ -9,7 +8,7 @@
 
 	function deleteIdentity() {
 		console.warn('DELETING IDENTITY');
-		$identityStore = { identity: null, rooms: {} } as IdentityStoreI;
+		$identityStore = {} as IdentityStoreI;
 	}
 
 	onMount(() => {
