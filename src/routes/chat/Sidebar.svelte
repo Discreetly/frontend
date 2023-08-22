@@ -44,7 +44,6 @@
 	<div class="p-4 space-y-4 overflow-y-auto">
 		<select class="select text-primary-500" size="8" bind:value={$selectedRoom[$selectedServer]}>
 			{#each $currentRoomsStore as room}
-				{console.log(room)}
 				{#if room.roomId == $selectedRoom[$selectedServer]}
 					<option value={room.roomId} title={room.roomId ? room.roomId.toString() : ''} selected
 						>{room.name}</option

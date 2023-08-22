@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import type { MessageI } from 'discreetly-interfaces';
-	import { messageStore, roomsStore, selectedRoom, selectedServer } from '$lib/stores';
+	import {
+		messageStore,
+		currentRoomMessages,
+		selectedServer,
+		currentSelectedRoom
+	} from '$lib/stores';
 	import { io } from 'socket.io-client';
 	import type { Socket } from 'socket.io-client';
 	import { genProof } from '$lib/crypto/prover';
@@ -10,22 +15,15 @@
 
 	let messageText = '';
 	let connected: boolean = false;
+	let sendingMessage: boolean = false;
 	let rateManager: RateLimiter;
 	let currentEpoch: number = 0;
 	let messagesLeft: number = 0;
 	let socket: Socket;
-	$: selectedRoomId = $selectedRoom[$selectedServer];
-	$: selectedRoomData = $roomsStore[selectedRoomId];
-
-	$: () => {
-		if (!$messageStore[selectedRoomId]) {
-			$messageStore[selectedRoomId] = [];
-		}
-	};
 
 	$: sendButtonText = messagesLeft > 0 ? 'Send (' + messagesLeft + ' left)' : 'X';
 	$: inRoom = true; // TODO fix this: $identityStore.rooms.hasOwnProperty(selectedRoom);
-	$: canSendMessage = inRoom && connected;
+	$: canSendMessage = inRoom && connected && !sendingMessage;
 
 	let elemChat: HTMLElement;
 
@@ -38,33 +36,42 @@
 	}
 
 	function sendMessage() {
+		sendingMessage = true;
+		setTimeout(() => {
+			sendingMessage = false;
+		}, 2500);
 		if (!connected) {
 			console.debug('Not connected to chat server');
+			sendingMessage = false;
 			return;
 		}
 		if (messageText.length === 0) {
 			console.debug('Message is empty');
+			sendingMessage = false;
 			return;
 		}
 		const identity = getIdentity();
 		const messageID = rateManager.useMessage();
 		if (messageID == -1) {
 			console.debug('Rate limit exceeded');
+			sendingMessage = false;
 			return;
 		} else {
 			messagesLeft = messageID;
 		}
-		genProof(selectedRoomData, messageText, identity, rateManager.getCurrentEpoch()).then((msg) => {
-			socket.emit('validateMessage', msg);
-			console.debug('Sending message: ', msg);
-			messageText = '';
-		});
-
+		genProof($currentSelectedRoom, messageText, identity, rateManager.getCurrentEpoch()).then(
+			(msg) => {
+				socket.emit('validateMessage', msg);
+				console.debug('Sending message: ', msg);
+				messageText = '';
+				sendingMessage = false;
+			}
+		);
 		scrollChatBottom();
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {
-		if (['Enter'].includes(event.code)) {
+		if (['Enter'].includes(event.key)) {
 			event.preventDefault();
 			sendMessage();
 		}
@@ -72,7 +79,10 @@
 
 	onMount(() => {
 		socket = io($selectedServer);
-		rateManager = new RateLimiter(selectedRoomData.userMessageLimit!, selectedRoomData.rateLimit!);
+		rateManager = new RateLimiter(
+			$currentSelectedRoom.userMessageLimit!,
+			$currentSelectedRoom.rateLimit!
+		);
 		scrollChatBottom('instant');
 		socket.on('connect', () => {
 			connected = true;
@@ -86,7 +96,7 @@
 				console.debug('socket-io-transport-closed', reason);
 			});
 
-			socket.emit('joiningRoom', selectedRoomData?.roomId);
+			socket.emit('joiningRoom', $currentSelectedRoom?.roomId);
 		});
 
 		socket.on('disconnected', () => {
@@ -125,7 +135,7 @@
 		}, 1000);
 	});
 	onDestroy(() => {
-		socket.emit('leavingRoom', selectedRoomData?.roomId);
+		socket.emit('leavingRoom', $currentSelectedRoom?.roomId);
 		socket.disconnect();
 	});
 </script>
@@ -137,18 +147,18 @@
 	>
 		<h2
 			class="h5 text-primary-500"
-			title={selectedRoomData?.roomId ? selectedRoomData.roomId.toString() : ''}
+			title={$currentSelectedRoom?.roomId ? $currentSelectedRoom.roomId.toString() : ''}
 		>
-			{selectedRoomData?.name}
+			{$currentSelectedRoom?.name}
 		</h2>
-		<small title={selectedRoomData?.roomId ? selectedRoomData.roomId.toString() : ''}
+		<small title={$currentSelectedRoom?.roomId ? $currentSelectedRoom.roomId.toString() : ''}
 			>Epoch: {currentEpoch}</small
 		>
 	</header>
 	<!-- Conversation -->
 	<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
-		{#if $messageStore[selectedRoomId]}
-			{#each $messageStore[selectedRoomId].reverse() as bubble}
+		{#if $currentRoomMessages}
+			{#each $currentRoomMessages.reverse() as bubble}
 				<div class="flex">
 					<div class="card p-4 space-y-2 bg-surface-200-700-token">
 						<header class="flex justify-between items-center">
@@ -180,7 +190,7 @@
 					: 'Connecting...'}
 				rows="1"
 				on:keydown={onPromptKeydown}
-				disabled={!connected || !inRoom}
+				disabled={!canSendMessage}
 			/>
 			<button
 				class:hidden={!canSendMessage}

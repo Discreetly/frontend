@@ -1,7 +1,5 @@
 import { RLNProver } from 'rlnjs';
 import { Group } from '@semaphore-protocol/group';
-import getMessageHash from './messageHasher';
-import getRateCommitmentHash from './rateCommitmentHasher';
 import type { MessageI } from 'discreetly-interfaces';
 import type { IdentityStoreI, RoomI } from '$lib/types';
 import type { RLNFullProof, MerkleProof } from 'rlnjs';
@@ -9,6 +7,7 @@ import { getMerkleProof } from '$lib//services/bandada';
 import { updateRooms } from '$lib/utils';
 import { get } from 'svelte/store';
 import { selectedServer, roomsStore } from '$lib/stores';
+import { calculateSignalHash } from './signalHash';
 
 const wasmPath = '/rln/circuit.wasm';
 const zkeyPath = '/rln/final.zkey';
@@ -27,10 +26,9 @@ interface proofInputsI {
 
 async function merkleProofFromRoom(roomId: string, RLN_IDENIFIER: bigint, rateCommitment: bigint) {
 	const roomFromStore = get(roomsStore)[roomId];
-	console.log(roomFromStore.identities);
-	console.log(rateCommitment);
 	const identities = roomFromStore.identities ? roomFromStore.identities.map((i) => BigInt(i)) : [];
 	const group = new Group(RLN_IDENIFIER, 20, identities);
+	console.log(group.root);
 	return group.generateMerkleProof(group.indexOf(rateCommitment));
 }
 
@@ -48,15 +46,13 @@ async function genProof(
 	const RLN_IDENIFIER = BigInt(roomId);
 	const userMessageLimit = BigInt(messageLimit);
 	const identityCommitment = BigInt(identity._commitment);
-	const messageHash: bigint = getMessageHash(message);
-	console.log(identity);
+	const messageHash: bigint = calculateSignalHash(message);
 	// const rateCommitment: bigint = getRateCommitmentHash(
 	// 	BigInt(identity._commitment),
 	// 	userMessageLimit
 	// );
 
 	let merkleProof: MerkleProof;
-	console.log(room);
 	switch (room.membershipType) {
 		case 'IDENTITY_LIST':
 			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENIFIER, identityCommitment);
@@ -71,6 +67,7 @@ async function genProof(
 		default:
 			throw new Error('Invalid room membership type');
 	}
+	console.log(merkleProof.root);
 
 	const proofInputs: proofInputsI = {
 		rlnIdentifier: RLN_IDENIFIER,
@@ -84,11 +81,13 @@ async function genProof(
 	//console.debug('PROOFINPUTS:', proofInputs);
 	return prover.generateProof(proofInputs).then((proof: RLNFullProof) => {
 		console.log('Proof generated!');
+		console.debug('PROOF:', proof);
 		const msg: MessageI = {
-			id: proof.snarkProof.publicSignals.nullifier.toString(),
+			messageId: proof.snarkProof.publicSignals.nullifier.toString(),
 			message: message,
 			roomId: RLN_IDENIFIER,
-			proof
+			proof,
+			epoch
 		};
 		return msg;
 	});

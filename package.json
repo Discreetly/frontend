@@ -42,6 +42,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@ethersproject/bytes": "^5.7.0",
+		"@ethersproject/keccak256": "^5.7.0",
+		"@ethersproject/strings": "^5.7.0",
 		"@semaphore-protocol/group": "^3.10.1",
 		"@semaphore-protocol/identity": "^3.10.1",
 		"discreetly-interfaces": "^0.1.34",
