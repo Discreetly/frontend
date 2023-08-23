@@ -1,4 +1,4 @@
-import type { ServerI } from 'discreetly-interfaces';
+import type { MessageI, ServerI } from 'discreetly-interfaces';
 import type { RoomI } from '$lib/types';
 
 import { get, post } from './api';
@@ -17,4 +17,8 @@ export async function getServerData(serverUrl: string): Promise<ServerI> {
 
 export async function postInviteCode(serverUrl: string, data: { code: string; idc: string }) {
 	return post([serverUrl, 'join'], data);
+}
+
+export async function getMessages(serverUrl: string, roomId: string) {
+	return get([serverUrl, `api/room/${roomId}/messages`]) as Promise<MessageI[]>;
 }
