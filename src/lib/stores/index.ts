@@ -5,20 +5,32 @@ import { storable, sessionable } from './storeFactory';
 import { writable, derived } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 
+// Keyed by server URL
 export interface serverStoreI {
 	[key: string]: ServerI;
 }
 
+// Keyed by server URL
 interface selectedRoomStoreI {
 	[key: string]: string;
 }
 
+// Keyed by roomId
 interface roomStoreI {
 	[key: string]: RoomI;
 }
 
+// Keyed by roomId
 interface messageStoreI {
 	[key: string]: MessageI[];
+}
+
+// Keyed by roomId
+interface rateLimitStoreI {
+	[key: string]: {
+		lastEpoch: number;
+		messagesSent: number;
+	};
 }
 
 /* ------------------ Server State ------------------*/
@@ -80,3 +92,5 @@ export const currentRoomMessages = derived(
 		return $messageStore[$currentSelectedRoom.roomId.toString()];
 	}
 );
+
+export const rateLimitStore = sessionable({} as rateLimitStoreI, 'rateLimitStore');
