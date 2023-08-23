@@ -94,7 +94,7 @@
 	});
 </script>
 
-<div id="chat" class="grid grid-rows-[auto_1fr_auto]">
+<div id="chat" class="grid grid-rows-[auto,1fr,auto]">
 	<!-- Header -->
 	<ChatRoomHeader {currentEpoch} {timeLeftInEpoch} />
 	<!-- Conversation -->
@@ -105,7 +105,7 @@
 
 <style>
 	#chat {
-		max-height: calc(100vh - 101px);
+		max-height: calc(100vh - 56px);
 		grid-area: chat;
 	}
 </style>

@@ -15,16 +15,20 @@
 	}
 </script>
 
-<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
+<section
+	id="conversation"
+	bind:this={elemChat}
+	class="p-2 md:p-4 overflow-y-auto space-y-2 md:space-y-4"
+>
 	{#if $currentRoomMessages}
 		{#each $currentRoomMessages as bubble}
-			<div class="flex">
-				<div class="card p-4 space-y-2 bg-surface-200-700-token">
-					<header class="flex justify-between items-center">
-						<small class="opacity-50 text-primary-500 mr-4"
+			<div class="flex flex-col items-start">
+				<div class="card p-2 md:p-4 space-y-1 md:space-y-2 bg-surface-200-700-token">
+					<header class="flex justify-between items-center text-xs md:text-sm">
+						<small class="opacity-50 text-primary-500 mr-2 md:mr-4"
 							>{getTimestampFromEpoch(Number(bubble.epoch), rateLimit).DateString}</small
 						>
-						<small class="opacity-50 text-primary-500">epoch: {bubble.epoch}</small>
+						<small class="hidden md:block opacity-50 text-primary-500">epoch: {bubble.epoch}</small>
 					</header>
 					<p class="text-primary-500">{bubble.message}</p>
 				</div>
