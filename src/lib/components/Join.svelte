@@ -9,9 +9,11 @@
 	let acceptedRoomNames: string[] = [];
 
 	async function addCode(newCode: string) {
-		console.log($selectedServer);
 		const idc = getCommitment();
-		const result = (await postInviteCode($selectedServer, { code: newCode, idc })) as JoinResponseI;
+		const result = (await postInviteCode($selectedServer, {
+			code: newCode.toLowerCase(),
+			idc
+		})) as JoinResponseI;
 		console.log('INVITE CODE RESPONSE: ', result);
 		if (result.status == 'valid' || result.status == 'already-added') {
 			acceptedRoomNames = await updateRooms($selectedServer, result.roomIds);

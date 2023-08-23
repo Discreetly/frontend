@@ -56,8 +56,13 @@
 			sendingMessage = false;
 			return false;
 		}
-		if (messageText.length === 0) {
+		if (messageText.length < 1) {
 			alert('MESSAGE IS EMPTY');
+			sendingMessage = false;
+			return false;
+		}
+		if (messageText.length > 2000) {
+			alert('MESSAGE IS TOO LONG');
 			sendingMessage = false;
 			return false;
 		}
@@ -75,15 +80,27 @@
 
 		const identity = getIdentity();
 		const room = $currentSelectedRoom;
-		genProof(room, messageText, identity, currentEpoch, messageId, userMessageLimit).then((msg) => {
-			socket.emit('validateMessage', msg);
-			console.debug('Sending message: ', msg);
-			if (currentRateLimit.lastEpoch == currentEpoch) {
-				currentRateLimit.messagesSent++;
-			}
-			messageText = '';
-			sendingMessage = false;
-		});
+		genProof(room, messageText, identity, currentEpoch, messageId, userMessageLimit)
+			.then((msg) => {
+				socket.emit('validateMessage', msg);
+				console.debug('Sending message: ', msg);
+				if (currentRateLimit.lastEpoch == currentEpoch) {
+					currentRateLimit.messagesSent++;
+				}
+				messageText = '';
+				sendingMessage = false;
+			})
+			.catch((err) => {
+				if (err.message.includes('Merkle Proof')) {
+					alert(
+						"Could not generate Merkle Proof. You either don't belong in the room or you don't have an updated member list."
+					);
+				} else {
+					alert(err);
+				}
+				console.error('Error sending message: ', err);
+				sendingMessage = false;
+			});
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {
@@ -98,6 +115,7 @@
 	<div class="input-group input-group-divider grid-cols-[1fr_auto] rounded-container-token">
 		<textarea
 			bind:value={messageText}
+			maxlength="2000"
 			class="p-1 md:p-2 text-primary-400 border"
 			class:bg-surface-900={!canSendMessage}
 			class:bg-surface-500={canSendMessage}

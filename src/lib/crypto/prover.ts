@@ -37,11 +37,14 @@ async function merkleProofFromRoom(
 	let mp: MerkleProof;
 	try {
 		mp = group.generateMerkleProof(group.indexOf(rateCommitment));
-	} catch {
+	} catch (err1: unknown) {
+		console.warn((err1 as Error).message);
+		console.warn('Could not generate Merkle Proof with Rate Commitment');
 		try {
 			mp = group.generateMerkleProof(group.indexOf(identityCommitment));
-		} catch {
-			throw new Error('Could not generate merkle proof');
+		} catch (err: unknown) {
+			console.error((err as Error).message);
+			throw new Error('Could not generate Merkle Proof with Identity Commitment');
 		}
 	}
 	return mp;

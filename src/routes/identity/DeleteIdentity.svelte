@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { configDefaults } from '$lib/defaults';
-	import { configStore, identityStore } from '$lib/stores';
+	import { configStore, identityStore, messageStore, roomsStore, selectedRoom } from '$lib/stores';
 	import type { IdentityStoreI } from '$lib/types';
 	import { onMount } from 'svelte';
 
@@ -11,6 +11,9 @@
 		console.warn('DELETING IDENTITY');
 		$identityStore = {} as IdentityStoreI;
 		$configStore = configDefaults;
+		$roomsStore = {};
+		$selectedRoom = {};
+		$messageStore = {};
 	}
 
 	onMount(() => {

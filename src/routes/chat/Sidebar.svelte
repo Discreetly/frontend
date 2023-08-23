@@ -9,7 +9,7 @@
 		<SelectServer />
 	</header>
 	<!-- List -->
-	<div class="p-4 space-y-4 overflow-y-auto">
+	<div class="p-1 md:p-2 overflow-y-auto">
 		<SelectRoom />
 	</div>
 	<!-- Footer -->
