@@ -66,6 +66,7 @@
 
 	function sendMessage() {
 		sendingMessage = true;
+		console.debug('Sending message: ', messageText);
 		setTimeout(() => {
 			sendingMessage = false;
 		}, 2500);
@@ -73,15 +74,8 @@
 		if (!checkStatus()) return;
 
 		const identity = getIdentity();
-
-		genProof(
-			$currentSelectedRoom,
-			messageText,
-			identity,
-			currentEpoch,
-			messageId,
-			userMessageLimit
-		).then((msg) => {
+		const room = $currentSelectedRoom;
+		genProof(room, messageText, identity, currentEpoch, messageId, userMessageLimit).then((msg) => {
 			socket.emit('validateMessage', msg);
 			console.debug('Sending message: ', msg);
 			if (currentRateLimit.lastEpoch == currentEpoch) {

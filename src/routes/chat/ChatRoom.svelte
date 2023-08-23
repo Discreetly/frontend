@@ -72,11 +72,14 @@
 				if (typeof data.proof === 'string') {
 					data.proof = JSON.parse(data.proof as string);
 				}
-				$messageStore[roomId].unshift(data);
-				$messageStore[roomId] = $messageStore[roomId].slice(0, 500); // Keep only the latest 500 messages
+				$messageStore[roomId] = [...$messageStore[roomId], data];
+				if ($messageStore[roomId].length > 500) {
+					$messageStore[roomId] = $messageStore[roomId].slice(-500); // Keep only the latest 500 messages
+				}
 				scrollChatToBottom();
 			}
 		});
+
 		getMessages($selectedServer, $currentSelectedRoom?.roomId.toString()).then((messages) => {
 			$messageStore[$currentSelectedRoom?.roomId.toString()] = messages;
 		});

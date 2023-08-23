@@ -20,16 +20,14 @@ export function storable<Type>(data: Type, localStorageKey: string): Writable<Ty
 
 	return {
 		subscribe,
-		set: (newValue: Type) => {
-			console.debug(localStorageKey, ':', newValue);
+		set: (value: Type) => {
 			if (isBrowser) {
-				localStorage[localStorageKey] = JSON.stringify(newValue);
+				localStorage[localStorageKey] = JSON.stringify(value);
 			}
-			set(newValue);
+			set(value);
 		},
 		update: (callBack: (value: Type) => Type) => {
 			const updatedStore = callBack(get(store));
-
 			if (isBrowser) {
 				localStorage[localStorageKey] = JSON.stringify(updatedStore);
 			}

@@ -17,7 +17,7 @@
 
 <section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
 	{#if $currentRoomMessages}
-		{#each $currentRoomMessages.reverse() as bubble}
+		{#each $currentRoomMessages as bubble}
 			<div class="flex">
 				<div class="card p-4 space-y-2 bg-surface-200-700-token">
 					<header class="flex justify-between items-center">

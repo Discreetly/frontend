@@ -11,21 +11,24 @@ export function roomListForServer(server: string = get(selectedServer)): RoomI[]
 	const roomIds = get(serverStore)[server]?.rooms ?? [];
 	return roomIds.map((roomId) => get(roomsStore)[roomId]);
 }
+
 function updateRoomStore(rooms: RoomI[], serverURL: string = get(selectedServer)) {
-	// Get the current roomStore state
-	const tempRoomStore = get(roomsStore);
-
-	// Iterate through the rooms and update the roomStore
-	rooms.forEach((room) => {
-		const roomId = String(room.roomId);
-		tempRoomStore[roomId] = { ...room, server: serverURL };
-		serverStore.update((store) => {
-			store[serverURL].rooms?.push(roomId);
-			return store;
+	// Update the roomStore directly
+	roomsStore.update((store) => {
+		rooms.forEach((room) => {
+			const roomId = String(room.roomId);
+			store[roomId] = { ...room, server: serverURL };
 		});
+		return store;
 	});
-
-	roomsStore.set(tempRoomStore);
+	// Update the serverStore
+	serverStore.update((store) => {
+		rooms.forEach((room) => {
+			const roomId = String(room.roomId);
+			store[serverURL].rooms?.push(roomId);
+		});
+		return store;
+	});
 }
 
 async function getRoomIdsIfEmpty(server: string, roomIds: string[]): Promise<string[]> {
@@ -56,6 +59,7 @@ export async function updateRooms(
 	roomIds = await getRoomIdsIfEmpty(server, roomIds);
 	const rooms = await fetchRoomsByIds(server, roomIds);
 	const acceptedRoomNames = extractRoomNames(rooms);
+
 	updateRoomStore(rooms, server);
 	if (get(selectedRoom)[server] === undefined) {
 		selectedRoom.update((store) => {
