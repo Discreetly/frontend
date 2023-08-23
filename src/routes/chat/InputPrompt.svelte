@@ -11,8 +11,6 @@
 
 	let messageText = '';
 	let sendingMessage: boolean = false;
-	console.log($rateLimitStore);
-	console.log($currentSelectedRoom);
 	$: if (!$rateLimitStore[$currentSelectedRoom.roomId!.toString()]) {
 		$rateLimitStore[$currentSelectedRoom.roomId!.toString()] = {
 			lastEpoch: currentEpoch,

@@ -10,7 +10,7 @@
 		title: 'Enter Server Address',
 		body: 'Provide the server address.',
 		// Populates the input value and attributes
-		value: 'http://discreetly.chat/',
+		value: 'https://server.discreetly.chat/',
 		valueAttr: { type: 'url', required: true },
 		// Returns the updated response value
 		response: (r: string) => {

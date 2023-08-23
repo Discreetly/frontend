@@ -34,7 +34,7 @@
 	href={'data:text/json;charset=utf-8,' + encodeURIComponent(getIdentityBackup())}
 	download="identity.json">JSON</a
 >
-<a class="btn variant-ghost-success" on:click={generateQR}>QR Code</a>
+<a class="btn variant-ghost-success" on:click={generateQR} style="cursor:pointer">QR Code</a>
 
 {#if loading && !imageUrl}
 	<Loading />

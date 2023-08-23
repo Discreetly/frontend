@@ -9,6 +9,7 @@
 	import type { Socket } from 'socket.io-client';
 	import type { MessageI } from 'discreetly-interfaces';
 	import { getTimestampFromEpoch } from '$lib/utils';
+	import { getMessages } from '$lib/services/server';
 
 	let scrollChatToBottom: () => {};
 	let socket: Socket;
@@ -61,16 +62,23 @@
 		});
 
 		socket.on('messageBroadcast', (data: MessageI) => {
-			console.debug('Received Message: ', data);
+			console.debug('Received Message: ', data.message);
 			const roomId = data.roomId?.toString();
 			if (roomId) {
 				if (!$messageStore[roomId]) {
 					console.debug('Creating room in message store', roomId);
 					$messageStore[roomId] = [] as MessageI[];
 				}
-				$messageStore[roomId] = [data, ...$messageStore[roomId].reverse()].slice(0, 500).reverse();
+				if (typeof data.proof === 'string') {
+					data.proof = JSON.parse(data.proof as string);
+				}
+				$messageStore[roomId].unshift(data);
+				$messageStore[roomId] = $messageStore[roomId].slice(0, 500); // Keep only the latest 500 messages
 				scrollChatToBottom();
 			}
+		});
+		getMessages($selectedServer, $currentSelectedRoom?.roomId.toString()).then((messages) => {
+			$messageStore[$currentSelectedRoom?.roomId.toString()] = messages;
 		});
 		scrollChatToBottom();
 		setInterval(() => {

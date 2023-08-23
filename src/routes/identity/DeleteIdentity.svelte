@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { identityStore } from '$lib/stores';
+	import { configDefaults } from '$lib/defaults';
+	import { configStore, identityStore } from '$lib/stores';
 	import type { IdentityStoreI } from '$lib/types';
 	import { onMount } from 'svelte';
 
@@ -9,6 +10,7 @@
 	function deleteIdentity() {
 		console.warn('DELETING IDENTITY');
 		$identityStore = {} as IdentityStoreI;
+		$configStore = configDefaults;
 	}
 
 	onMount(() => {
@@ -24,7 +26,7 @@
 
 <div class="card variant-soft-error">
 	<header class="card-header">
-		<h3 class="h4">Delete Your Identity</h3>
+		<h3 class="h4">Delete Your Identity & Reset Application</h3>
 	</header>
 	<section class="px-4 pt-4">
 		<input type="checkbox" id="checkbox" class="mx-2 p-1" />
