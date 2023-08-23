@@ -19,7 +19,7 @@
 	<svelte:fragment slot="trail">
 		<div class="me-2 text-secondary-500">Alpha Version!</div>
 		{#if identityExists}
-			<a href="/identity">Identity</a>
+			<a href="/identity">⚙️</a>
 		{:else}
 			<a href="/signup">Sign Up</a>
 		{/if}

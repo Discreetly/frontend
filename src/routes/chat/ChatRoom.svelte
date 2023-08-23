@@ -1,89 +1,33 @@
 <script lang="ts">
+	import ChatRoomHeader from './ChatRoomHeader.svelte';
+
+	import InputPrompt from './InputPrompt.svelte';
+	import Conversation from './Conversation.svelte';
 	import { onMount, onDestroy } from 'svelte';
-	import type { MessageI } from 'discreetly-interfaces';
-	import {
-		messageStore,
-		currentRoomMessages,
-		selectedServer,
-		currentSelectedRoom
-	} from '$lib/stores';
+	import { selectedServer, currentSelectedRoom, messageStore } from '$lib/stores';
 	import { io } from 'socket.io-client';
 	import type { Socket } from 'socket.io-client';
-	import { genProof } from '$lib/crypto/prover';
-	import RateLimiter from '$lib/utils/rateLimit';
-	import { getIdentity } from '$lib/utils/';
+	import type { MessageI } from 'discreetly-interfaces';
+	import { getTimestampFromEpoch } from '$lib/utils';
 
-	let messageText = '';
-	let connected: boolean = false;
-	let sendingMessage: boolean = false;
-	let rateManager: RateLimiter;
-	let currentEpoch: number = 0;
-	let messagesLeft: number = 0;
+	let scrollChatToBottom: () => {};
 	let socket: Socket;
+	let connected: boolean = false;
+	$: currentEpoch = 0;
+	$: timeLeftInEpoch = '0';
 
-	$: sendButtonText = messagesLeft > 0 ? 'Send (' + messagesLeft + ' left)' : 'X';
-	$: inRoom = true; // TODO fix this: $identityStore.rooms.hasOwnProperty(selectedRoom);
-	$: canSendMessage = inRoom && connected && !sendingMessage;
-
-	let elemChat: HTMLElement;
-
-	// For some reason, eslint thinks ScrollBehavior is undefined...
-	// eslint-disable-next-line no-undef
-	function scrollChatBottom(behavior: ScrollBehavior = 'smooth'): void {
-		setTimeout(() => {
-			elemChat.scrollTo({ top: elemChat.scrollHeight, behavior });
-		}, 1);
-	}
-
-	function sendMessage() {
-		sendingMessage = true;
-		setTimeout(() => {
-			sendingMessage = false;
-		}, 2500);
-		if (!connected) {
-			console.debug('Not connected to chat server');
-			sendingMessage = false;
-			return;
-		}
-		if (messageText.length === 0) {
-			console.debug('Message is empty');
-			sendingMessage = false;
-			return;
-		}
-		const identity = getIdentity();
-		const messageID = rateManager.useMessage();
-		if (messageID == -1) {
-			console.debug('Rate limit exceeded');
-			sendingMessage = false;
-			return;
-		} else {
-			messagesLeft = messageID;
-		}
-		genProof($currentSelectedRoom, messageText, identity, rateManager.getCurrentEpoch()).then(
-			(msg) => {
-				socket.emit('validateMessage', msg);
-				console.debug('Sending message: ', msg);
-				messageText = '';
-				sendingMessage = false;
-			}
-		);
-		scrollChatBottom();
-	}
-
-	function onPromptKeydown(event: KeyboardEvent): void {
-		if (['Enter'].includes(event.key)) {
-			event.preventDefault();
-			sendMessage();
-		}
+	function updateEpoch() {
+		currentEpoch = Math.floor(Date.now() / $currentSelectedRoom.rateLimit!);
+		timeLeftInEpoch = (
+			($currentSelectedRoom.rateLimit! -
+				(Date.now() -
+					getTimestampFromEpoch(currentEpoch, $currentSelectedRoom.rateLimit!).unixEpochTime)) /
+			1000
+		).toFixed(1);
 	}
 
 	onMount(() => {
 		socket = io($selectedServer);
-		rateManager = new RateLimiter(
-			$currentSelectedRoom.userMessageLimit!,
-			$currentSelectedRoom.rateLimit!
-		);
-		scrollChatBottom('instant');
 		socket.on('connect', () => {
 			connected = true;
 			const engine = socket.io.engine;
@@ -124,15 +68,14 @@
 					console.debug('Creating room in message store', roomId);
 					$messageStore[roomId] = [] as MessageI[];
 				}
-				$messageStore[roomId] = [data, ...$messageStore[roomId].reverse()].slice(0, 500);
-				scrollChatBottom();
+				$messageStore[roomId] = [data, ...$messageStore[roomId].reverse()].slice(0, 500).reverse();
+				scrollChatToBottom();
 			}
 		});
-
+		scrollChatToBottom();
 		setInterval(() => {
-			currentEpoch = rateManager.getCurrentEpoch();
-			messagesLeft = rateManager.getRemainingMessages();
-		}, 1000);
+			updateEpoch();
+		}, 100);
 	});
 	onDestroy(() => {
 		socket.emit('leavingRoom', $currentSelectedRoom?.roomId);
@@ -142,74 +85,16 @@
 
 <div id="chat" class="grid grid-rows-[auto_1fr_auto]">
 	<!-- Header -->
-	<header
-		class="border-b border-surface-500/30 px-5 py-3 flex flex-row justify-between place-items-center"
-	>
-		<h2
-			class="h5 text-primary-500"
-			title={$currentSelectedRoom?.roomId ? $currentSelectedRoom.roomId.toString() : ''}
-		>
-			{$currentSelectedRoom?.name}
-		</h2>
-		<small title={$currentSelectedRoom?.roomId ? $currentSelectedRoom.roomId.toString() : ''}
-			>Epoch: {currentEpoch}</small
-		>
-	</header>
+	<ChatRoomHeader {currentEpoch} {timeLeftInEpoch} />
 	<!-- Conversation -->
-	<section id="conversation" bind:this={elemChat} class="p-4 overflow-y-auto space-y-4">
-		{#if $currentRoomMessages}
-			{#each $currentRoomMessages.reverse() as bubble}
-				<div class="flex">
-					<div class="card p-4 space-y-2 bg-surface-200-700-token">
-						<header class="flex justify-between items-center">
-							<small class="opacity-50 text-primary-500"
-								>{rateManager.getTimestampFromEpoch(Number(bubble.epoch))}</small
-							>
-							<small class="opacity-50 text-primary-500">epoch: {bubble.epoch}</small>
-						</header>
-						<p class="text-primary-500">{bubble.message}</p>
-					</div>
-				</div>
-			{/each}
-		{/if}
-	</section>
+	<Conversation bind:scrollChatBottom={scrollChatToBottom} />
 	<!-- Prompt -->
-	<section class="border-t border-surface-500/30 p-4 !border-dashed">
-		<div class="input-group input-group-divider grid-cols-[1fr_auto] rounded-container-token">
-			<textarea
-				bind:value={messageText}
-				class="p-2 text-primary-400 border"
-				class:bg-surface-900={!canSendMessage}
-				class:bg-surface-500={canSendMessage}
-				name="prompt"
-				id="prompt"
-				placeholder={canSendMessage
-					? 'Write a message...'
-					: connected
-					? 'Not a member of this room'
-					: 'Connecting...'}
-				rows="1"
-				on:keydown={onPromptKeydown}
-				disabled={!canSendMessage}
-			/>
-			<button
-				class:hidden={!canSendMessage}
-				class={canSendMessage && messageText ? 'variant-ghost-primary' : 'variant-ghost-surface'}
-				disabled={!canSendMessage}
-				on:click={sendMessage}
-			>
-				{sendButtonText}
-			</button>
-		</div>
-	</section>
+	<InputPrompt {socket} {connected} {currentEpoch} />
 </div>
 
 <style>
 	#chat {
 		max-height: calc(100vh - 101px);
 		grid-area: chat;
-	}
-	#conversation {
-		overflow: scroll;
 	}
 </style>

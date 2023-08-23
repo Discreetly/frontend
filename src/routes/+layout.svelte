@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { autoModeWatcher } from '@skeletonlabs/skeleton';
 	import { Modal } from '@skeletonlabs/skeleton';
+	import { Toast } from '@skeletonlabs/skeleton';
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
@@ -34,6 +35,7 @@
 			`}</svelte:head
 >
 <Modal />
+<Toast />
 <app id="app">
 	<div id="header">
 		<AppHeader />
