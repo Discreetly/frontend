@@ -16,4 +16,10 @@
 		grid-template-rows: auto;
 		grid-template-areas: 'sidebar chat';
 	}
+	@media (max-width: 639px) {
+		#chat-wrapper {
+			grid-template-columns: 1fr;
+			grid-template-areas: 'chat';
+		}
+	}
 </style>

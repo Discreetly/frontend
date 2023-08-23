@@ -94,11 +94,11 @@
 	}
 </script>
 
-<section class="border-t border-surface-500/30 p-4 !border-dashed">
+<section class="border-t border-surface-500/30 p-2 md:p-4 !border-dashed">
 	<div class="input-group input-group-divider grid-cols-[1fr_auto] rounded-container-token">
 		<textarea
 			bind:value={messageText}
-			class="p-2 text-primary-400 border"
+			class="p-1 md:p-2 text-primary-400 border"
 			class:bg-surface-900={!canSendMessage}
 			class:bg-surface-500={canSendMessage}
 			name="prompt"
@@ -110,7 +110,9 @@
 		/>
 		<button
 			class:hidden={!canSendMessage}
-			class={canSendMessage && messageText ? 'variant-ghost-primary' : 'variant-ghost-surface'}
+			class={canSendMessage && messageText
+				? 'text-xs md:text-base variant-ghost-primary'
+				: 'text-xs md:text-base variant-ghost-surface'}
 			disabled={!canSendMessage}
 			on:click={sendMessage}
 		>

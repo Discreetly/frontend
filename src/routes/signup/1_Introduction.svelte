@@ -1,8 +1,7 @@
-<h5 class="text-center h4 my-7">This app is a little different from what you're used to.</h5>
-<div class="grid place-content-center text-justify text-lg mb-10">
-	<p class="text-xl mb-3 italic underline underline-offset-8">
-		So please actually read the following:
-	</p>
+<h5 class="text-center h4 my-4 md:my-7">
+	This app is a little different from what you're used to.
+</h5>
+<div class="grid place-content-center md:text-lg mb-6 md:mb-10 px-2 md:px-0">
 	<div id="info">
 		<p>
 			<b class="text-secondary-500">Discreetly</b> is an <b>anonymous</b> chat app

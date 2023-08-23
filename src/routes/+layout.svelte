@@ -12,6 +12,9 @@
 	import { selectedServer } from '$lib/stores';
 	import { getServerList, setDefaultServers } from '$lib/utils/';
 	import { updateServer } from '$lib/utils/';
+	import { Drawer } from '@skeletonlabs/skeleton';
+	import SelectServer from '$lib/components/SelectServer.svelte';
+	import SelectRoom from '$lib/components/SelectRoom.svelte';
 
 	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {
@@ -36,6 +39,10 @@
 >
 <Modal />
 <Toast />
+<Drawer position="top" padding="p-4">
+	<SelectServer />
+	<SelectRoom />
+</Drawer>
 <app id="app">
 	<div id="header">
 		<AppHeader />

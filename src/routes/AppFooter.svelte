@@ -4,7 +4,7 @@
 	$: identityExists = !!$identityStore._commitment;
 </script>
 
-<AppBar padding="py-3 px-8">
+<AppBar class="hidden md:block" padding="py-3 px-8">
 	<svelte:fragment slot="lead">
 		<a href="/">Home</a>
 		{#if identityExists}

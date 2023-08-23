@@ -13,7 +13,7 @@
 
 <div class="h-100">
 	<Stepper
-		class="max-w-3xl mx-auto mt-16"
+		class="max-w-sm sm:max-w-md md:max-w-3xl mx-auto mt-16"
 		on:complete={() => {
 			goto('/chat');
 		}}
