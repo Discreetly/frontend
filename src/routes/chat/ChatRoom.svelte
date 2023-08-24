@@ -8,7 +8,7 @@
 	import { io } from 'socket.io-client';
 	import type { Socket } from 'socket.io-client';
 	import type { MessageI } from 'discreetly-interfaces';
-	import { getTimestampFromEpoch } from '$lib/utils';
+	import { getEpochFromTimestamp, getTimestampFromEpoch } from '$lib/utils';
 	import { getMessages } from '$lib/services/server';
 
 	let scrollChatToBottom: () => {};
@@ -62,7 +62,7 @@
 		});
 
 		socket.on('messageBroadcast', (data: MessageI) => {
-			console.debug('Received Message: ', data.message);
+			console.debug('Received Message: ', data);
 			const roomId = data.roomId?.toString();
 			if (roomId) {
 				if (!$messageStore[roomId]) {
@@ -71,6 +71,12 @@
 				}
 				if (typeof data.proof === 'string') {
 					data.proof = JSON.parse(data.proof as string);
+				}
+				if (!data.epoch) {
+					data.epoch = getEpochFromTimestamp(
+						+data.timeStamp!,
+						$currentSelectedRoom.rateLimit!
+					).epoch;
 				}
 				$messageStore[roomId] = [...$messageStore[roomId], data];
 				if ($messageStore[roomId].length > 500) {
@@ -81,6 +87,7 @@
 		});
 
 		getMessages($selectedServer, $currentSelectedRoom?.roomId.toString()).then((messages) => {
+			console.log(messages);
 			$messageStore[$currentSelectedRoom?.roomId.toString()] = messages;
 		});
 		scrollChatToBottom();

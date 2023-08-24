@@ -47,6 +47,7 @@
 		"@ethersproject/strings": "^5.7.0",
 		"@semaphore-protocol/group": "^3.10.1",
 		"@semaphore-protocol/identity": "^3.10.1",
+		"date-fns": "^2.30.0",
 		"discreetly-interfaces": "^0.1.37",
 		"libsodium-wrappers": "^0.7.11",
 		"poseidon-lite": "^0.2.0",

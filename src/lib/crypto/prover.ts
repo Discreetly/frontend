@@ -44,6 +44,9 @@ async function merkleProofFromRoom(
 			mp = group.generateMerkleProof(group.indexOf(identityCommitment));
 		} catch (err: unknown) {
 			console.error((err as Error).message);
+			console.table(identities);
+			console.debug('Rate Commitment:', rateCommitment);
+			console.debug('Identity Commitment:', identityCommitment);
 			throw new Error('Could not generate Merkle Proof with Identity Commitment');
 		}
 	}

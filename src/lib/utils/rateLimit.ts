@@ -1,3 +1,5 @@
+import { formatRelative } from 'date-fns';
+
 export interface State {
 	currentEpoch: number;
 	lastEpochMessageWasSent: number;
@@ -91,10 +93,7 @@ export function getTimestampFromEpoch(
 	ratelimit: number
 ): { DateString: string; unixEpochTime: number } {
 	const unixEpochTime = epoch * ratelimit;
-	const DateString = new Date(unixEpochTime).toLocaleString('en-US', {
-		hour: 'numeric',
-		minute: 'numeric',
-		hour12: true
-	});
+	const DateString = formatRelative(new Date(unixEpochTime), new Date());
+
 	return { DateString, unixEpochTime };
 }
