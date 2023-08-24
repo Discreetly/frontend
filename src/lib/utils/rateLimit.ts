@@ -92,8 +92,15 @@ export function getTimestampFromEpoch(
 	epoch: number,
 	ratelimit: number
 ): { DateString: string; unixEpochTime: number } {
-	const unixEpochTime = epoch * ratelimit;
-	const DateString = formatRelative(new Date(unixEpochTime), new Date());
+	let DateString = '';
+	let unixEpochTime = 0;
+	try {
+		unixEpochTime = epoch * ratelimit;
+		DateString = formatRelative(new Date(unixEpochTime), new Date());
+	} catch (err) {
+		DateString = 'Unknown';
+		console.debug(err);
+	}
 
 	return { DateString, unixEpochTime };
 }
