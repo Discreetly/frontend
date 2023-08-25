@@ -1,11 +1,64 @@
 <script lang="ts">
-	import { currentSelectedRoom } from '$lib/stores';
+	import { currentSelectedRoom, rateLimitStore } from '$lib/stores';
+	import { onMount } from 'svelte';
 	export let currentEpoch: number;
 	export let timeLeftInEpoch: string;
+	export let userMessageLimit: number;
+	export let roomRateLimit: number;
+	export let messagesLeft: () => number;
+	export let messageId: number;
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
-	$: userMessageLimit = $currentSelectedRoom.userMessageLimit ?? 1;
-	$: currentRateLimit = $currentSelectedRoom.rateLimit ?? 0;
+	$: actions(messagesLeft(), userMessageLimit);
+
+	function actions(msgsRemaining: number, totalMsgs: number) {
+		const d = document.getElementById('ActionPoints');
+		let canvas = d?.querySelector('canvas') as HTMLCanvasElement;
+
+		const circleRadius = 8;
+		const circleSpacing = 5;
+		const startX = circleRadius;
+
+		if (!canvas) {
+			canvas = document.createElement('canvas');
+			canvas.height = 20;
+			d?.appendChild(canvas);
+		}
+
+		canvas.width = (circleRadius * 2 + circleSpacing) * totalMsgs - circleSpacing;
+
+		const ctx = canvas.getContext('2d')!;
+		ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawing
+
+		let x = startX;
+		const y = canvas.height / 2;
+
+		for (let i = 0; i < msgsRemaining; i++) {
+			ctx.fillStyle = msgsRemaining === 1 ? '#fa5f5f' : '#45a164';
+			ctx.strokeStyle = msgsRemaining === 1 ? '#bc4747' : '#34794b'; // Outline color
+			ctx.lineWidth = 1; // Outline width
+			ctx.beginPath();
+			ctx.arc(x, y, circleRadius, 0, Math.PI * 2, true);
+			ctx.fill();
+			ctx.stroke(); // Draw the outline
+			x += circleRadius * 2 + circleSpacing;
+		}
+
+		for (let i = msgsRemaining; i < totalMsgs; i++) {
+			ctx.fillStyle = '#73888a';
+			ctx.strokeStyle = '#1a1f1f'; // Outline color
+			ctx.lineWidth = 1; // Outline width
+			ctx.beginPath();
+			ctx.arc(x, y, circleRadius, 0, Math.PI * 2, true);
+			ctx.fill();
+			ctx.stroke(); // Draw the outline
+			x += circleRadius * 2 + circleSpacing;
+		}
+	}
+
+	onMount(() => {
+		actions(messagesLeft(), userMessageLimit);
+	});
 </script>
 
 <header
@@ -14,13 +67,17 @@
 	<h2 class="h5 text-primary-500" title={roomId}>
 		{roomName}
 	</h2>
-	<div class="hidden md:block text-xs md:text-sm">
+
+	<div class="hidden md:inline text-xs md:text-sm">
 		<small title={roomId}
-			>you can send {userMessageLimit} messages every {currentRateLimit / 1000} seconds</small
+			>you can send {userMessageLimit} messages every {roomRateLimit / 1000} seconds / {messageId} of
+			{messagesLeft()}
+			used</small
 		>
 		<br class="hidden md:inline" />
 		<small class="code" title={String(currentEpoch)}
 			>Epoch: {currentEpoch} / Time Left in Epoch: {timeLeftInEpoch}s</small
 		>
 	</div>
+	<div id="ActionPoints" />
 </header>

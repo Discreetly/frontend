@@ -4,25 +4,54 @@
 	import InputPrompt from './InputPrompt.svelte';
 	import Conversation from './Conversation.svelte';
 	import { onMount, onDestroy } from 'svelte';
-	import { selectedServer, currentSelectedRoom, messageStore } from '$lib/stores';
+	import { selectedServer, currentSelectedRoom, messageStore, rateLimitStore } from '$lib/stores';
 	import { io } from 'socket.io-client';
 	import type { Socket } from 'socket.io-client';
 	import type { MessageI } from 'discreetly-interfaces';
-	import { getEpochFromTimestamp, getTimestampFromEpoch } from '$lib/utils';
-	import { getMessages } from '$lib/services/server';
+	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
+	import Loading from '$lib/components/loading.svelte';
 
 	let scrollChatToBottom: () => {};
 	let socket: Socket;
 	let connected: boolean = false;
+	let lastRoom = '';
 	$: currentEpoch = 0;
 	$: timeLeftInEpoch = '0';
+	$: userMessageLimit = $currentSelectedRoom.userMessageLimit ?? 1;
+	$: roomRateLimit = $currentSelectedRoom.rateLimit ?? 0;
+	$: if (!$rateLimitStore[$currentSelectedRoom.roomId!.toString()]) {
+		$rateLimitStore[$currentSelectedRoom.roomId!.toString()] = {
+			lastEpoch: currentEpoch,
+			messagesSent: 0
+		};
+	}
+	$: currentRateLimit = $rateLimitStore[$currentSelectedRoom.roomId!.toString()];
+	$: messagesLeft = () => {
+		if (currentRateLimit.lastEpoch !== currentEpoch) {
+			currentRateLimit.lastEpoch = currentEpoch;
+			currentRateLimit.messagesSent = 0;
+			return userMessageLimit;
+		} else {
+			return userMessageLimit - currentRateLimit.messagesSent;
+		}
+	};
+	$: messageId = userMessageLimit - messagesLeft();
+	$: try {
+		if (lastRoom) {
+			socket.emit('leavingRoom', lastRoom);
+		}
+		socket.emit('joiningRoom', $currentSelectedRoom?.roomId.toString());
+		console.debug('Joining room', $currentSelectedRoom?.roomId.toString());
+	} catch {
+	} finally {
+	}
 
 	function updateEpoch() {
 		currentEpoch = Math.floor(Date.now() / $currentSelectedRoom.rateLimit!);
 		timeLeftInEpoch = (
 			($currentSelectedRoom.rateLimit! -
 				(Date.now() -
-					getTimestampFromEpoch(currentEpoch, $currentSelectedRoom.rateLimit!).unixEpochTime)) /
+					getTimestampFromEpoch($currentSelectedRoom.rateLimit!, currentEpoch).timestamp)) /
 			1000
 		).toFixed(1);
 	}
@@ -41,7 +70,7 @@
 				console.debug('socket-io-transport-closed', reason);
 			});
 
-			socket.emit('joiningRoom', $currentSelectedRoom?.roomId);
+			socket.emit('joiningRoom', $currentSelectedRoom?.roomId.toString());
 		});
 
 		socket.on('disconnected', () => {
@@ -74,8 +103,8 @@
 				}
 				if (!data.epoch) {
 					data.epoch = getEpochFromTimestamp(
-						+data.timeStamp!,
-						$currentSelectedRoom.rateLimit!
+						$currentSelectedRoom.rateLimit!,
+						+data.timeStamp!
 					).epoch;
 				}
 				$messageStore[roomId] = [...$messageStore[roomId], data];
@@ -84,13 +113,15 @@
 				}
 				scrollChatToBottom();
 			}
+			socket.on('Members', (data: string) => {
+				console.log(data);
+			});
 		});
 
-		getMessages($selectedServer, $currentSelectedRoom?.roomId.toString()).then((messages) => {
-			console.log(messages);
-			$messageStore[$currentSelectedRoom?.roomId.toString()] = messages;
-		});
+		updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
+
 		scrollChatToBottom();
+
 		setInterval(() => {
 			updateEpoch();
 		}, 100);
@@ -101,14 +132,33 @@
 	});
 </script>
 
-<div id="chat" class="grid grid-rows-[auto,1fr,auto]">
-	<!-- Header -->
-	<ChatRoomHeader {currentEpoch} {timeLeftInEpoch} />
-	<!-- Conversation -->
-	<Conversation bind:scrollChatBottom={scrollChatToBottom} />
-	<!-- Prompt -->
-	<InputPrompt {socket} {connected} {currentEpoch} />
-</div>
+{#if $currentSelectedRoom}
+	<div id="chat" class="grid grid-rows-[auto,1fr,auto]">
+		<!-- Header -->
+		<ChatRoomHeader
+			{currentEpoch}
+			{timeLeftInEpoch}
+			{userMessageLimit}
+			{messageId}
+			{messagesLeft}
+			{roomRateLimit}
+		/>
+		<!-- Conversation -->
+		<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
+		<!-- Prompt -->
+		<InputPrompt
+			{socket}
+			{connected}
+			{currentEpoch}
+			{userMessageLimit}
+			{messageId}
+			{currentRateLimit}
+			{messagesLeft}
+		/>
+	</div>
+{:else}
+	<Loading />
+{/if}
 
 <style>
 	#chat {
