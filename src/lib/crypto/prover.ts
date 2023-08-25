@@ -1,13 +1,13 @@
 import { RLNProver } from 'rlnjs';
 import { Group } from '@semaphore-protocol/group';
-import type { MessageI } from 'discreetly-interfaces';
+import type { MessageI, MessageInterfaces } from 'discreetly-interfaces';
 import type { IdentityStoreI, RoomI } from '$lib/types';
 import type { RLNFullProof, MerkleProof } from 'rlnjs';
 import { getMerkleProof } from '$lib//services/bandada';
 import { updateRooms } from '$lib/utils';
 import { get } from 'svelte/store';
 import { selectedServer, roomsStore } from '$lib/stores';
-import { calculateSignalHash } from './signalHash';
+import { calculateSignalHash } from 'discreetly-interfaces';
 import getRateCommitmentHash from './rateCommitmentHasher';
 
 const wasmPath = '/rln/circuit.wasm';
@@ -32,7 +32,19 @@ async function merkleProofFromRoom(
 	identityCommitment: bigint
 ) {
 	const roomFromStore = get(roomsStore)[roomId];
-	const identities = roomFromStore.identities ? roomFromStore.identities.map((i) => BigInt(i)) : [];
+	let identities: bigint[];
+	try {
+		identities = roomFromStore.identities
+			? roomFromStore.identities.map((i) => {
+					// This removes any non-numeric characters from the string
+					// In particular there was a bug where the `n` at the end of a bigint wasn't removed and it wasn't parsing correctly.
+					return BigInt(String(i).replace(/\D/g, ''));
+			  })
+			: [];
+	} catch (err) {
+		console.debug(roomFromStore.identities);
+		throw new Error('Could not parse identities from room');
+	}
 	const group = new Group(RLN_IDENIFIER, 20, identities);
 	let mp: MerkleProof;
 	try {
@@ -55,17 +67,17 @@ async function merkleProofFromRoom(
 
 /**
  *
- * @param room
- * @param message
- * @param identity
- * @param epoch
- * @param messageId
- * @param messageLimit
+ * @param {RoomI} room
+ * @param {MessageInterfaces} message
+ * @param {IdentityStoreI} identity
+ * @param {bigint | number} epoch
+ * @param {number} messageId
+ * @param {number} messageLimit
  * @returns Message with proof attached
  */
 async function genProof(
 	room: RoomI,
-	message: string,
+	message: MessageInterfaces,
 	identity: IdentityStoreI,
 	epoch: bigint | number,
 	messageId: bigint | number,
@@ -78,7 +90,7 @@ async function genProof(
 	const userMessageLimit = BigInt(messageLimit);
 	const identitySecret = BigInt(identity._secret);
 	const identityCommitment = BigInt(identity._commitment);
-	const messageHash: bigint = calculateSignalHash(message);
+	const messageHash: bigint = calculateSignalHash(JSON.stringify(message));
 	const rateCommitment: bigint = getRateCommitmentHash(identityCommitment, userMessageLimit);
 
 	let merkleProof: MerkleProof;
@@ -93,8 +105,16 @@ async function genProof(
 			break;
 		case 'BANDADA_GROUP':
 			if (room.bandadaAddress === undefined) throw new Error('Bandada address not defined');
-			merkleProof = await getMerkleProof(room.bandadaAddress, rateCommitment);
-			throw new Error('Bandada not implemented yet');
+			try {
+				merkleProof = await getMerkleProof(
+					room.bandadaAddress,
+					room.bandadaGroupId!,
+					rateCommitment
+				);
+				break;
+			} catch (err) {
+				throw new Error('GetMerkleProof failed' + err);
+			}
 		case 'CONTRACT':
 			//TODO
 			throw new Error('RLN contracts not implemented yet');

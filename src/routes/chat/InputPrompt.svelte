@@ -8,28 +8,14 @@
 	export let socket: Socket;
 	export let connected: boolean;
 	export let currentEpoch: number;
+	export let userMessageLimit: number;
+	export let currentRateLimit: { lastEpoch: number; messagesSent: number };
+	export let messageId: number;
+	export let messagesLeft: () => number;
 
 	let messageText = '';
 	let sendingMessage: boolean = false;
-	$: if (!$rateLimitStore[$currentSelectedRoom.roomId!.toString()]) {
-		$rateLimitStore[$currentSelectedRoom.roomId!.toString()] = {
-			lastEpoch: currentEpoch,
-			messagesSent: 0
-		};
-	}
 
-	$: currentRateLimit = $rateLimitStore[$currentSelectedRoom.roomId!.toString()];
-	$: userMessageLimit = $currentSelectedRoom.userMessageLimit ?? 1;
-	$: messagesLeft = () => {
-		if (currentRateLimit.lastEpoch !== currentEpoch) {
-			currentRateLimit.lastEpoch = currentEpoch;
-			currentRateLimit.messagesSent = 0;
-			return userMessageLimit;
-		} else {
-			return userMessageLimit - currentRateLimit.messagesSent;
-		}
-	};
-	$: messageId = userMessageLimit - messagesLeft();
 	$: placeholderText = () => {
 		if (!connected) {
 			return 'Connecting...';

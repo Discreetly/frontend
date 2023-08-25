@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { selectedServer, selectedRoom, currentRoomsStore } from '$lib/stores';
+	import { updateMessages } from '$lib/utils';
 
 	function setRoom(roomId: string) {
 		$selectedRoom[$selectedServer] = roomId;
+		updateMessages($selectedServer, roomId);
 	}
 </script>
 

@@ -1,9 +1,10 @@
 import type { RoomI } from '$lib/types';
-import { roomsStore, selectedRoom, selectedServer, serverStore } from '$lib/stores';
+import { roomsStore, selectedRoom, selectedServer, serverStore, messageStore } from '$lib/stores';
 import { get } from 'svelte/store';
 import {
 	getIdentityRoomIds as getRoomIdsByIdentityCommitment,
-	getRoomById
+	getRoomById,
+	getMessages
 } from '$lib/services/server';
 import { getCommitment } from '.';
 
@@ -68,4 +69,13 @@ export async function updateRooms(
 		});
 	}
 	return acceptedRoomNames;
+}
+
+export function updateMessages(server: string, roomId: string) {
+	getMessages(server, roomId).then((messages) => {
+		messageStore.update((store) => {
+			store[roomId] = messages;
+			return store;
+		});
+	});
 }
