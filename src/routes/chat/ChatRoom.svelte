@@ -120,6 +120,7 @@
 
 			socket.on('systemBroadcast', (data: string) => {
 				toastStore.trigger({ message: data, timeout: 3000 });
+				console.debug('Received System Message: ', data);
 			});
 		});
 
@@ -141,6 +142,7 @@
 	<div id="chat" class="grid grid-rows-[auto,1fr,auto]">
 		<!-- Header -->
 		<ChatRoomHeader
+			{connected}
 			{currentEpoch}
 			{timeLeftInEpoch}
 			{userMessageLimit}

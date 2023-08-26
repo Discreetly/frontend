@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { currentSelectedRoom, rateLimitStore } from '$lib/stores';
 	import { onMount } from 'svelte';
+	export let connected: boolean;
 	export let currentEpoch: number;
 	export let timeLeftInEpoch: string;
 	export let userMessageLimit: number;
@@ -64,7 +65,7 @@
 <header
 	class="hidden border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3 sm:flex flex-row justify-between place-items-center text-xs md:text-base"
 >
-	<h2 class="h5 text-primary-500" title={roomId}>
+	<h2 id="roomTitle" class="h5 text-primary-500" class:connected title={roomId}>
 		{roomName}
 	</h2>
 
@@ -81,3 +82,16 @@
 	</div>
 	<div id="ActionPoints" />
 </header>
+
+<style>
+	#roomTitle::before {
+		margin-right: 0.5em;
+		content: '⬤';
+		color: rgb(var(--color-error-500));
+	}
+	#roomTitle.connected::before {
+		margin-right: 0.5em;
+		content: '⬤';
+		color: rgb(var(--color-success-500));
+	}
+</style>
