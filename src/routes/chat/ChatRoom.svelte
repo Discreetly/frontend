@@ -10,7 +10,7 @@
 	import type { MessageI } from 'discreetly-interfaces';
 	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
 	import Loading from '$lib/components/loading.svelte';
-	import { toastStore } from '@skeletonlabs/skeleton/dist/utilities/Toast/stores';
+	import { toastStore } from '@skeletonlabs/skeleton';
 
 	let scrollChatToBottom: () => {};
 	let socket: Socket;
