@@ -10,6 +10,7 @@
 	import type { MessageI } from 'discreetly-interfaces';
 	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
 	import Loading from '$lib/components/loading.svelte';
+	import { toastStore } from '@skeletonlabs/skeleton/dist/utilities/Toast/stores';
 
 	let scrollChatToBottom: () => {};
 	let socket: Socket;
@@ -116,6 +117,10 @@
 			socket.on('Members', (data: string) => {
 				console.log(data);
 			});
+
+			socket.on('systemBroadcast', (data: string) => {
+				toastStore.trigger({ message: data, timeout: 3000 });
+			});
 		});
 
 		updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
@@ -152,7 +157,6 @@
 			{currentEpoch}
 			{userMessageLimit}
 			{messageId}
-			{currentRateLimit}
 			{messagesLeft}
 		/>
 	</div>

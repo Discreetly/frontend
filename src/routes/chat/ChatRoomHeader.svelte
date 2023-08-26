@@ -17,7 +17,6 @@
 
 		const circleRadius = 8;
 		const circleSpacing = 5;
-		const startX = circleRadius;
 
 		if (!canvas) {
 			canvas = document.createElement('canvas');
@@ -26,6 +25,7 @@
 		}
 
 		canvas.width = (circleRadius * 2 + circleSpacing) * totalMsgs - circleSpacing;
+		const startX = canvas.width - circleRadius;
 
 		const ctx = canvas.getContext('2d')!;
 		ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawing
@@ -41,7 +41,7 @@
 			ctx.arc(x, y, circleRadius, 0, Math.PI * 2, true);
 			ctx.fill();
 			ctx.stroke(); // Draw the outline
-			x += circleRadius * 2 + circleSpacing;
+			x -= circleRadius * 2 + circleSpacing;
 		}
 
 		for (let i = msgsRemaining; i < totalMsgs; i++) {
@@ -52,7 +52,7 @@
 			ctx.arc(x, y, circleRadius, 0, Math.PI * 2, true);
 			ctx.fill();
 			ctx.stroke(); // Draw the outline
-			x += circleRadius * 2 + circleSpacing;
+			x -= circleRadius * 2 + circleSpacing;
 		}
 	}
 

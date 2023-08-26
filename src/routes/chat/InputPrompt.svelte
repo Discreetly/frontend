@@ -9,7 +9,6 @@
 	export let connected: boolean;
 	export let currentEpoch: number;
 	export let userMessageLimit: number;
-	export let currentRateLimit: { lastEpoch: number; messagesSent: number };
 	export let messageId: number;
 	export let messagesLeft: () => number;
 
@@ -21,7 +20,7 @@
 			return 'Connecting...';
 		}
 		if (messagesLeft() === 0) {
-			return 'Rate limit reached for this epoch';
+			return 'Please wait...Rate limit reached for this epoch';
 		}
 		if (sendingMessage) {
 			return 'Sending...';
@@ -68,12 +67,15 @@
 		const room = $currentSelectedRoom;
 		genProof(room, messageText, identity, currentEpoch, messageId, userMessageLimit)
 			.then((msg) => {
-				$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent++;
+				if ($rateLimitStore[$currentSelectedRoom.roomId!.toString()].lastEpoch == currentEpoch) {
+					$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent++;
+					console.debug(
+						$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent,
+						'messages sent this epoch'
+					);
+				}
 				socket.emit('validateMessage', msg);
 				console.debug('Sending message: ', msg);
-				if (currentRateLimit.lastEpoch == currentEpoch) {
-					currentRateLimit.messagesSent++;
-				}
 				messageText = '';
 				sendingMessage = false;
 			})
