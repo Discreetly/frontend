@@ -69,13 +69,13 @@
 		{roomName}
 	</h2>
 
-	<div class="hidden md:inline text-xs md:text-sm">
+	<div class="hidden lg:inline text-xs md:text-sm">
 		<small title={roomId}
 			>you can send {userMessageLimit} messages every {roomRateLimit / 1000} seconds / {messageId} of
 			{messagesLeft()}
 			used</small
 		>
-		<br class="hidden md:inline" />
+		<br class="hidden lg:inline" />
 		<small class="code" title={String(currentEpoch)}
 			>Epoch: {currentEpoch} / Time Left in Epoch: {timeLeftInEpoch}s</small
 		>
@@ -85,13 +85,13 @@
 
 <style>
 	#roomTitle::before {
+		vertical-align: 0.125rem;
 		margin-right: 0.5em;
+		font-size: 0.75em;
 		content: '⬤';
 		color: rgb(var(--color-error-500));
 	}
 	#roomTitle.connected::before {
-		margin-right: 0.5em;
-		content: '⬤';
 		color: rgb(var(--color-success-500));
 	}
 </style>
