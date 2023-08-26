@@ -68,6 +68,7 @@
 		const room = $currentSelectedRoom;
 		genProof(room, messageText, identity, currentEpoch, messageId, userMessageLimit)
 			.then((msg) => {
+				$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent++;
 				socket.emit('validateMessage', msg);
 				console.debug('Sending message: ', msg);
 				if (currentRateLimit.lastEpoch == currentEpoch) {
