@@ -1,6 +1,9 @@
 <script lang="ts">
 	import SelectRoom from '$lib/components/SelectRoom.svelte';
 	import SelectServer from '$lib/components/SelectServer.svelte';
+	import { currentSelectedRoom } from '$lib/stores';
+
+	$: identities = $currentSelectedRoom.identities;
 </script>
 
 <div id="sidebar" class="hidden sm:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
@@ -9,11 +12,12 @@
 		<SelectServer />
 	</header>
 	<!-- List -->
-	<div class="p-1 md:p-2 overflow-y-auto">
+	<div class="p-1 md:p-2">
+		<h6 class="h6 mx-3">Rooms</h6>
 		<SelectRoom />
 	</div>
 	<!-- Footer -->
-	<!-- <footer class="border-t border-surface-500/30 p-4">(footer)</footer> -->
+	<footer class="border-t border-surface-500/30 p-4">© 2023 Privacy & Scaling Explorations</footer>
 </div>
 
 <style>

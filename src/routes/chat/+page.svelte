@@ -12,7 +12,7 @@
 	#chat-wrapper {
 		height: 100%;
 		display: grid;
-		grid-template-columns: minmax(20%, 200px) 1fr;
+		grid-template-columns: minmax(17%, 300px) 1fr;
 		grid-template-rows: auto;
 		grid-template-areas: 'sidebar chat';
 	}

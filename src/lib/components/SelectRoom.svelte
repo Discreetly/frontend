@@ -19,6 +19,9 @@
 			on:click={() => {
 				setRoom(room.roomId.toString());
 			}}
+			title={`id: ${room.roomId},
+epoch length(s): ${(room.rateLimit ? room.rateLimit : 1) / 1000},
+'message limit': ${room.userMessageLimit}`}
 		>
 			<span class="flex-auto">
 				<dt>{room.name}</dt>

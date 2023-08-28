@@ -52,9 +52,9 @@
 			<Loading />
 		</slot>
 	</div>
-	<div id="footer">
+	<!-- <div id="footer">
 		<AppFooter />
-	</div>
+	</div> -->
 </app>
 
 <style>
