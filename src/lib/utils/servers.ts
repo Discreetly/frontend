@@ -35,7 +35,7 @@ export async function updateServer(
 		url = Object.keys(get(serverStore))[0];
 		selectedServer.set(url);
 	}
-	console.log('Updating server', url);
+	console.debug('Updating server', url);
 	const oldServerStore = get(store);
 	getServerData(url).then((newServerData) => {
 		const newServerStore = {

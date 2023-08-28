@@ -37,18 +37,24 @@
 	{#if $currentRoomMessages}
 		{#each $currentRoomMessages as bubble}
 			<div class="flex flex-col items-start">
-				<div class="card p-2 md:p-4 space-y-1 md:space-y-2 bg-surface-200-700-token">
+				<div
+					class="card p-2 md:p-4 space-y-1 md:space-y-2 bg-surface-100-800-token border-1 border-secondary-500/30"
+				>
 					<header class="flex justify-between items-center text-xs md:text-sm">
-						<small class="opacity-50 text-primary-500 mr-2 md:mr-4">{getTime(bubble)}</small>
+						<small class="opacity-50 text-surface-700-200-token mr-2 md:mr-4"
+							>{getTime(bubble)}</small
+						>
 						{#if bubble.epoch}
-							<small class="hidden md:block opacity-50 text-primary-500"
+							<small class="hidden md:block opacity-50 text-surface-700-200-token"
 								>epoch: {bubble.epoch}</small
 							>
 						{:else}
-							<small class="hidden md:block opacity-70 text-error-500">SYSTEM MESSAGE</small>
+							<small class="hidden md:block opacity-70 text-error-500-400-token text-"
+								>SYSTEM MESSAGE</small
+							>
 						{/if}
 					</header>
-					<p class="text-primary-500">{bubble.message}</p>
+					<p class="text-surface-800-100-token">{bubble.message}</p>
 				</div>
 			</div>
 		{/each}

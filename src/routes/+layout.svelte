@@ -39,7 +39,7 @@
 >
 <Modal />
 <Toast position="t" />
-<Drawer position="top" padding="p-4">
+<Drawer position="top" padding="p-4" rounded="rounded-token">
 	<SelectServer />
 	<SelectRoom />
 </Drawer>

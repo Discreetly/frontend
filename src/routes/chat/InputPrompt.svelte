@@ -105,9 +105,9 @@
 		<textarea
 			bind:value={messageText}
 			maxlength="2000"
-			class="p-1 md:p-2 text-primary-400 border"
-			class:bg-surface-900={!canSendMessage}
-			class:bg-surface-500={canSendMessage}
+			class=" p-1 md:p-2 text-surface-900-50-token border"
+			class:bg-surface-300-600-token={!canSendMessage}
+			class:bg-surface-200-700-token={canSendMessage}
 			name="prompt"
 			id="prompt"
 			placeholder={placeholderText()}
@@ -118,8 +118,8 @@
 		<button
 			class:hidden={!canSendMessage}
 			class={canSendMessage && messageText
-				? 'text-xs md:text-base variant-ghost-primary'
-				: 'text-xs md:text-base variant-ghost-surface'}
+				? 'text-xs md:text-base variant-ghost-success'
+				: 'text-xs md:text-base variant-ghost-secondary'}
 			disabled={!canSendMessage}
 			on:click={sendMessage}
 		>

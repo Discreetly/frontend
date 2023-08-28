@@ -11,12 +11,14 @@
 	import { IdentityStoreE } from '$lib/types';
 </script>
 
-<div class="h-100">
+<div class="h-100 mx-2 md:mx-4">
 	<Stepper
 		class="max-w-sm sm:max-w-md md:max-w-3xl mx-auto mt-16"
 		on:complete={() => {
 			goto('/chat');
 		}}
+		buttonNext="variant-filled-surface-50-900-token"
+		buttonComplete="variant-filled-success"
 	>
 		<Step>
 			<svelte:fragment slot="header"

@@ -131,7 +131,9 @@ async function genProof(
 		x: messageHash,
 		epoch: BigInt(epoch)
 	};
-	//console.debug('PROOFINPUTS:', proofInputs);
+	console.info(
+		`Generating proof: epoch ${epoch}, message ID ${messageId}, message hash {messageHash}`
+	);
 	return prover.generateProof(proofInputs).then((proof: RLNFullProof) => {
 		console.log('Proof generated!');
 		console.debug('PROOF:', proof);

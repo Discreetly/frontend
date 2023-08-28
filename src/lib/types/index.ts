@@ -27,13 +27,24 @@ export enum IdentityStoreE {
 export interface SignUpStatusI {
 	inviteAccepted: boolean;
 	identityBackedUp: boolean;
+	inviteCode?: string;
 }
 
 export interface ConfigurationI {
 	signUpStatus: SignUpStatusI;
 	identityStore: IdentityStoreE;
+	apiUsername?: string;
+	apiPassword?: string;
 }
 
 export interface RoomI extends RI {
 	server?: string;
+}
+
+export interface InviteCode {
+	claimcode: string;
+}
+export interface Invites {
+	message?: string;
+	codes: InviteCode[];
 }
