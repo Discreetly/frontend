@@ -10,14 +10,17 @@
 		assure you there is more going on here.
 	</p>
 	<p class="text-justify my-3">
-		Under the hood, there is no "login", the server doesn't know who you are, you are <span
-			class="fst-italic">actually</span
-		> anonymous.
+		Under the hood, there is no "login", the server doesn't know who you are, you are anonymous.
 	</p>
 	<p class="text-justify my-3">
 		There is one catch, if you send messages too fast, someone can figure out which identity you
 		are, and remove you from the chat. So if you try to break the rules, you will be removed, and
 		there is no undo.
+	</p>
+	<p>
+		When you send a message, your device generates a zk proof that you are a member of that room,
+		and that you haven't sent too many messages during some time period (an epoch), but doesn't
+		reveal which member you are.
 	</p>
 	<p class="text-justify my-3">
 		Read more about <a class="anchor" href="https://rate-limiting-nullifier.github.io/rln-docs/"

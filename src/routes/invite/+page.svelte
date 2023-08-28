@@ -12,7 +12,7 @@
 		const canvas = document.createElement('canvas');
 		div?.appendChild(canvas);
 		const p = document.createElement('p');
-		p.innerText = `${$selectedServer}/signup/${inviteCode}`;
+		p.innerText = `${$selectedServer}signup/${inviteCode}`;
 		div?.appendChild(p);
 		canvasContainer?.appendChild(div);
 		const url = `${$selectedServer}/signup/${inviteCode}`;
