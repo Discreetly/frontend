@@ -115,7 +115,7 @@
 				scrollChatToBottom();
 			}
 			socket.on('Members', (data: string) => {
-				console.log(data);
+				console.debug(data);
 			});
 
 			socket.on('systemBroadcast', (data: string) => {

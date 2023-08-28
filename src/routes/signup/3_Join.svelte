@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Join from '$lib/components/Join.svelte';
+	import { configStore } from '$lib/stores';
 </script>
 
-<Join />
+<Join code={$configStore.signUpStatus.inviteCode} />

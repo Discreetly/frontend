@@ -5,9 +5,10 @@ import type { IdentityStoreI } from '$lib/types';
 
 export function createIdentity(regenerate = false) {
 	if (!get(identityStore)._commitment || regenerate) {
-		console.log('Creating identity');
+		console.debug('Creating identity');
 		const id = new Identity() as unknown as IdentityStoreI;
 		identityStore.set(id);
+		console.log('Identity Created! Congrats on your new journey');
 		return 'created';
 	} else {
 		console.warn('Identity already exists');
@@ -24,7 +25,7 @@ export function getCommitment() {
 }
 
 export function getIdentityBackup() {
-	return getIdentity().toString();
+	return JSON.stringify(get(identityStore));
 }
 
 export function doesIdentityExist(): boolean {

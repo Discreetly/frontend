@@ -1,43 +1,47 @@
 <script lang="ts">
 	import { getIdentityBackup } from '$lib/utils/';
-	import Loading from '$lib/components/loading.svelte';
-	import QRCode from 'qrcode';
-
-	let loading: boolean = false;
-	let imageUrl: string | undefined = undefined;
-
-	function generateQR() {
-		loading = true;
-		const opts = {
-			type: 'image/jpeg',
-			errorCorrectionLevel: 'M',
-			mode: 'Alphanumeric',
-			color: {
-				dark: '#202626',
-				light: '#ffffff'
-			}
-		};
-
-		QRCode.toDataURL(getIdentityBackup(), opts).then((response) => {
-			imageUrl = response;
-		});
-		setTimeout(() => {
-			imageUrl = undefined;
-			loading = false;
-		}, 15000);
+	let revealIdentity = false;
+	let id = '';
+	function reveal() {
+		id = getIdentityBackup();
+		if (revealIdentity == false) {
+			revealIdentity = true;
+			setTimeout(() => {
+				revealIdentity = false;
+				id = '';
+			}, 60000);
+		} else {
+			revealIdentity = false;
+		}
 	}
 </script>
 
-<h4 class="h4">Backup Your Identity</h4>
-<a
-	class="btn variant-ghost-success"
-	href={'data:text/json;charset=utf-8,' + encodeURIComponent(getIdentityBackup())}
-	download="identity.json">JSON</a
->
-<a class="btn variant-ghost-success" on:click={generateQR} style="cursor:pointer">QR Code</a>
+<div class="card variant-ghost-secondary">
+	<header class="card-header">
+		<h4 class="h4">Backup Your Identity</h4>
+	</header>
+	<section class="px-4 pt-4 mb-5">
+		<div class="m-2 sm:m-3 flex flex-col gap-4">
+			<a
+				class="btn variant-ghost-success"
+				href={'data:text/json;charset=utf-8,' +
+					encodeURIComponent(JSON.stringify(getIdentityBackup()))}
+				download="identity.json">Download Identity Backup as JSON</a
+			>
+			{#if !revealIdentity}
+				<div class="btn variant-ghost-success" on:click={reveal}>Show Identity</div>
+			{:else}
+				<div class="btn variant-ghost-success" on:click={reveal}>Hide Identity</div>
+				<div id="reveleadIdentity" class="text-sm p-2 sm:p-4 bg-error-300-600-token max-w-sm">
+					Identity:{id}
+				</div>
+			{/if}
+		</div>
+	</section>
+</div>
 
-{#if loading && !imageUrl}
-	<Loading />
-{:else}
-	<img src={imageUrl} class="mx-auto" />
-{/if}
+<style>
+	#reveleadIdentity {
+		overflow-wrap: break-word;
+	}
+</style>

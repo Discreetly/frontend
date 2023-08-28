@@ -65,7 +65,7 @@
 <header
 	class="hidden border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3 sm:flex flex-row justify-between place-items-center text-xs md:text-base"
 >
-	<h2 id="roomTitle" class="h5 text-primary-500" class:connected title={roomId}>
+	<h2 id="roomTitle" class="h5 text-secondary-800-100-token" class:connected title={roomId}>
 		{roomName}
 	</h2>
 

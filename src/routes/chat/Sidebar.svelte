@@ -1,11 +1,11 @@
 <script lang="ts">
-	import SelectRoom from '../../lib/components/SelectRoom.svelte';
+	import SelectRoom from '$lib/components/SelectRoom.svelte';
 	import SelectServer from '$lib/components/SelectServer.svelte';
 </script>
 
 <div id="sidebar" class="hidden sm:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 	<!-- Header -->
-	<header class="border-b border-surface-500/30 p-4">
+	<header class="border-b border-surface-500/30 p-1">
 		<SelectServer />
 	</header>
 	<!-- List -->

@@ -1,28 +1,33 @@
 <script lang="ts">
+	import JoinMore from './JoinMore.svelte';
 	import { identityStore } from '$lib/stores';
 	import DeleteIdentity from './DeleteIdentity.svelte';
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
-	import Join from '$lib/components/Join.svelte';
 	import { createIdentity } from '$lib/utils/';
 	$: identityExists = !!$identityStore._commitment;
 </script>
 
 {#if !identityExists}
 	<div class="mb-8 text-center">
-		<span class="badge variant-ghost-secondary text-sm px-4 py-2">Identity Not Found</span>
+		<span class="text-base italic px-4 py-2 font-mono badge variant-outline-error"
+			>Identity Not Found!</span
+		>
 	</div>
 {/if}
 <div class="grid grid-flow-rows gap-5 my-5 max-w-md mx-auto">
 	{#if !identityExists}
-		<button on:click={() => createIdentity()} class="btn variant-filled-success" type="button">
+		<button
+			on:click={() => createIdentity()}
+			class="btn variant-ghost-primary font-medium"
+			type="button"
+		>
 			Generate Identity
 		</button>
 		<RestoreIdentity />
 	{:else}
 		<BackupIdentity />
 		<DeleteIdentity />
-		<h4 class="h4 mt-4">Join More Rooms</h4>
-		<Join />
+		<JoinMore />
 	{/if}
 </div>

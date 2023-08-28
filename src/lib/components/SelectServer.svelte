@@ -14,7 +14,7 @@
 		valueAttr: { type: 'url', required: true },
 		// Returns the updated response value
 		response: (r: string) => {
-			console.log('response:', r);
+			console.debug('response:', r);
 			if (getServerList().includes(r)) {
 				console.warn('Server already exists');
 				return;
@@ -24,15 +24,15 @@
 	};
 </script>
 
-<div class=" flex flex-row">
-	<select class="select text-primary-500" bind:value={$selectedServer}>
+<div class="m-2 sm:md-3 flex flex-row">
+	<select class="select variant-ghost" bind:value={$selectedServer}>
 		{#each Object.entries($serverStore) as [key, s]}
 			<option value={key}>{s.name}</option>
 		{/each}
 	</select>
 	<button
 		type="button"
-		class="btn btn-sm variant-ghost-primary ms-2"
+		class="btn btn-sm variant-ghost ms-2"
 		on:click={() => {
 			modalStore.trigger(addServerModal);
 		}}>+</button

@@ -4,23 +4,37 @@
 	import { postInviteCode } from '$lib/services/server';
 	import type { JoinResponseI } from '$lib/types';
 	import { getCommitment, updateRooms } from '$lib/utils/';
+	import Loading from './loading.svelte';
+	import Button from './button.svelte';
 
-	let code = '';
+	export let code = '';
 	let acceptedRoomNames: string[] = [];
+	let loading = false;
+	let msg: string | undefined;
 
 	async function addCode(newCode: string) {
-		const idc = getCommitment();
-		const result = (await postInviteCode($selectedServer, {
-			code: newCode.toLowerCase(),
-			idc
-		})) as JoinResponseI;
-		console.log('INVITE CODE RESPONSE: ', result);
-		if (result.status == 'valid' || result.status == 'already-added') {
-			acceptedRoomNames = await updateRooms($selectedServer, result.roomIds);
-			code = '';
-			$configStore.signUpStatus.inviteAccepted = true;
-		} else {
-			alert('Invalid invite code');
+		try {
+			const idc = getCommitment();
+			loading = true;
+			const result = (await postInviteCode($selectedServer, {
+				code: newCode.toLowerCase(),
+				idc
+			})) as JoinResponseI;
+			console.debug('INVITE CODE RESPONSE: ', result);
+			if (result.status == 'valid' || result.status == 'already-added') {
+				console.debug('Updating new rooms');
+				acceptedRoomNames = await updateRooms($selectedServer, result.roomIds);
+				code = '';
+				console.log(`Added to rooms: ${acceptedRoomNames}`);
+				$configStore.signUpStatus.inviteAccepted = true;
+				$configStore.signUpStatus.inviteCode = '';
+			} else {
+				alert('Invalid invite code');
+				msg = 'Invalid invite code.';
+			}
+			loading = false;
+		} catch (e: unknown) {
+			msg = String(e.message);
 		}
 	}
 	function inviteCodeKeyPress(event: KeyboardEvent) {
@@ -77,27 +91,44 @@
 	}
 </script>
 
-<div class="grid place-content-center">
+<div class="grid place-content-center mb-2 sm:mb-4">
 	<label class="label">
 		<span>Select or Add a Server</span>
 		<SelectServer />
 	</label>
 	<label class="label mt-3">
 		<span>Invite Code</span>
-		<input
-			class="input max-w-md"
-			type="text"
-			placeholder="Invite Code"
-			bind:value={code}
-			on:keydown={(event) => inviteCodeKeyPress(event)}
-		/>
-		<button
-			class="btn variant-ghost-success"
-			type="button"
-			disabled={!code}
-			on:click={() => addCode(code)}>Submit</button
-		>
+		<div class="m-2 sm:md-3">
+			<input
+				class="input max-w-md mb-2 variant-ghost"
+				type="text"
+				placeholder="Invite Code"
+				bind:value={code}
+				on:keydown={(event) => inviteCodeKeyPress(event)}
+			/>
+			{#if !loading}
+				<button
+					class="btn variant-ghost-success"
+					type="button"
+					disabled={!code}
+					on:click={() => addCode(code)}>Submit</button
+				>
+			{:else}
+				<p class="italic">Loading...</p>
+			{/if}
+		</div>
 	</label>
+	{#if msg}
+		<aside class="p">
+			<div>{msg}</div>
+			<div>
+				If you are having trouble and would like help, please message us on <a
+					href="https://discord.gg/brJQ36KVxk"
+					class="underline link">Discord</a
+				>
+			</div>
+		</aside>
+	{/if}
 	{#if acceptedRoomNames.length > 0}
 		<p class="text-center mt-2">You've been added to:</p>
 		<div class="my-2">
@@ -107,3 +138,9 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	aside {
+		overflow-wrap: normal;
+	}
+</style>
