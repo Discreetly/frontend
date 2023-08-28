@@ -26,6 +26,7 @@
 		</h1>
 	</svelte:fragment>
 	<a href="/about" class="btn btn-sm variant-ringed-secondary hidden sm:inline me-2">About</a>
+	<a href="/about" class="btn btn-sm variant-ringed-secondary sm:hidden me-2">?</a>
 	{#if identityExists}
 		<a href="/chat" class="hidden btn btn-sm variant-ringed-secondary sm:inline me-2">Chat</a>
 		<a

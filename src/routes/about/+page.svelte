@@ -1,3 +1,7 @@
+<script>
+	import Button from '$lib/components/button.svelte';
+</script>
+
 <div class="mx-auto mt-10 max-w-[80ch]">
 	<img src="/logo-text.png" alt="discreetly" class="max-h-20 mb-5" />
 	<h5 class="italic mb-4 mt-1">A new take on anonymous communication.</h5>
@@ -20,4 +24,5 @@
 			>RLN</a
 		>.
 	</p>
+	<a href="https://discord.gg/brJQ36KVxk" class="btn variant-ghost-secondary">Join our Discord</a>
 </div>
