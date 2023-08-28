@@ -37,7 +37,7 @@
 	{/if}
 	<svelte:fragment slot="trail">
 		<div class="hidden sm:inline me-2 text-primary-500">Alpha Version!</div>
-		<a href="/about" class="btn btn-sm variant-ringed-secondary sm:hidden me-2">?</a>
+		<a href="/about" class="btn-icon btn-icon-sm variant-soft-secondary sm:hidden me-2">?</a>
 		{#if identityExists}
 			<a href="/identity">⚙</a>
 		{/if}
