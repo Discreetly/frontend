@@ -12,10 +12,10 @@
 		const canvas = document.createElement('canvas');
 		div?.appendChild(canvas);
 		const p = document.createElement('p');
-		p.innerText = `${$selectedServer}signup/${inviteCode}`;
+		p.innerText = `https://app.discreetly.chat/signup/${inviteCode}`;
 		div?.appendChild(p);
 		canvasContainer?.appendChild(div);
-		const url = `${$selectedServer}/signup/${inviteCode}`;
+		const url = `https://app.discreetly.chat/signup/${inviteCode}`;
 		qrcode.toCanvas(canvas, url);
 	}
 
