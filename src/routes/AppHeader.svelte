@@ -22,7 +22,11 @@
 >
 	<svelte:fragment slot="lead">
 		<h1 class="h4 text-primary-500">
-			<a href="/"><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a>
+			{#if identityExists}
+				<a href="/chat"><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a>
+			{:else}
+				<a href="/"><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a>
+			{/if}
 		</h1>
 	</svelte:fragment>
 	<a href="/about" class="btn btn-sm variant-ringed-secondary hidden sm:inline me-2">About</a>
