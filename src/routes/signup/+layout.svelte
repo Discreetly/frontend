@@ -39,7 +39,7 @@
 			>
 			<Join />
 		</Step>
-		<Step locked={!$configStore.signUpStatus.identityBackedUp}>
+		<Step>
 			<svelte:fragment slot="header"
 				><div class="h3 text-center">Backup your identity</div></svelte:fragment
 			>
