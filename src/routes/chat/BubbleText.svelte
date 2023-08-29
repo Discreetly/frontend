@@ -1,10 +1,18 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import * as marked from 'marked';
 	import Autolinker from 'autolinker';
 	import DOMPurify from 'dompurify';
 	import * as emoji from 'node-emoji'
 
 	export let bubbleText: string;
+	let formattedText = '';
+
+	onMount(() => {
+		// Only render text on the frontend because DOMPurify
+		// needs access to the DOM.
+		formattedText = formatText(bubbleText);
+	});
 
 	function formatText(text: string): string {
 		// Format URLs
@@ -35,7 +43,7 @@
 </script>
 
 <section id="BubbleText">
-	<div class="text-surface-800-100-token whitespace-pre">{@html formatText(bubbleText)}</div>
+	<div class="text-surface-800-100-token whitespace-pre">{@html formattedText}</div>
 </section>
 
 <style></style>
