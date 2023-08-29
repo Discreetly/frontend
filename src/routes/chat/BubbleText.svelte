@@ -13,10 +13,7 @@
 			newWindow: true,
 			replaceFn: (match) => {
 				// Only replacing URLs.  We can also replace email, phone, mention, and hashtag if we want.
-				if (match.getType() === 'url') {
-					return true;
-				}
-				return false;
+				return match.getType() === 'url'
 			}
 		});
 
