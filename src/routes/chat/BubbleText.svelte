@@ -2,6 +2,7 @@
 	import * as marked from 'marked';
 	import Autolinker from 'autolinker';
 	import DOMPurify from 'dompurify';
+	import * as emoji from 'node-emoji'
 
 	export let bubbleText: string;
 
@@ -16,6 +17,9 @@
 				return match.getType() === 'url'
 			}
 		});
+
+		// Format Emojis
+		editedText = emoji.emojify(editedText);
 
 		// Sanitize HTML - This step must go after the Autolinker url step
 		editedText = DOMPurify.sanitize(editedText);

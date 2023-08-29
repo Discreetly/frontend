@@ -57,6 +57,7 @@
 		"dompurify": "^3.0.5",
 		"libsodium-wrappers": "^0.7.11",
 		"marked": "^7.0.5",
+		"node-emoji": "^2.1.0",
 		"poseidon-lite": "^0.2.0",
 		"qr-scanner": "^1.4.2",
 		"qrcode": "^1.5.3",
