@@ -38,7 +38,7 @@
 			`}</svelte:head
 >
 <Modal />
-<Toast position="t" />
+<Toast position="t" background="variant-filled-primary" />
 <Drawer position="top" padding="p-4" rounded="rounded-token">
 	<SelectServer />
 	<SelectRoom />

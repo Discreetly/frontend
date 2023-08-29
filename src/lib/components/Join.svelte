@@ -3,14 +3,12 @@
 	import SelectServer from '$lib/components/SelectServer.svelte';
 	import { postInviteCode } from '$lib/services/server';
 	import type { JoinResponseI } from '$lib/types';
-	import { getCommitment, updateRooms } from '$lib/utils/';
-	import Loading from './loading.svelte';
-	import Button from './button.svelte';
+	import { getCommitment, updateRooms, alert } from '$lib/utils/';
 
 	export let code = '';
 	let acceptedRoomNames: string[] = [];
 	let loading = false;
-	let msg: string | undefined;
+	let err: string | undefined;
 
 	async function addCode(newCode: string) {
 		try {
@@ -29,12 +27,13 @@
 				$configStore.signUpStatus.inviteAccepted = true;
 				$configStore.signUpStatus.inviteCode = '';
 			} else {
-				alert('Invalid invite code');
-				msg = 'Invalid invite code.';
+				err = 'Invalid invite code.';
+				alert(err);
 			}
 			loading = false;
-		} catch (e: unknown) {
-			msg = String(e.message);
+		} catch (e) {
+			err = String((e as Error).message);
+			alert(err);
 		}
 	}
 	function inviteCodeKeyPress(event: KeyboardEvent) {
@@ -118,9 +117,8 @@
 			{/if}
 		</div>
 	</label>
-	{#if msg}
+	{#if err}
 		<aside class="p">
-			<div>{msg}</div>
 			<div>
 				If you are having trouble and would like help, please message us on <a
 					href="https://discord.gg/brJQ36KVxk"

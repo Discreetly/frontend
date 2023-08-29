@@ -2,8 +2,7 @@
 	import { currentSelectedRoom, rateLimitStore } from '$lib/stores';
 	import { genProof } from '$lib/crypto/prover';
 	import type { Socket } from 'socket.io-client';
-	import { getIdentity } from '$lib/utils';
-	import { toastStore } from '@skeletonlabs/skeleton';
+	import { getIdentity, alert } from '$lib/utils';
 
 	export let socket: Socket;
 	export let connected: boolean;
@@ -29,11 +28,6 @@
 	};
 	$: sendButtonText = messagesLeft() > 0 ? 'Send (' + messagesLeft() + ' left)' : 'X';
 	$: canSendMessage = connected && !sendingMessage;
-
-	function alert(alertMessage: string) {
-		toastStore.trigger({ message: alertMessage, timeout: 1000 });
-		console.warn(alertMessage);
-	}
 
 	function checkStatus(): boolean {
 		if (!connected) {

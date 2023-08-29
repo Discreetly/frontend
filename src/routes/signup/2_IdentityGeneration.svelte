@@ -7,15 +7,11 @@
 
 <div class="grid place-content-center gap-5">
 	{#if !identityExists}
-		<button on:click={() => createIdentity()} class="btn variant-ghost-primary" type="button">
+		<button on:click={() => createIdentity()} class="btn variant-ghost-success" type="button">
 			Generate Identity
 		</button>
 		<RestoreIdentity />
 	{:else}
 		<p class="h4">Identity Created ✅</p>
-		<button on:click={() => createIdentity(true)} class="btn variant-ghost-success" type="button">
-			Re-Generate Identity
-		</button>
-		<RestoreIdentity />
 	{/if}
 </div>
