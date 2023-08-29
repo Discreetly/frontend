@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { currentRoomMessages, currentSelectedRoom } from '$lib/stores';
+	import { currentRoomMessages } from '$lib/stores';
 	import { getEpochFromTimestamp, getTimestampFromEpoch } from '$lib/utils/rateLimit';
 	import type { MessageI } from 'discreetly-interfaces';
 	import { onMount } from 'svelte';
+	import BubbleText from './BubbleText.svelte';
 
 	export let roomRateLimit: number;
 
@@ -54,7 +55,7 @@
 							>
 						{/if}
 					</header>
-					<p class="text-surface-800-100-token">{bubble.message}</p>
+					<BubbleText bubbleText={JSON.stringify(bubble.message)} />
 				</div>
 			</div>
 		{/each}
