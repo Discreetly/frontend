@@ -3,7 +3,6 @@
 	import AP from '$lib/components/AP.svelte';
 	import FullCircle from 'svelte-material-icons/Circle.svelte';
 	import { configStore, currentSelectedRoom } from '$lib/stores';
-	import { onMount } from 'svelte';
 	import { ActionRepresentationE } from '$lib/types';
 	export let connected: boolean;
 	export let currentEpoch: number;
@@ -14,31 +13,40 @@
 	export let messageId: number;
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
+	$: epochLengthSeconds = roomRateLimit / 1000;
+	$: timeToNextEpoch = epochLengthSeconds - +timeLeftInEpoch;
 </script>
 
 <header
-	class="hidden border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3 sm:flex flex-row justify-between place-items-center text-xs md:text-base"
+	class="hidden border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3 sm:flex flex-col text-xs md:text-base"
 >
-	<div class="flex flex-row">
-		<span class="place-self-center mr-2">
-			{#if connected}
-				<FullCircle class="w-4 h-4 text-green-500" />
+	<div class="flex flex-row justify-between place-items-center mb-2">
+		<div class="flex flex-row">
+			<span class="place-self-center mr-2">
+				{#if connected}
+					<FullCircle class="w-4 h-4 text-green-500" />
+				{:else}
+					<FullCircle class="w-4 h-4 text-error-500" />
+				{/if}
+			</span>
+			<h2 class="h5 text-secondary-800-100-token" title={roomId}>
+				{roomName}
+			</h2>
+			<div class="ms-2 text-xs font-mono self-center">
+				[{timeToNextEpoch.toFixed(1)}/{epochLengthSeconds}s]
+			</div>
+		</div>
+		<div title={String(epochLengthSeconds + ' seconds per epoch')}>
+			{#if $configStore.actionRepresentation == ActionRepresentationE.AP}
+				<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
+			{:else if $configStore.actionRepresentation == ActionRepresentationE.Hearts}
+				<Hearts health={messagesLeft()} maxHealth={userMessageLimit} />
 			{:else}
-				<FullCircle class="w-4 h-4 text-error-500" />
+				<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
 			{/if}
-		</span>
-		<h2 class="h5 text-secondary-800-100-token" title={roomId}>
-			{roomName}
-		</h2>
+		</div>
 	</div>
-
-	{#if $configStore.actionRepresentation == ActionRepresentationE.AP}
-		<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
-	{:else if $configStore.actionRepresentation == ActionRepresentationE.Hearts}
-		<Hearts health={messagesLeft()} maxHealth={userMessageLimit} />
-	{:else}
-		<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
-	{/if}
+	<progress value={timeToNextEpoch} max={epochLengthSeconds} />
 </header>
 
 <style>
