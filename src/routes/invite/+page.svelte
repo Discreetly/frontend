@@ -5,6 +5,7 @@
 	import qrcode from 'qrcode';
 	let numCodes = 1;
 	let roomIds: string[] = [];
+	let roomNames: string[] = [];
 
 	function makeInviteQRCode(inviteCode: string) {
 		const canvasContainer = document.getElementById('qr');
@@ -17,6 +18,9 @@
 		canvasContainer?.appendChild(div);
 		const url = `https://app.discreetly.chat/signup/${inviteCode}`;
 		qrcode.toCanvas(canvas, url);
+		canvas.style.height = '250px';
+		canvas.style.width = '250px';
+		div.className = 'flex flex-col place-items-center gap-2';
 	}
 
 	async function newCodes(numCodes: number) {
@@ -45,23 +49,38 @@
 		} else {
 			roomIds = roomIds.filter((id) => id !== roomId);
 		}
+		roomNames = $currentRoomsStore
+			.filter((room) => roomIds.includes(String(room.roomId)))
+			.map((room) => room.name);
 	}
 </script>
 
 <div class="flex flex-col place-content-center max-w-sm m-auto pt-5">
 	<div id="qr" class="flex flex-col gap-12 place-content-center">
 		<div>
-			<canvas class="variant-ghost-success" />
-			<p>no codes yet</p>
+			<canvas class="variant-soft-secondary" width="250" height="250" />
+			<p>no code generated yet</p>
 		</div>
 	</div>
 	<div
-		class="btn my-12 variant-ghost-primary text-center items-center"
+		class="btn my-12 variant-soft-primary text-center items-center"
 		on:click={() => {
 			newCodes(numCodes);
 		}}
 	>
-		New Codes
+		{#if numCodes > 1}
+			Generate New Codes
+		{:else}
+			Generate New Code
+		{/if}
+	</div>
+	<div class="border-b border-spacing-3 pb-5 mb-5">
+		<p>Rooms:</p>
+		<ul class="ul">
+			{#each roomNames as name}
+				<li class="ms-2">- {name}</li>
+			{/each}
+		</ul>
 	</div>
 	<Accordion>
 		<AccordionItem>
@@ -79,7 +98,12 @@
 				><div>
 					{#each $currentRoomsStore as room}
 						<label class="label">
-							<input type="checkbox" value={room.roomId} on:change={updateRoomList} />
+							<input
+								type="checkbox"
+								value={room.roomId}
+								on:change={updateRoomList}
+								checked={roomIds.includes(String(room.roomId))}
+							/>
 							<span title={String(room.roomId)}>{room.name}</span>
 						</label>
 					{/each}
@@ -105,6 +129,8 @@
 <style>
 	#qr > div > canvas {
 		margin: 0 auto;
+		height: 250px;
+		width: 250px;
 	}
 	#qr > div > p {
 		text-align: center;
