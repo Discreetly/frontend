@@ -3,6 +3,7 @@
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { currentSelectedRoom, identityStore } from '$lib/stores';
 	import { drawerStore } from '@skeletonlabs/skeleton';
+	import Settings from 'svelte-material-icons/TuneVariant.svelte';
 	$: identityExists = !!$identityStore._commitment;
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 
@@ -43,7 +44,7 @@
 		<div class="hidden sm:inline me-2 text-primary-500">Alpha Version!</div>
 		<a href="/about" class="btn-icon btn-icon-sm variant-soft-secondary sm:hidden me-2">?</a>
 		{#if identityExists}
-			<a href="/identity">⚙</a>
+			<a href="/settings"><Settings size="1.2em" /></a>
 		{/if}
 		<LightSwitch />
 	</svelte:fragment>

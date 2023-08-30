@@ -6,7 +6,7 @@
 	<header class="card-header">
 		<h4 class="h4">Join More Rooms</h4>
 	</header>
-	<section class="py-2 mb-2">
+	<section class="p-2 mb-2">
 		<Join />
 	</section>
 </div>

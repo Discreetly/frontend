@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { autoModeWatcher } from '@skeletonlabs/skeleton';
 	import { Modal } from '@skeletonlabs/skeleton';
 	import { Toast } from '@skeletonlabs/skeleton';
 	import '../theme.postcss';
@@ -7,7 +6,6 @@
 	import '../app.postcss';
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
-	import AppFooter from './AppFooter.svelte';
 	import Loading from '$lib/components/loading.svelte';
 	import { selectedServer } from '$lib/stores';
 	import { getServerList, setDefaultServers } from '$lib/utils/';
@@ -30,13 +28,6 @@
 	});
 </script>
 
-<svelte:head
-	>{@html `
-			<script>
-				${autoModeWatcher.toString()} autoModeWatcher();
-			</script>
-			`}</svelte:head
->
 <Modal />
 <Toast position="t" background="variant-filled-primary" />
 <Drawer position="top" padding="p-4" rounded="rounded-token">

@@ -1,4 +1,5 @@
-import type { RoomI as RI } from 'discreetly-interfaces';
+import type { MessageI, RoomI as RI, ServerI } from 'discreetly-interfaces';
+
 export interface ButtonI {
 	link: string;
 	cls: string;
@@ -17,6 +18,34 @@ export interface JoinResponseI {
 	roomIds: string[];
 }
 
+// Keyed by server URL
+export interface serverStoreI {
+	[key: string]: ServerI;
+}
+
+// Keyed by server URL
+export interface selectedRoomStoreI {
+	[key: string]: string;
+}
+
+// Keyed by roomId
+export interface roomStoreI {
+	[key: string]: RoomI;
+}
+
+// Keyed by roomId
+export interface messageStoreI {
+	[key: string]: MessageI[];
+}
+
+// Keyed by roomId
+export interface rateLimitStoreI {
+	[key: string]: {
+		lastEpoch: number;
+		messagesSent: number;
+	};
+}
+
 export enum IdentityStoreE {
 	'NO_IDENTITY',
 	'localStorage',
@@ -30,11 +59,17 @@ export interface SignUpStatusI {
 	inviteCode?: string;
 }
 
+export enum ActionRepresentationE {
+	'AP',
+	'Hearts'
+}
+
 export interface ConfigurationI {
 	signUpStatus: SignUpStatusI;
 	identityStore: IdentityStoreE;
 	apiUsername?: string;
 	apiPassword?: string;
+	actionRepresentation?: ActionRepresentationE;
 }
 
 export interface RoomI extends RI {

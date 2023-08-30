@@ -61,6 +61,7 @@
 		"poseidon-lite": "^0.2.0",
 		"qr-scanner": "^1.4.2",
 		"qrcode": "^1.5.3",
-		"socket.io-client": "^4.7.1"
+		"socket.io-client": "^4.7.1",
+		"svelte-material-icons": "^3.0.5"
 	}
 }

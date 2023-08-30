@@ -26,7 +26,7 @@
 	}
 
 	onMount(() => {
-		scrollChatBottom('smooth', 500);
+		scrollChatBottom('instant', 1);
 	});
 </script>
 
@@ -50,12 +50,14 @@
 								>epoch: {bubble.epoch}</small
 							>
 						{:else}
-							<small class="hidden md:block opacity-70 text-error-500-400-token text-"
+							<small class="hidden md:block opacity-70 text-error-500-400-token"
 								>SYSTEM MESSAGE</small
 							>
 						{/if}
 					</header>
-					<BubbleText bubbleText={JSON.stringify(bubble.message)} />
+					{#key bubble}
+						<BubbleText bubbleText={String(bubble.message)} />
+					{/key}
 				</div>
 			</div>
 		{/each}

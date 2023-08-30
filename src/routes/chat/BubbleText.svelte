@@ -3,7 +3,7 @@
 	import * as marked from 'marked';
 	import Autolinker from 'autolinker';
 	import DOMPurify from 'dompurify';
-	import * as emoji from 'node-emoji'
+	import * as emoji from 'node-emoji';
 
 	export let bubbleText: string;
 	let formattedText = '';
@@ -20,9 +20,10 @@
 			stripPrefix: false,
 			stripTrailingSlash: false,
 			newWindow: true,
+			className: 'link',
 			replaceFn: (match) => {
 				// Only replacing URLs.  We can also replace email, phone, mention, and hashtag if we want.
-				return match.getType() === 'url'
+				return match.getType() === 'url';
 			}
 		});
 
@@ -43,7 +44,11 @@
 </script>
 
 <section id="BubbleText">
-	<div class="text-surface-800-100-token whitespace-pre">{@html formattedText}</div>
+	<div class="text-surface-800-100-token">{@html formattedText}</div>
 </section>
 
-<style></style>
+<style>
+	#BubbleText > * {
+		white-space: break-spaces;
+	}
+</style>

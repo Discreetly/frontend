@@ -5,7 +5,10 @@
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
 	import { createIdentity } from '$lib/utils/';
+	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
+	import ActionRepresentation from './ActionRepresentation.svelte';
 	$: identityExists = !!$identityStore._commitment;
+	let tabSet: number = 0;
 </script>
 
 {#if !identityExists}
@@ -26,8 +29,28 @@
 		</button>
 		<RestoreIdentity />
 	{:else}
-		<BackupIdentity />
-		<DeleteIdentity />
-		<JoinMore />
+		<TabGroup
+			justify="justify-around"
+			active="variant-soft-secondary"
+			flex="flex-1 lg:flex-none"
+			class="w-full"
+		>
+			<Tab bind:group={tabSet} name="id" value={0} class="center">
+				<span>Identity</span>
+			</Tab>
+			<Tab bind:group={tabSet} name="server" value={1}>Server</Tab>
+			<Tab bind:group={tabSet} name="misc" value={2}>Settings</Tab>
+			<!-- Tab Panels --->
+			<svelte:fragment slot="panel">
+				{#if tabSet === 0}
+					<BackupIdentity />
+					<DeleteIdentity />
+				{:else if tabSet === 1}
+					<JoinMore />
+				{:else if tabSet === 2}
+					<ActionRepresentation />
+				{/if}
+			</svelte:fragment>
+		</TabGroup>
 	{/if}
 </div>

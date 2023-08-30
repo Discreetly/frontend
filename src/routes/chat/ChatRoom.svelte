@@ -26,6 +26,10 @@
 			messagesSent: 0
 		};
 	}
+	let unsubscribeStore = currentSelectedRoom.subscribe((currentValue) => {
+		updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
+	});
+
 	$: currentRateLimit = $rateLimitStore[$currentSelectedRoom.roomId!.toString()];
 	$: messagesLeft = () => {
 		if (currentRateLimit.lastEpoch !== currentEpoch) {
@@ -133,6 +137,7 @@
 		}, 100);
 	});
 	onDestroy(() => {
+		unsubscribeStore();
 		socket.emit('leavingRoom', $currentSelectedRoom?.roomId);
 		socket.disconnect();
 	});
@@ -151,7 +156,9 @@
 			{roomRateLimit}
 		/>
 		<!-- Conversation -->
-		<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
+		{#key $currentSelectedRoom.roomId}
+			<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
+		{/key}
 		<!-- Prompt -->
 		<InputPrompt
 			{socket}

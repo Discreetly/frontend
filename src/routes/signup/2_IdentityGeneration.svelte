@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { identityStore } from '$lib/stores';
 	import { createIdentity } from '$lib/utils/';
-	import RestoreIdentity from '../identity/RestoreIdentity.svelte';
+	import RestoreIdentity from '../settings/RestoreIdentity.svelte';
 	$: identityExists = !!$identityStore._commitment;
 </script>
 

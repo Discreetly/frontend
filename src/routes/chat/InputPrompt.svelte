@@ -3,6 +3,7 @@
 	import { genProof } from '$lib/crypto/prover';
 	import type { Socket } from 'socket.io-client';
 	import { getIdentity, alert } from '$lib/utils';
+	import Send from 'svelte-material-icons/Send.svelte';
 
 	export let socket: Socket;
 	export let connected: boolean;
@@ -26,7 +27,6 @@
 		}
 		return 'Write a message...';
 	};
-	$: sendButtonText = messagesLeft() > 0 ? 'Send (' + messagesLeft() + ' left)' : 'X';
 	$: canSendMessage = connected && !sendingMessage;
 
 	function checkStatus(): boolean {
@@ -42,6 +42,12 @@
 		}
 		if (messageText.length > 2000) {
 			alert('MESSAGE IS TOO LONG');
+			sendingMessage = false;
+			return false;
+		}
+		// This is 100% thanks to Violet for spamming the chat with spaces
+		if (messageText.replaceAll(' ', '') == '') {
+			alert('MESSAGE IS EMPTY');
 			sendingMessage = false;
 			return false;
 		}
@@ -99,7 +105,7 @@
 		<textarea
 			bind:value={messageText}
 			maxlength="2000"
-			class=" p-1 md:p-2 text-surface-900-50-token border"
+			class=" p-1 md:p-2 text-surface-900-50-token border-none"
 			class:bg-surface-300-600-token={!canSendMessage}
 			class:bg-surface-200-700-token={canSendMessage}
 			name="prompt"
@@ -112,12 +118,12 @@
 		<button
 			class:hidden={!canSendMessage}
 			class={canSendMessage && messageText
-				? 'text-xs md:text-base variant-ghost-success'
-				: 'text-xs md:text-base variant-ghost-secondary'}
+				? 'border-none text-xs md:text-base variant-soft-success'
+				: 'border-none text-xs md:text-base variant-soft-secondary'}
 			disabled={!canSendMessage}
 			on:click={sendMessage}
 		>
-			{sendButtonText}
+			<Send />
 		</button>
 	</div>
 </section>

@@ -1,37 +1,15 @@
-import type { ConfigurationI, IdentityStoreI } from '$lib/types';
-import type { MessageI, ServerI } from 'discreetly-interfaces';
-import type { RoomI } from '$lib/types';
 import { storable, sessionable } from './storeFactory';
 import { writable, derived } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
-
-// Keyed by server URL
-export interface serverStoreI {
-	[key: string]: ServerI;
-}
-
-// Keyed by server URL
-interface selectedRoomStoreI {
-	[key: string]: string;
-}
-
-// Keyed by roomId
-interface roomStoreI {
-	[key: string]: RoomI;
-}
-
-// Keyed by roomId
-interface messageStoreI {
-	[key: string]: MessageI[];
-}
-
-// Keyed by roomId
-interface rateLimitStoreI {
-	[key: string]: {
-		lastEpoch: number;
-		messagesSent: number;
-	};
-}
+import type {
+	ConfigurationI,
+	IdentityStoreI,
+	messageStoreI,
+	rateLimitStoreI,
+	roomStoreI,
+	selectedRoomStoreI,
+	serverStoreI
+} from '$lib/types';
 
 /* ------------------ Server State ------------------*/
 /**
