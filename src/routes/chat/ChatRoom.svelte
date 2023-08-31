@@ -67,6 +67,9 @@
 			connected = true;
 			const engine = socket.io.engine;
 
+			updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
+			scrollChatToBottom();
+
 			engine.once('upgrade', () => {
 				console.debug('Upgraded connection to', engine.transport.name);
 			});
@@ -127,10 +130,6 @@
 				console.debug('Received System Message: ', data);
 			});
 		});
-
-		updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
-
-		scrollChatToBottom();
 
 		setInterval(() => {
 			updateEpoch();

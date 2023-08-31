@@ -36,11 +36,13 @@
 				[{timeToNextEpoch.toFixed(1)}/{epochLengthSeconds}s]
 			</div>
 		</div>
-		<div title={String(epochLengthSeconds + ' seconds per epoch')}>
+		<div
+			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds`}
+		>
 			{#if $configStore.actionRepresentation == ActionRepresentationE.AP}
 				<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
 			{:else if $configStore.actionRepresentation == ActionRepresentationE.Hearts}
-				<Hearts health={messagesLeft()} maxHealth={userMessageLimit} />
+				<Hearts health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
 			{:else}
 				<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
 			{/if}
