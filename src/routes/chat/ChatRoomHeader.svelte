@@ -1,5 +1,6 @@
 <script lang="ts">
 	import AP from '$lib/components/AP.svelte';
+	import Clock from '$lib/components/Clock.svelte';
 	import { configStore, currentSelectedRoom } from '$lib/stores';
 	import { ProgressBar } from '@skeletonlabs/skeleton';
 	import FullCircle from 'svelte-material-icons/Circle.svelte';
@@ -31,21 +32,22 @@
 			<h2 class="h5 text-secondary-800-100-token" title={roomId}>
 				{roomName}
 			</h2>
-			<div class="ms-2 text-xs font-mono self-center">
+			<div class="hidden sm:block ms-2 text-xs font-mono self-center">
 				[{timeToNextEpoch.toFixed(1)}/{epochLengthSeconds}s]
 			</div>
 		</div>
 		<div
+			class="flex flex-row place-content-center"
 			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds`}
 		>
 			<AP health={messagesLeft()} maxHealth={userMessageLimit} />
+			<div class="block sm:hidden">
+				<Clock time={timeToNextEpoch} maxTime={epochLengthSeconds} />
+			</div>
 		</div>
 	</div>
 	<div class="hidden sm:block">
 		<ProgressBar value={timeToNextEpoch} max={epochLengthSeconds} />
-	</div>
-	<div class="block sm:hidden">
-		<ProgressBar value={timeToNextEpoch} max={epochLengthSeconds} height={'h-1'} />
 	</div>
 </header>
 
