@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { selectedServer, selectedRoom, currentRoomsStore } from '$lib/stores';
 	import { updateMessages } from '$lib/utils';
 	import { drawerStore } from '@skeletonlabs/skeleton';
@@ -7,6 +8,7 @@
 		$selectedRoom[$selectedServer] = roomId;
 		updateMessages($selectedServer, roomId);
 		drawerStore.close();
+		goto('/chat');
 	}
 </script>
 

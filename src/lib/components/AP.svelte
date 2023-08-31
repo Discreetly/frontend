@@ -1,29 +1,22 @@
 <script lang="ts">
-	import FullCircle from 'svelte-material-icons/Circle.svelte';
-	import CircleEmpty from 'svelte-material-icons/CircleOutline.svelte';
-
+	import Hearts from '$lib/components/ActionPoints/Hearts.svelte';
+	import AP from '$lib/components/ActionPoints/ActionPoints.svelte';
+	import { ActionRepresentationE } from '$lib/types';
+	import Shields from '$lib/components/ActionPoints/Shields.svelte';
+	import { configStore } from '$lib/stores';
+	import Battery from './ActionPoints/Battery.svelte';
 	export let health: number;
 	export let maxHealth: number;
-	export let reverse: boolean = false;
-
-	$: fullcircles = health;
-	$: emptycircles = maxHealth - health;
 </script>
 
-<div class="flex flex-row ms-2 place-items-center">
-	{#if reverse}
-		{#each { length: emptycircles } as _, i}
-			<CircleEmpty class="w-4 h-4 text-surface-600-300-token" />
-		{/each}
-		{#each { length: fullcircles } as _, i}
-			<FullCircle class="w-4 h-4 text-green-500" />
-		{/each}
-	{:else}
-		{#each { length: fullcircles } as _, i}
-			<FullCircle class="w-4 h-4 text-green-500" />
-		{/each}
-		{#each { length: emptycircles } as _, i}
-			<CircleEmpty class="w-4 h-4 text-surface-600-300-token" />
-		{/each}
-	{/if}
-</div>
+{#if $configStore.actionRepresentation == ActionRepresentationE.AP}
+	<AP {health} {maxHealth} />
+{:else if $configStore.actionRepresentation == ActionRepresentationE.Hearts}
+	<Hearts {health} {maxHealth} />
+{:else if $configStore.actionRepresentation == ActionRepresentationE.Shields}
+	<Shields {health} {maxHealth} />
+{:else if $configStore.actionRepresentation == ActionRepresentationE.Battery}
+	<Battery {health} {maxHealth} />
+{:else}
+	<AP {health} {maxHealth} />
+{/if}

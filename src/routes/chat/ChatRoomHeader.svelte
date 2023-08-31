@@ -1,9 +1,8 @@
 <script lang="ts">
-	import Hearts from '$lib/components/Hearts.svelte';
 	import AP from '$lib/components/AP.svelte';
-	import FullCircle from 'svelte-material-icons/Circle.svelte';
 	import { configStore, currentSelectedRoom } from '$lib/stores';
-	import { ActionRepresentationE } from '$lib/types';
+	import { ProgressBar } from '@skeletonlabs/skeleton';
+	import FullCircle from 'svelte-material-icons/Circle.svelte';
 	export let connected: boolean;
 	export let currentEpoch: number;
 	export let timeLeftInEpoch: string;
@@ -18,7 +17,7 @@
 </script>
 
 <header
-	class="hidden border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3 sm:flex flex-col text-xs md:text-base"
+	class="flex flex-col text-xs md:text-base border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3"
 >
 	<div class="flex flex-row justify-between place-items-center mb-2">
 		<div class="flex flex-row">
@@ -39,16 +38,15 @@
 		<div
 			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds`}
 		>
-			{#if $configStore.actionRepresentation == ActionRepresentationE.AP}
-				<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
-			{:else if $configStore.actionRepresentation == ActionRepresentationE.Hearts}
-				<Hearts health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
-			{:else}
-				<AP health={messagesLeft()} maxHealth={userMessageLimit} reverse={true} />
-			{/if}
+			<AP health={messagesLeft()} maxHealth={userMessageLimit} />
 		</div>
 	</div>
-	<progress value={timeToNextEpoch} max={epochLengthSeconds} />
+	<div class="hidden sm:block">
+		<ProgressBar value={timeToNextEpoch} max={epochLengthSeconds} />
+	</div>
+	<div class="block sm:hidden">
+		<ProgressBar value={timeToNextEpoch} max={epochLengthSeconds} height={'h-1'} />
+	</div>
 </header>
 
 <style>

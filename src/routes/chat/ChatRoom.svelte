@@ -31,6 +31,7 @@
 	});
 
 	$: currentRateLimit = $rateLimitStore[$currentSelectedRoom.roomId!.toString()];
+
 	$: messagesLeft = () => {
 		if (currentRateLimit.lastEpoch !== currentEpoch) {
 			currentRateLimit.lastEpoch = currentEpoch;

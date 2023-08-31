@@ -61,7 +61,9 @@ export interface SignUpStatusI {
 
 export enum ActionRepresentationE {
 	'AP',
-	'Hearts'
+	'Hearts',
+	'Shields',
+	'Battery'
 }
 
 export interface ConfigurationI {

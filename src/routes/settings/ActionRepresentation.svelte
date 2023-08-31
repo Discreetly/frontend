@@ -1,13 +1,13 @@
 <script lang="ts">
-	import ActionPoints from '$lib/components/AP.svelte';
-	import Hearts from '$lib/components/Hearts.svelte';
+	import AP from '$lib/components/AP.svelte';
 	import { configStore } from '$lib/stores';
 	import { ActionRepresentationE } from '$lib/types';
-
-	$: ap = $configStore.actionRepresentation;
 	$: if ($configStore.actionRepresentation == undefined) {
 		$configStore.actionRepresentation = ActionRepresentationE.AP;
 	}
+
+	let health = 4;
+	let maxHealth = 5;
 </script>
 
 <div class="card variant-soft-secondary">
@@ -16,13 +16,6 @@
 	</header>
 	<section class="p-2 mb-2 sm:p-4 sm:mb-4">
 		<div class="flex flex-col">
-			<div class="mb-2 sm:mb-4">
-				{#if $configStore.actionRepresentation == ActionRepresentationE.AP}
-					<ActionPoints health={4} maxHealth={5} />
-				{:else if $configStore.actionRepresentation == ActionRepresentationE.Hearts}
-					<Hearts health={4} maxHealth={5} />
-				{/if}
-			</div>
 			<select
 				id="action-representation"
 				class="select"
@@ -30,7 +23,22 @@
 			>
 				<option value={ActionRepresentationE.AP}>Action Points</option>
 				<option value={ActionRepresentationE.Hearts}>Hearts</option>
+				<option value={ActionRepresentationE.Shields}>Shields</option>
+				<option value={ActionRepresentationE.Battery}>Battery</option>
 			</select>
+
+			<div class="border-t mt-2 pt-2 mb-2 sm:mb-4 flex flex-col place-items-center">
+				<h6 class="h6">Demo</h6>
+				<AP {health} {maxHealth} />
+				<label
+					><div>Health: {health}</div>
+					<input type="range" min="0" max={maxHealth} bind:value={health} />
+				</label>
+				<label
+					><div>Max Health: {maxHealth}</div>
+					<input type="range" min="1" max={10} bind:value={maxHealth} />
+				</label>
+			</div>
 		</div>
 	</section>
 </div>
