@@ -1,14 +1,27 @@
 <script lang="ts">
 	import JoinMore from './JoinMore.svelte';
 	import { identityStore } from '$lib/stores';
+	import { page } from '$app/stores';
 	import DeleteIdentity from './DeleteIdentity.svelte';
 	import BackupIdentity from './BackupIdentity.svelte';
 	import RestoreIdentity from './RestoreIdentity.svelte';
 	import { createIdentity } from '$lib/utils/';
 	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
 	import ActionRepresentation from './ActionRepresentation.svelte';
+	import { onMount } from 'svelte';
 	$: identityExists = !!$identityStore._commitment;
 	let tabSet: number = 0;
+	onMount(() => {
+		console.log('Page: ', $page);
+		if ($page.url.hash) {
+			const hash = $page.url.hash.replace('#', '');
+			console.log('Hash: ', hash);
+			if (hash === 'join-more') {
+				console.log('setting tab to join');
+				tabSet = 1;
+			}
+		}
+	});
 </script>
 
 {#if !identityExists}
