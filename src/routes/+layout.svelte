@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Modal } from '@skeletonlabs/skeleton';
+	import { AppShell, Modal } from '@skeletonlabs/skeleton';
 	import { Toast } from '@skeletonlabs/skeleton';
 	import '../theme.postcss';
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
@@ -34,38 +34,10 @@
 	<SelectServer />
 	<SelectRoom />
 </Drawer>
-<app id="app">
-	<div id="header">
-		<AppHeader />
-	</div>
-	<div id="main">
-		<slot>
-			<Loading />
-		</slot>
-	</div>
-	<!-- <div id="footer">
-		<AppFooter />
-	</div> -->
-</app>
 
-<style>
-	#app {
-		height: 100vh;
-		display: grid;
-		grid-template-columns: 1fr;
-		grid-template-rows: auto 1fr auto;
-		grid-template-areas: 'head' 'main' 'foot';
-	}
-	#app > #header {
-		grid-area: head;
-	}
-
-	#app > #main {
-		grid-area: main;
-		height: 100%;
-	}
-
-	#app > #footer {
-		grid-area: foot;
-	}
-</style>
+<AppShell>
+	<svelte:fragment slot="header"><AppHeader /></svelte:fragment>
+	<slot>
+		<Loading />
+	</slot>
+</AppShell>

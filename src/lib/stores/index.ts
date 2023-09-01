@@ -1,10 +1,11 @@
 import { storable, sessionable } from './storeFactory';
-import { writable, derived } from 'svelte/store';
+import { derived } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 import type {
 	ConfigurationI,
 	IdentityStoreI,
 	messageStoreI,
+	pixelStoreI,
 	rateLimitStoreI,
 	roomStoreI,
 	selectedRoomStoreI,
@@ -51,6 +52,8 @@ export const currentSelectedRoom = derived(
  * @description Session store (removed after the session is cleared) of the last 500 messages or so of each room the user participates in; rooms they don't have selected will not be updated
  */
 export const messageStore = sessionable({} as messageStoreI, 'messages');
+
+export const pixelStore = sessionable({} as pixelStoreI, 'pixelmaps');
 
 /* ------------------ Misc State ------------------*/
 /**

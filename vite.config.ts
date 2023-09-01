@@ -10,9 +10,6 @@ export default defineConfig({
 		rollupOptions: {
 			plugins: [sizes()],
 			output: {
-				manualChunks: {
-					'@sveltejs/kit': ['@sveltejs/kit']
-				},
 				compact: true
 			}
 		}
