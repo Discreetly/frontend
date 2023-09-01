@@ -18,28 +18,36 @@
 	let lastRoom = '';
 	$: currentEpoch = 0;
 	$: timeLeftInEpoch = '0';
+	$: roomId = $currentSelectedRoom.roomId!.toString();
 	$: userMessageLimit = $currentSelectedRoom.userMessageLimit ?? 1;
 	$: roomRateLimit = $currentSelectedRoom.rateLimit ?? 0;
-	$: if (!$rateLimitStore[$currentSelectedRoom.roomId!.toString()]) {
-		$rateLimitStore[$currentSelectedRoom.roomId!.toString()] = {
+	$: if (!$rateLimitStore[roomId]) {
+		console.debug('Resetting rate limit store for room', roomId);
+		$rateLimitStore[roomId] = {
 			lastEpoch: currentEpoch,
 			messagesSent: 0
 		};
 	}
+
 	let unsubscribeStore = currentSelectedRoom.subscribe((currentValue) => {
-		updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
+		updateMessages($selectedServer, roomId);
 	});
 
-	$: currentRateLimit = $rateLimitStore[$currentSelectedRoom.roomId!.toString()];
-
 	$: messagesLeft = () => {
-		if (currentRateLimit.lastEpoch !== currentEpoch) {
-			currentRateLimit.lastEpoch = currentEpoch;
-			currentRateLimit.messagesSent = 0;
+		if (currentEpoch > 0) {
+			if ($rateLimitStore[roomId].lastEpoch !== currentEpoch) {
+				$rateLimitStore[roomId] = {
+					lastEpoch: currentEpoch,
+					messagesSent: 0
+				};
+				console.debug('MessagesLeft() resetting epoch for room', roomId);
 			return userMessageLimit;
 		} else {
-			return userMessageLimit - currentRateLimit.messagesSent;
+				console.debug('MessagesLeft() returning messages left for room', roomId);
+				return userMessageLimit - $rateLimitStore[roomId].messagesSent;
+			}
 		}
+		return 0;
 	};
 	$: messageId = userMessageLimit - messagesLeft();
 	$: try {
