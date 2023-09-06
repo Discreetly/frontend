@@ -11,8 +11,8 @@ export enum IdentityStoreE {
 }
 
 export enum ActionRepresentationE {
-	'AP',
 	'Hearts',
+	'AP',
 	'Shields',
 	'Battery'
 }
