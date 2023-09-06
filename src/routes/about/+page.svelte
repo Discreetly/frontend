@@ -1,31 +1,45 @@
 <script>
 	import Button from '$lib/components/button.svelte';
+	import Demo from '$lib/components/Demo.svelte';
 </script>
 
 <div class="mx-auto mt-10 max-w-[80ch]">
 	<img src="/logo-text.png" alt="discreetly" class="max-h-20 mb-5" />
-	<h5 class="italic mb-4 mt-1">A new take on anonymous communication.</h5>
+	<h5 class="italic mb-4 mt-1">A new take on group chats.</h5>
 	<p class="text-justify my-3">
-		This feels like a mostly familiar chat application, with random numbers as usernames, but I
-		assure you there is more going on here.
+		This feels like a mostly familiar chat application, except there aren't user names. Under the
+		hood, there is no "login", the server doesn't know who you are, you are anonymous. You're
+		completely anonymous. <i class="italic">Unless you break the rules.</i>
 	</p>
+
 	<p class="text-justify my-3">
-		Under the hood, there is no "login", the server doesn't know who you are, you are anonymous.
+		The beauty of this system is that it fosters trust among group members, knowing that everyone in
+		the chat is a verified member. At the same time, it provides the freedom to express oneself
+		anonymously.
 	</p>
+
 	<p class="text-justify my-3">
-		There is one catch, if you send messages too fast, someone can figure out which identity you
-		are, and remove you from the chat. So if you try to break the rules, you will be removed, and
-		there is no undo.
+		When you want to send a message in a room, you need to verify your membership in that room, but
+		without giving away your identity. This is accomplished using a zero-knowledge proof, a clever
+		piece of cryptography that lets you prove you know something, without having to reveal what that
+		something is.
 	</p>
-	<p>
-		When you send a message, your device generates a zk proof that you are a member of that room,
-		and that you haven't sent too many messages during some time period (an epoch), but doesn't
-		reveal which member you are.
+
+	<p class="text-justify my-3">
+		However, there's a small catch. To prevent spam, each time you send a message, you "share" a
+		tiny piece of your identity that is only useful for that epoch (time period). If you send too
+		many messages during an epoch, someone can reassemble your identity, all of your messages can be
+		linked together, and you will be removed from the chat for spamming. This is done automatically
+		and permanently, there is no unban.
 	</p>
+
 	<p class="text-justify my-3">
 		Read more about <a class="anchor" href="https://rate-limiting-nullifier.github.io/rln-docs/"
 			>RLN</a
 		>.
 	</p>
 	<a href="https://discord.gg/brJQ36KVxk" class="btn variant-ghost-secondary">Join our Discord</a>
+	<div>
+		<Demo />
+	</div>
 </div>

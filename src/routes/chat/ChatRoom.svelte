@@ -1,21 +1,29 @@
 <script lang="ts">
 	import ChatRoomHeader from './ChatRoomHeader.svelte';
-
-	import InputPrompt from './InputPrompt.svelte';
-	import Conversation from './Conversation.svelte';
-	import { onMount, onDestroy } from 'svelte';
-	import { selectedServer, currentSelectedRoom, messageStore, rateLimitStore } from '$lib/stores';
-	import { io } from 'socket.io-client';
-	import type { Socket } from 'socket.io-client';
-	import type { MessageI } from 'discreetly-interfaces';
-	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
 	import Loading from '$lib/components/loading.svelte';
+	import {
+		currentSelectedRoom,
+		messageStore,
+		rateLimitStore,
+		selectedServer,
+		configStore
+	} from '$lib/stores';
+	import { Experiences } from '$lib/types';
+	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
 	import { toastStore } from '@skeletonlabs/skeleton';
+	import type { MessageI } from 'discreetly-interfaces';
+	import type { Socket } from 'socket.io-client';
+	import { io } from 'socket.io-client';
+	import { onDestroy, onMount } from 'svelte';
+	import Conversation from './Conversation.svelte';
+	import Draw from './Draw.svelte';
+	import InputPrompt from './InputPrompt.svelte';
 
 	let scrollChatToBottom: () => {};
 	let socket: Socket;
 	let connected: boolean = false;
 	let lastRoom = '';
+	let onlineMembers = '?';
 	$: currentEpoch = 0;
 	$: timeLeftInEpoch = '0';
 	$: roomId = $currentSelectedRoom.roomId!.toString();
@@ -40,10 +48,8 @@
 					lastEpoch: currentEpoch,
 					messagesSent: 0
 				};
-				console.debug('MessagesLeft() resetting epoch for room', roomId);
-			return userMessageLimit;
-		} else {
-				console.debug('MessagesLeft() returning messages left for room', roomId);
+				return userMessageLimit;
+			} else {
 				return userMessageLimit - $rateLimitStore[roomId].messagesSent;
 			}
 		}
@@ -71,13 +77,16 @@
 	}
 
 	onMount(() => {
+		console.log('MESSAGES LEFT: ' + messagesLeft());
 		socket = io($selectedServer);
 		socket.on('connect', () => {
 			connected = true;
 			const engine = socket.io.engine;
 
 			updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
-			scrollChatToBottom();
+			if ($configStore.experience == Experiences.Chat) {
+				scrollChatToBottom();
+			}
 
 			engine.once('upgrade', () => {
 				console.debug('Upgraded connection to', engine.transport.name);
@@ -131,7 +140,8 @@
 				scrollChatToBottom();
 			}
 			socket.on('Members', (data: string) => {
-				console.debug(data);
+				console.debug(`Members Online: ${data}`);
+				onlineMembers = data;
 			});
 
 			socket.on('systemBroadcast', (data: string) => {
@@ -153,7 +163,6 @@
 
 {#if $currentSelectedRoom}
 	<div id="chat" class="grid grid-rows-[auto,1fr,auto]">
-		<!-- Header -->
 		<ChatRoomHeader
 			{connected}
 			{currentEpoch}
@@ -163,19 +172,36 @@
 			{messagesLeft}
 			{roomRateLimit}
 		/>
+		{#if $configStore.experience == Experiences.Chat}
+			{#key $currentSelectedRoom.roomId}
+				<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
+			{/key}
+			<InputPrompt
+				{socket}
+				{connected}
+				{currentEpoch}
+				{userMessageLimit}
+				{messageId}
+				{messagesLeft}
+			/>
+		{:else if $configStore.experience == Experiences.Draw}
+			<Draw />
+		{:else}
+			{#key $currentSelectedRoom.roomId}
+				<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
+			{/key}
+			<InputPrompt
+				{socket}
+				{connected}
+				{currentEpoch}
+				{userMessageLimit}
+				{messageId}
+				{messagesLeft}
+			/>
+		{/if}
 		<!-- Conversation -->
-		{#key $currentSelectedRoom.roomId}
-			<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
-		{/key}
+
 		<!-- Prompt -->
-		<InputPrompt
-			{socket}
-			{connected}
-			{currentEpoch}
-			{userMessageLimit}
-			{messageId}
-			{messagesLeft}
-		/>
 	</div>
 {:else}
 	<Loading />

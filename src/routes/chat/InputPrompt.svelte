@@ -73,6 +73,13 @@
 						$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent,
 						'messages sent this epoch'
 					);
+				} else {
+					$rateLimitStore[$currentSelectedRoom.roomId!.toString()].lastEpoch = currentEpoch;
+					$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent = 1;
+					console.debug(
+						$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent,
+						'messages sent this epoch'
+					);
 				}
 				socket.emit('validateMessage', msg);
 				console.debug('Sending message: ', msg);

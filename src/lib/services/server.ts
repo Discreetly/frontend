@@ -25,11 +25,18 @@ export async function getMessages(serverUrl: string, roomId: string) {
 
 export async function createInvite(
 	serverUrl: string,
+	username: string,
+	password: string,
 	numCodes: number,
 	roomIds: string[],
-	username: string,
-	password: string
+	expiresAt?: number,
+	usesLeft?: number
 ) {
-	const data = { numCodes, rooms: roomIds };
+	const data = { numCodes, expiresAt, usesLeft };
+	if (roomIds.length > 0) {
+		data['roomIds'] = roomIds;
+	} else {
+		data['all'] = true;
+	}
 	return postAuth([serverUrl, `api/addcode`], data, username, password) as Promise<Invites>;
 }

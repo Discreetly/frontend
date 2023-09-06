@@ -3,9 +3,14 @@
 	import { selectedServer, configStore, currentRoomsStore } from '$lib/stores';
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import qrcode from 'qrcode';
+	import { formatRelative } from 'date-fns';
 	let numCodes = 1;
 	let roomIds: string[] = [];
 	let roomNames: string[] = [];
+	let daysFromNow = 1;
+	let usesLeft = 1;
+
+	$: expiresAt = Date.now() + daysFromNow * 1000 * 60 * 60 * 24;
 
 	function makeInviteQRCode(inviteCode: string) {
 		const canvasContainer = document.getElementById('qr');
@@ -27,12 +32,17 @@
 		console.log(`Requesting ${numCodes} codes`);
 		const canvasContainer = document.getElementById('qr');
 		canvasContainer?.replaceChildren();
+		if (usesLeft == 0) {
+			usesLeft = -1;
+		}
 		const resp = await createInvite(
 			$selectedServer,
+			$configStore.apiUsername as string,
+			$configStore.apiPassword as string,
 			numCodes,
 			roomIds,
-			$configStore.apiUsername as string,
-			$configStore.apiPassword as string
+			expiresAt,
+			usesLeft
 		);
 		console.log(resp);
 		const codes = resp.codes;
@@ -87,8 +97,26 @@
 			<svelte:fragment slot="summary">Number of Codes</svelte:fragment>
 			<svelte:fragment slot="content"
 				><label class="label">
-					<span>Num Codes: {numCodes}</span>
+					<span># Codes: {numCodes}</span>
 					<input type="range" min="1" max="5" bind:value={numCodes} />
+				</label></svelte:fragment
+			>
+		</AccordionItem>
+		<AccordionItem>
+			<svelte:fragment slot="summary">Number of Uses Per Code</svelte:fragment>
+			<svelte:fragment slot="content"
+				><label class="label">
+					<span># Uses: {usesLeft ? usesLeft : 'Unlimited'}</span>
+					<input type="range" min="0" max="50" bind:value={usesLeft} />
+				</label></svelte:fragment
+			>
+		</AccordionItem>
+		<AccordionItem>
+			<svelte:fragment slot="summary">Expiration</svelte:fragment>
+			<svelte:fragment slot="content"
+				><label class="label">
+					<span>Expiration: {daysFromNow} day(s) ({formatRelative(expiresAt, new Date())})</span>
+					<input type="range" min="1" max="14" bind:value={daysFromNow} />
 				</label></svelte:fragment
 			>
 		</AccordionItem>
