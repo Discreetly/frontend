@@ -32,6 +32,11 @@ export async function createInvite(
 	expiresAt?: number,
 	usesLeft?: number
 ) {
-	const data = { numCodes, rooms: roomIds, expiresAt, usesLeft };
+	const data = { numCodes, expiresAt, usesLeft };
+	if (roomIds.length > 0) {
+		data['roomIds'] = roomIds;
+	} else {
+		data['all'] = true;
+	}
 	return postAuth([serverUrl, `api/addcode`], data, username, password) as Promise<Invites>;
 }
