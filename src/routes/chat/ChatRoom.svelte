@@ -48,10 +48,8 @@
 					lastEpoch: currentEpoch,
 					messagesSent: 0
 				};
-				console.debug('MessagesLeft() resetting epoch for room', roomId);
 				return userMessageLimit;
 			} else {
-				console.debug('MessagesLeft() returning messages left for room', roomId);
 				return userMessageLimit - $rateLimitStore[roomId].messagesSent;
 			}
 		}
