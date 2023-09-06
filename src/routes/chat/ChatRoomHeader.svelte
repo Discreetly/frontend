@@ -1,9 +1,10 @@
 <script lang="ts">
 	import AP from '$lib/components/AP.svelte';
 	import Clock from '$lib/components/Clock.svelte';
-	import { configStore, currentSelectedRoom } from '$lib/stores';
+	import { currentSelectedRoom } from '$lib/stores';
 	import { ProgressBar } from '@skeletonlabs/skeleton';
 	import FullCircle from 'svelte-material-icons/Circle.svelte';
+	import ExperienceMenu from './ExperienceMenu.svelte';
 	export let connected: boolean;
 	export let currentEpoch: number;
 	export let timeLeftInEpoch: string;
@@ -40,6 +41,7 @@
 			class="flex flex-row place-content-center"
 			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds`}
 		>
+			<ExperienceMenu />
 			<AP health={messagesLeft()} maxHealth={userMessageLimit} />
 			<div class="block sm:hidden">
 				<Clock time={timeToNextEpoch} maxTime={epochLengthSeconds} />

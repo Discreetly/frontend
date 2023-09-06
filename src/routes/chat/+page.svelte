@@ -10,7 +10,8 @@
 
 <style>
 	#chat-wrapper {
-		height: 100%;
+		height: 100vh;
+		max-height: calc(100vh - 56px);
 		display: grid;
 		grid-template-columns: minmax(17%, 300px) 1fr;
 		grid-template-rows: auto;
