@@ -6,7 +6,8 @@
 		messageStore,
 		rateLimitStore,
 		selectedServer,
-		configStore
+		configStore,
+		currentRoomsStore
 	} from '$lib/stores';
 	import { Experiences } from '$lib/types';
 	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
@@ -67,6 +68,9 @@
 	}
 
 	function updateEpoch() {
+		if ($currentSelectedRoom === undefined) {
+			$currentSelectedRoom = $currentRoomsStore[0];
+		}
 		currentEpoch = Math.floor(Date.now() / $currentSelectedRoom.rateLimit!);
 		timeLeftInEpoch = (
 			($currentSelectedRoom.rateLimit! -
