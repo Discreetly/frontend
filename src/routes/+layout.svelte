@@ -13,7 +13,7 @@
 	import { Drawer } from '@skeletonlabs/skeleton';
 	import SelectServer from '$lib/components/SelectServer.svelte';
 	import SelectRoom from '$lib/components/SelectRoom.svelte';
-	export const prerender = false;
+	export const ssr = false;
 	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
