@@ -2,11 +2,12 @@
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 	import { currentSelectedRoom, identityStore } from '$lib/stores';
-	import { drawerStore } from '@skeletonlabs/skeleton';
+	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	import Settings from 'svelte-material-icons/TuneVariant.svelte';
 	$: identityExists = !!$identityStore._commitment;
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 
+	const drawerStore = getDrawerStore();
 	// Open the drawer:
 	function drawerOpen(): void {
 		drawerStore.open();
