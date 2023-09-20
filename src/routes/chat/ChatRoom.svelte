@@ -152,6 +152,8 @@
 				toastStore.trigger({ message: data, timeout: 3000 });
 				console.debug('Received System Message: ', data);
 			});
+
+			scrollChatToBottom();
 		});
 
 		setInterval(() => {

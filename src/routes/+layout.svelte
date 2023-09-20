@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { AppShell, Modal } from '@skeletonlabs/skeleton';
+	import { AppShell, Modal, initializeStores } from '@skeletonlabs/skeleton';
 	import { Toast } from '@skeletonlabs/skeleton';
-	import '../theme.postcss';
-	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	import '../app.postcss';
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
@@ -13,7 +11,9 @@
 	import { Drawer } from '@skeletonlabs/skeleton';
 	import SelectServer from '$lib/components/SelectServer.svelte';
 	import SelectRoom from '$lib/components/SelectRoom.svelte';
-	export const ssr = false;
+
+	initializeStores();
+
 	// Hack to get BigInt <-> JSON compatibility
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
