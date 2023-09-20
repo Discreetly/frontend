@@ -8,6 +8,7 @@ export interface ConfigurationI {
 	apiPassword?: string;
 	actionRepresentation?: ActionRepresentationE;
 	experience?: Experiences;
+	beta?: boolean;
 }
 
 export interface RoomI extends RI {
