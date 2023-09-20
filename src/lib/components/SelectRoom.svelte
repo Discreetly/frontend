@@ -2,7 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { selectedServer, selectedRoom, currentRoomsStore } from '$lib/stores';
 	import { updateMessages } from '$lib/utils';
-	import { drawerStore } from '@skeletonlabs/skeleton';
+	import { getDrawerStore } from '@skeletonlabs/skeleton';
+
+	const drawerStore = getDrawerStore();
 
 	function setRoom(roomId: string) {
 		$selectedRoom[$selectedServer] = roomId;

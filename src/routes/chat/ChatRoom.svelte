@@ -11,7 +11,7 @@
 	} from '$lib/stores';
 	import { Experiences } from '$lib/types';
 	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
-	import { toastStore } from '@skeletonlabs/skeleton';
+	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { MessageI } from 'discreetly-interfaces';
 	import type { Socket } from 'socket.io-client';
 	import { io } from 'socket.io-client';
@@ -19,6 +19,8 @@
 	import Conversation from './Conversation.svelte';
 	import Draw from './Draw.svelte';
 	import InputPrompt from './InputPrompt.svelte';
+
+	const toastStore = getToastStore();
 
 	let scrollChatToBottom: () => {};
 	let socket: Socket;
@@ -152,6 +154,8 @@
 				toastStore.trigger({ message: data, timeout: 3000 });
 				console.debug('Received System Message: ', data);
 			});
+
+			scrollChatToBottom();
 		});
 
 		setInterval(() => {
