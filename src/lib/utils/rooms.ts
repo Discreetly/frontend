@@ -79,3 +79,4 @@ export function updateMessages(server: string, roomId: string) {
 		});
 	});
 }
+

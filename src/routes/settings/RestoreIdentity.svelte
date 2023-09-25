@@ -66,3 +66,11 @@
 	<span>Recovery Identity using json text</span>
 	<textarea name="textarea" id="" cols="30" rows="10" placeholder="Paste your Identity Here" />
 </label>
+
+<style>
+	textarea {
+		width: 100%;
+		height: 100%;
+		background-color: #1A1F1F;
+	}
+</style>
