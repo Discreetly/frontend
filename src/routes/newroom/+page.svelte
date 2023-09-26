@@ -9,7 +9,6 @@
   import RateLimit from './3_RateLimit.svelte';
   import MessageLimit from './4_MessageLimit.svelte';
   import ClaimCodes from './5_ClaimCodes.svelte';
-  import RoomType from './6_RoomType.svelte';
 
   let formData: any = {
     roomName: "",
@@ -26,21 +25,21 @@
   function handleSubmit (): void {
     const identity = getIdentity();
     formData.rateLimit = formData.rateLimit * 1000
-    // createRoom(
-    //   $selectedServer,
-    //   formData.roomName,
-    //   $configStore.apiUsername as string,
-    //   $configStore.apiPassword as string,
-    //   formData.rateLimit,
-    //   formData.messageLimit,
-    //   formData.claimCodes,
-    //   [identity._commitment],
-    //   formData.membershipType,
-    //   formData.roomType,
-    //   formData.bandadaAddress,
-    //   formData.bandadaGroupId,
-    //   formData.bandadaApiKey,
-    //   )
+    createRoom(
+      $selectedServer,
+      formData.roomName,
+      $configStore.apiUsername as string,
+      $configStore.apiPassword as string,
+      formData.rateLimit,
+      formData.messageLimit,
+      formData.claimCodes,
+      [identity._commitment],
+      formData.membershipType,
+      formData.roomType,
+      formData.bandadaAddress,
+      formData.bandadaGroupId,
+      formData.bandadaApiKey,
+      )
   };
 
 </script>
@@ -50,7 +49,7 @@
   <Stepper class="max-w-sm sm:max-w-md md:max-w-3xl mx-auto mt-16"
   on:complete={() => {
     handleSubmit();
-    // goto('/chat')
+    goto('/chat')
   }}
   buttonNext="variant-filled-surface-50-900-token"
   buttonComplete="variant-filled-success">
@@ -59,6 +58,5 @@
   <RateLimit {formData} />
   <MessageLimit {formData} />
   <ClaimCodes {formData} />
-  <RoomType {formData} />
 </Stepper>
 </div>
