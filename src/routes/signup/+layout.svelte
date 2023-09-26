@@ -3,7 +3,6 @@
 	import IdentityGeneration from './2_IdentityGeneration.svelte';
 	import Join from './3_Join.svelte';
 	import Backup from './4_Backup.svelte';
-
 	import { configStore } from '$lib/stores';
 	import Loading from '$lib/components/loading.svelte';
 	import { Stepper, Step } from '@skeletonlabs/skeleton';

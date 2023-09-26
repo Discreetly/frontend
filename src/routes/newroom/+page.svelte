@@ -2,7 +2,16 @@
   import { createRoom } from '$lib/services/server';
   import { getIdentity } from '$lib/utils';
   import { selectedServer, configStore } from '$lib/stores'
-  let formData = {
+  import { Stepper, Step } from '@skeletonlabs/skeleton'
+  import { goto } from '$app/navigation';
+  import RoomName from './1_RoomName.svelte'
+  import MembershipType from './2_MembershipType.svelte'
+  import RateLimit from './3_RateLimit.svelte';
+  import MessageLimit from './4_MessageLimit.svelte';
+  import ClaimCodes from './5_ClaimCodes.svelte';
+  import RoomType from './6_RoomType.svelte';
+
+  let formData: any = {
     roomName: '',
     membershipType: 'IDENTITY_LIST',
     rateLimit: 0,
@@ -14,91 +23,66 @@
     bandadaApiKey: undefined,
   };
 
-  let bandadaFields = false;
-
-  function toggleBandadaFields (e: any): void {
-    if (e.target.value === 'BANDADA_GROUP') {
-      bandadaFields = true;
-    } else {
-      bandadaFields = false;
-    }
-  }
-
-  function handleSubmit (e: Event): void {
-    e.preventDefault();
-    // const {roomName, membershipType, rateLimit, messageLimit, claimCodes, roomType} = e.target as HTMLFormElement;
-    console.log(formData);
+  function handleSubmit (): void {
     const identity = getIdentity();
-    createRoom(
-      $selectedServer,
-      formData.roomName,
-      $configStore.apiUsername as string,
-      $configStore.apiPassword as string,
-      formData.rateLimit,
-      formData.messageLimit,
-      formData.claimCodes,
-      [identity._commitment],
-      formData.membershipType,
-      formData.roomType,
-      formData.bandadaAddress,
-      formData.bandadaGroupId,
-      formData.bandadaApiKey,
-      )
-    console.log('submitting form');
+    // createRoom(
+    //   $selectedServer,
+    //   formData.roomName,
+    //   $configStore.apiUsername as string,
+    //   $configStore.apiPassword as string,
+    //   formData.rateLimit,
+    //   formData.messageLimit,
+    //   formData.claimCodes,
+    //   [identity._commitment],
+    //   formData.membershipType,
+    //   formData.roomType,
+    //   formData.bandadaAddress,
+    //   formData.bandadaGroupId,
+    //   formData.bandadaApiKey,
+    //   )
   };
-</script>
-<div class="grid grid-flow-rows gap-7 my-5 max-w-md mx-auto">
 
-  <h1 class="flex content-center font-bold">Create Room</h1>
-  <form method="POST" on:submit|preventDefault={handleSubmit}
-  class="grid gap-7">
-    <label for="roomName">Room Name: <input class="text-black" bind:value={formData.roomName} name="roomName" type="text" /></label>
-    <label for="membershipType">
-      Room Type:
-       <select name="membershipType" class="text-black" bind:value={formData.membershipType} on:change={toggleBandadaFields}>
-      <option value="IDENTITY_LIST" class="text-black">
-        Identity List
-      </option>
-      <option value="BANDADA_GROUP" class="text-black">
-        Bandada Group
-      </option>
-    </select>
-    {#if bandadaFields === true}
-    <div class="grid grid-flow-rows gap-5 my-5 max-w-md mx-auto">
-      <label for="bandadaAddress">
-            Bandada Address:
-            <input name="bandadaAddress" type="text" class="text-black" bind:value={formData.bandadaAddress}/>
-      </label>
-          <label for="bandadaGroup">
-            Bandada Group Id:
-            <input name="bandadaGroup" type="text" class="text-black"bind:value={formData.bandadaGroupId}/>
-          </label>
-          <label for='bandadaApiKey'>
-            Bandada Api Key:
-            <input name="bandadaApiKey" type="text" class="text-black" bind:value={formData.bandadaApiKey}/>
-          </label>
-    </div>
-      {/if}
-    </label>
-    <label for="rateLimit">
-      Rate Limit:
-      <input name="rateLimit" class="text-black" type="number" bind:value={formData.rateLimit}/>
-    </label>
-    <label for="messageLimit">
-      User Message Limit:
-      <input name="messageLimit" class="text-black" type="number" bind:value={formData.messageLimit}/>
-    </label>
-    <label for="claimCodes">
-      Claim Codes:
-      <input name="claimCodes"class="text-black" type="number" bind:value={formData.claimCodes}/>
-    </label>
-    <label for="room-type">
-      Room Type:
-      <select name="roomType" class="text-black" bind:value={formData.roomType}>
-        <option value="PUBLIC" class="text-black">Public</option>
-        <option value="PRIVATE" class="text-black">Private</option>
-      </select>
-      <br>
-    <button>Create Room</button>
-  </form>
+</script>
+
+<div class="grid grid-flow-rows gap-7 my-5 max-w-md mx-auto">
+  <h1 class="text-3xl text-center">Create a Room</h1>
+  <Stepper class="max-w-sm sm:max-w-md md:max-w-3xl mx-auto mt-16"
+  on:complete={() => {
+    handleSubmit();
+    goto('/chat')
+  }}
+  buttonNext="variant-filled-surface-50-900-token"
+  buttonComplete="variant-filled-success">
+  <RoomName {formData} />
+  <Step>
+    <svelte:fragment slot="header">
+      <div class="h3 text-center">Membership Type</div>
+      </svelte:fragment>
+    <MembershipType {formData} />
+  </Step>
+  <Step>
+    <svelte:fragment slot="header">
+      <div class="h3 text-center">Rate Limit</div>
+    </svelte:fragment>
+    <RateLimit {formData} />
+  </Step>
+  <Step>
+    <svelte:fragment slot="header">
+      <div class="h3 text-center">User Message Limit</div>
+    </svelte:fragment>
+    <MessageLimit {formData} />
+  </Step>
+  <Step>
+    <svelte:fragment slot="header">
+      <div class="h3 text-center">Number of Claim Codes for {formData.roomName}</div>
+    </svelte:fragment>
+    <ClaimCodes {formData} />
+  </Step>
+  <Step>
+    <svelte:fragment slot="header">
+      <div class="h3 text-center">Public or Private</div>
+    </svelte:fragment>
+    <RoomType {formData} />
+  </Step>
+</Stepper>
 </div>
