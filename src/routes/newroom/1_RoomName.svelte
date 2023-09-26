@@ -21,8 +21,9 @@
   <svelte:fragment slot="header">
     <div class="h3 text-center">Room Name</div>
     </svelte:fragment>
-    <div class="flex justify-center w-full">
+    <div class="flex flex-col justify-center w-full">
+      <i class="text-center">Room Name must be between 3 and 32 characters</i>
+      <br>
       <input name="roomName" maxlength="32" class="text-black w-full" type="text" bind:value={formData.roomName}/>
     </div>
-    <p class="text-center">Room Name must be between 3 and 32 characters</p>
 </Step>

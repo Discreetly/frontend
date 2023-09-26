@@ -12,10 +12,10 @@
   import RoomType from './6_RoomType.svelte';
 
   let formData: any = {
-    roomName: '',
+    roomName: "",
     membershipType: 'IDENTITY_LIST',
-    rateLimit: 0,
-    messageLimit: 0,
+    rateLimit: 10,
+    messageLimit: 3,
     claimCodes: 0,
     roomType: 'PUBLIC',
     bandadaAddress: undefined,
@@ -25,6 +25,7 @@
 
   function handleSubmit (): void {
     const identity = getIdentity();
+    formData.rateLimit = formData.rateLimit * 1000
     // createRoom(
     //   $selectedServer,
     //   formData.roomName,
@@ -49,40 +50,15 @@
   <Stepper class="max-w-sm sm:max-w-md md:max-w-3xl mx-auto mt-16"
   on:complete={() => {
     handleSubmit();
-    goto('/chat')
+    // goto('/chat')
   }}
   buttonNext="variant-filled-surface-50-900-token"
   buttonComplete="variant-filled-success">
   <RoomName {formData} />
-  <Step>
-    <svelte:fragment slot="header">
-      <div class="h3 text-center">Membership Type</div>
-      </svelte:fragment>
-    <MembershipType {formData} />
-  </Step>
-  <Step>
-    <svelte:fragment slot="header">
-      <div class="h3 text-center">Rate Limit</div>
-    </svelte:fragment>
-    <RateLimit {formData} />
-  </Step>
-  <Step>
-    <svelte:fragment slot="header">
-      <div class="h3 text-center">User Message Limit</div>
-    </svelte:fragment>
-    <MessageLimit {formData} />
-  </Step>
-  <Step>
-    <svelte:fragment slot="header">
-      <div class="h3 text-center">Number of Claim Codes for {formData.roomName}</div>
-    </svelte:fragment>
-    <ClaimCodes {formData} />
-  </Step>
-  <Step>
-    <svelte:fragment slot="header">
-      <div class="h3 text-center">Public or Private</div>
-    </svelte:fragment>
-    <RoomType {formData} />
-  </Step>
+  <MembershipType {formData} />
+  <RateLimit {formData} />
+  <MessageLimit {formData} />
+  <ClaimCodes {formData} />
+  <RoomType {formData} />
 </Stepper>
 </div>
