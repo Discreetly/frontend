@@ -49,6 +49,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@cryptkeeperzk/providers": "^0.3.1",
 		"@ethersproject/bytes": "^5.7.0",
 		"@ethersproject/keccak256": "^5.7.0",
 		"@ethersproject/strings": "^5.7.0",

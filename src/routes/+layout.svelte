@@ -11,6 +11,12 @@
 	import { Drawer } from '@skeletonlabs/skeleton';
 	import SelectServer from '$lib/components/SelectServer.svelte';
 	import SelectRoom from '$lib/components/SelectRoom.svelte';
+	import { cryptkeeperConnect, type CryptKeeperInjectedProvider } from '@cryptkeeperzk/providers';
+	let ckClient: CryptKeeperInjectedProvider | undefined;
+	cryptkeeperConnect().then((client) => {
+		ckClient = client;
+	});
+	console.log(ckClient);
 
 	initializeStores();
 
