@@ -56,7 +56,7 @@
 		"@semaphore-protocol/identity": "^3.10.1",
 		"autolinker": "^4.0.0",
 		"date-fns": "^2.30.0",
-		"discreetly-interfaces": "^0.1.38",
+		"discreetly-interfaces": "^0.1.39",
 		"dompurify": "^3.0.5",
 		"libsodium-wrappers": "^0.7.11",
 		"marked": "^7.0.5",

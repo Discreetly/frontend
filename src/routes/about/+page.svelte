@@ -1,11 +1,14 @@
 <script>
 	import Button from '$lib/components/button.svelte';
 	import Demo from '$lib/components/Demo.svelte';
+	import Introduction from '$lib/components/Introduction.svelte';
 </script>
 
 <div class="mx-auto mt-10 max-w-[80ch]">
 	<img src="/logo-text.png" alt="discreetly" class="max-h-20 mb-5" />
 	<h5 class="italic mb-4 mt-1">A new take on group chats.</h5>
+
+	<Introduction />
 	<p class="text-justify my-3">
 		This feels like a mostly familiar chat application, except there aren't user names. Under the
 		hood, there is no "login", the server doesn't know who you are, you are anonymous. You're

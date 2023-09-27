@@ -3,14 +3,13 @@
 	import Loading from '$lib/components/loading.svelte';
 	import {
 		currentSelectedRoom,
-		messageStore,
 		rateLimitStore,
 		selectedServer,
 		configStore,
 		currentRoomsStore
 	} from '$lib/stores';
 	import { Experiences } from '$lib/types';
-	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
+	import { addMessageToRoom, getTimestampFromEpoch, updateMessages } from '$lib/utils';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { MessageI } from 'discreetly-interfaces';
 	import type { Socket } from 'socket.io-client';
@@ -18,7 +17,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Conversation from './Conversation.svelte';
 	import Draw from './Draw.svelte';
-	import InputPrompt from './InputPrompt.svelte';
+	import InputPrompt from './ChatInputPrompt.svelte';
 
 	const toastStore = getToastStore();
 
@@ -126,23 +125,7 @@
 			console.debug('Received Message: ', data);
 			const roomId = data.roomId?.toString();
 			if (roomId) {
-				if (!$messageStore[roomId]) {
-					console.debug('Creating room in message store', roomId);
-					$messageStore[roomId] = [] as MessageI[];
-				}
-				if (typeof data.proof === 'string') {
-					data.proof = JSON.parse(data.proof as string);
-				}
-				if (!data.epoch) {
-					data.epoch = getEpochFromTimestamp(
-						$currentSelectedRoom.rateLimit!,
-						+data.timeStamp!
-					).epoch;
-				}
-				$messageStore[roomId] = [...$messageStore[roomId], data];
-				if ($messageStore[roomId].length > 500) {
-					$messageStore[roomId] = $messageStore[roomId].slice(-500); // Keep only the latest 500 messages
-				}
+				addMessageToRoom(roomId, data);
 				scrollChatToBottom();
 			}
 			socket.on('Members', (data: string) => {

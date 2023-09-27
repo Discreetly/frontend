@@ -4,6 +4,8 @@
 	import { currentSelectedRoom, identityStore } from '$lib/stores';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	import Settings from 'svelte-material-icons/TuneVariant.svelte';
+	import Information from 'svelte-material-icons/Information.svelte';
+	import Console from 'svelte-material-icons/Console.svelte';
 	$: identityExists = !!$identityStore._commitment;
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 
@@ -43,7 +45,8 @@
 	{/if}
 	<svelte:fragment slot="trail">
 		<div class="hidden sm:inline me-2 text-primary-500">Alpha Version!</div>
-		<a href="/about" class="btn-icon btn-icon-sm variant-soft-secondary sm:hidden me-2">?</a>
+		<a href="/console" class="hidden sm:inline me-2"><Console size="1.2em" /></a>
+		<a href="/about" class="hidden sm:inline me-2"><Information size="1.2em" /></a>
 		{#if identityExists}
 			<a href="/settings"><Settings size="1.2em" /></a>
 		{/if}

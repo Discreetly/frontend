@@ -58,6 +58,7 @@
 				{#if tabSet === 0}
 					<BackupIdentity />
 					<DeleteIdentity />
+					<RestoreIdentity />
 				{:else if tabSet === 1}
 					<JoinMore />
 				{:else if tabSet === 2}

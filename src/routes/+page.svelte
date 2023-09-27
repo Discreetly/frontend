@@ -2,6 +2,10 @@
 	import Button from '$lib/components/button.svelte';
 	import { identityStore } from '$lib/stores';
 	$: identityExists = !!$identityStore._commitment;
+
+	console.info(
+		'I see you are checking out the logs, let us know what you think on our discord: https://discord.gg/brJQ36KVxk'
+	);
 </script>
 
 <div class="mx-5 lg:mx-auto mt-10 max-w-[80ch]">

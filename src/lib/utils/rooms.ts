@@ -1,12 +1,20 @@
 import type { RoomI } from '$lib/types';
-import { roomsStore, selectedRoom, selectedServer, serverStore, messageStore } from '$lib/stores';
+import {
+	roomsStore,
+	selectedRoom,
+	selectedServer,
+	serverStore,
+	messageStore,
+	currentSelectedRoom
+} from '$lib/stores';
 import { get } from 'svelte/store';
 import {
 	getIdentityRoomIds as getRoomIdsByIdentityCommitment,
 	getRoomById,
 	getMessages
 } from '$lib/services/server';
-import { getCommitment } from '.';
+import { getCommitment, getEpochFromTimestamp } from '.';
+import type { MessageI } from 'discreetly-interfaces';
 
 export function roomListForServer(server: string = get(selectedServer)): RoomI[] {
 	const roomIds = get(serverStore)[server]?.rooms ?? [];
@@ -77,5 +85,42 @@ export function updateMessages(server: string, roomId: string) {
 			store[roomId] = messages;
 			return store;
 		});
+	});
+}
+
+export function addMessageToRoom(roomId: string, data: MessageI) {
+	messageStore.update((currentStore) => {
+		if (!currentStore[roomId]) {
+			console.debug('Creating room in message store', roomId);
+			currentStore[roomId] = [] as MessageI[];
+		}
+
+		if (typeof data.proof === 'string') {
+			data.proof = JSON.parse(data.proof as string);
+		}
+
+		if (!data.epoch) {
+			data.epoch = getEpochFromTimestamp(
+				get(currentSelectedRoom).rateLimit!,
+				+data.timeStamp!
+			).epoch;
+		}
+
+		// Add the new message
+		currentStore[roomId] = [...currentStore[roomId], data];
+
+		// Trim messages to the last 500
+		if (currentStore[roomId].length > 500) {
+			currentStore[roomId] = currentStore[roomId].slice(-500);
+		}
+
+		return { ...currentStore };
+	});
+}
+
+export function clearMessageHistory(roomId: string) {
+	messageStore.update((currentStore) => {
+		currentStore[roomId] = [] as MessageI[];
+		return { ...currentStore };
 	});
 }

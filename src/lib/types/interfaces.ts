@@ -9,6 +9,8 @@ export interface ConfigurationI {
 	actionRepresentation?: ActionRepresentationE;
 	experience?: Experiences;
 	beta?: boolean;
+	numMessagesToSave: number;
+	hashedPwd: string;
 }
 
 export interface RoomI extends RI {

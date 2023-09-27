@@ -1,41 +1,30 @@
 <script lang="ts">
-	import { selectedServer, configStore } from '$lib/stores';
 	import SelectServer from '$lib/components/SelectServer.svelte';
-	import { postInviteCode } from '$lib/services/server';
-	import type { JoinResponseI } from '$lib/types';
-	import { getCommitment, updateRooms, alert } from '$lib/utils/';
+	import { inviteCode } from '$lib/utils/inviteCode';
 
 	export let code = '';
 	let acceptedRoomNames: string[] = [];
 	let loading = false;
 	let err: string | undefined;
 
-	async function addCode(newCode: string) {
-		try {
-			const idc = getCommitment();
-			loading = true;
-			const result = (await postInviteCode($selectedServer, {
-				code: newCode.toLowerCase(),
-				idc
-			})) as JoinResponseI;
-			console.debug('INVITE CODE RESPONSE: ', result);
-			if (result.status == 'valid' || result.status == 'already-added') {
-				console.debug('Updating new rooms');
-				acceptedRoomNames = await updateRooms($selectedServer, result.roomIds);
-				code = '';
-				console.log(`Added to rooms: ${acceptedRoomNames}`);
-				$configStore.signUpStatus.inviteAccepted = true;
-				$configStore.signUpStatus.inviteCode = '';
-			} else {
-				err = 'Invalid invite code.';
+	function addCode(code: string) {
+		loading = true;
+		inviteCode(code)
+			.then(({ acceptedRoomNames, err }) => {
+				if (err) {
+					alert(err);
+				} else {
+					acceptedRoomNames = acceptedRoomNames;
+				}
+			})
+			.catch((err) => {
 				alert(err);
-			}
-			loading = false;
-		} catch (e) {
-			err = String((e as Error).message);
-			alert(err);
-		}
+			})
+			.finally(() => {
+				loading = false;
+			});
 	}
+
 	function inviteCodeKeyPress(event: KeyboardEvent) {
 		const input = event.target as HTMLInputElement | null;
 

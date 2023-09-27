@@ -1,15 +1,17 @@
 import { storable, sessionable } from './storeFactory';
-import { derived } from 'svelte/store';
+import { derived, writable } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 import type {
 	ConfigurationI,
 	IdentityStoreI,
+	consoleStoreI,
 	messageStoreI,
 	pixelStoreI,
 	rateLimitStoreI,
 	roomStoreI,
 	selectedRoomStoreI,
-	serverStoreI
+	serverStoreI,
+	roomKeyStoreI
 } from '$lib/types';
 
 /* ------------------ Server State ------------------*/
@@ -61,11 +63,24 @@ export const pixelStore = sessionable({} as pixelStoreI, 'pixelmaps');
  */
 export const configStore = storable(configDefaults as ConfigurationI, 'configStore');
 
-//TODO!  This needs to be encrypted
+export const roomKeyStore = storable({} as roomKeyStoreI, 'roomKeyStore');
+
+export const consoleStore = sessionable(
+	{
+		messages: [{ message: 'Welcome User', type: 'info' }],
+		settings: {}
+	} as consoleStoreI,
+	'consoleStore'
+);
+
+export const keyStore = writable({} as CryptoKey);
+
 /**
  * @description Identity store, this is the user's identity
  */
 export const identityStore = storable({} as IdentityStoreI, 'identity');
+
+export const identityKeyStore = storable({} as IdentityStoreI, 'identity');
 
 export const currentRoomMessages = derived(
 	[currentSelectedRoom, messageStore],

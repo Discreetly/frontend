@@ -32,7 +32,7 @@
 	});
 </script>
 
-<div class="card variant-ghost-error">
+<div class="card variant-ghost-error mb-5">
 	<header class="card-header">
 		<h3 class="h4">Delete Your Identity & Reset Application</h3>
 	</header>

@@ -28,19 +28,29 @@ interface proofInputsI {
 async function merkleProofFromRoom(
 	roomId: string,
 	RLN_IDENIFIER: bigint,
-	rateCommitment: bigint,
-	identityCommitment: bigint
+	commitment: bigint,
+	admin = false
 ) {
 	const roomFromStore = get(roomsStore)[roomId];
 	let identities: bigint[];
 	try {
-		identities = roomFromStore.identities
-			? roomFromStore.identities.map((i) => {
-					// This removes any non-numeric characters from the string
-					// In particular there was a bug where the `n` at the end of a bigint wasn't removed and it wasn't parsing correctly.
-					return BigInt(String(i).replace(/\D/g, ''));
-			  })
-			: [];
+		if (admin) {
+			identities = roomFromStore.adminIdentities
+				? roomFromStore.adminIdentities.map((i) => {
+						// This removes any non-numeric characters from the string
+						// In particular there was a bug where the `n` at the end of a bigint wasn't removed and it wasn't parsing correctly.
+						return BigInt(String(i).replace(/\D/g, ''));
+				  })
+				: [];
+		} else {
+			identities = roomFromStore.identities
+				? roomFromStore.identities.map((i) => {
+						// This removes any non-numeric characters from the string
+						// In particular there was a bug where the `n` at the end of a bigint wasn't removed and it wasn't parsing correctly.
+						return BigInt(String(i).replace(/\D/g, ''));
+				  })
+				: [];
+		}
 	} catch (err) {
 		console.debug(roomFromStore.identities);
 		throw new Error('Could not parse identities from room');
@@ -48,19 +58,10 @@ async function merkleProofFromRoom(
 	const group = new Group(RLN_IDENIFIER, 20, identities);
 	let mp: MerkleProof;
 	try {
-		mp = group.generateMerkleProof(group.indexOf(rateCommitment));
+		mp = group.generateMerkleProof(group.indexOf(commitment));
 	} catch (err1: unknown) {
-		console.warn((err1 as Error).message);
-		console.warn('Could not generate Merkle Proof with Rate Commitment');
-		try {
-			mp = group.generateMerkleProof(group.indexOf(identityCommitment));
-		} catch (err: unknown) {
-			console.error((err as Error).message);
-			console.table(identities);
-			console.debug('Rate Commitment:', rateCommitment);
-			console.debug('Identity Commitment:', identityCommitment);
-			throw new Error('Could not generate Merkle Proof with Identity Commitment');
-		}
+		console.error((err1 as Error).message);
+		throw new Error('Could not generate Merkle Proof with Rate Commitment');
 	}
 	return mp;
 }
@@ -81,7 +82,8 @@ async function genProof(
 	identity: IdentityStoreI,
 	epoch: bigint | number,
 	messageId: bigint | number,
-	messageLimit: bigint | number
+	messageLimit: bigint | number,
+	admin = false
 ): Promise<MessageI> {
 	const roomId = typeof room.roomId === 'bigint' ? room.roomId.toString() : String(room.roomId);
 	await updateRooms(get(selectedServer), [roomId]);
@@ -92,25 +94,17 @@ async function genProof(
 	const identityCommitment = BigInt(identity._commitment);
 	const messageHash: bigint = calculateSignalHash(JSON.stringify(message));
 	const rateCommitment: bigint = getRateCommitmentHash(identityCommitment, userMessageLimit);
+	const commitment = admin ? identityCommitment : rateCommitment;
 
 	let merkleProof: MerkleProof;
 	switch (room.membershipType) {
 		case 'IDENTITY_LIST':
-			merkleProof = await merkleProofFromRoom(
-				roomId,
-				RLN_IDENIFIER,
-				rateCommitment,
-				identityCommitment
-			);
+			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENIFIER, commitment);
 			break;
 		case 'BANDADA_GROUP':
 			if (room.bandadaAddress === undefined) throw new Error('Bandada address not defined');
 			try {
-				merkleProof = await getMerkleProof(
-					room.bandadaAddress,
-					room.bandadaGroupId!,
-					rateCommitment
-				);
+				merkleProof = await getMerkleProof(room.bandadaAddress, room.bandadaGroupId!, commitment);
 				break;
 			} catch (err) {
 				throw new Error('GetMerkleProof failed' + err);

@@ -60,9 +60,28 @@
 	}
 </script>
 
-<h4 class="h4">Restore Your Identity</h4>
-<FileDropzone name="Discreetly_Identity.json" bind:files on:change={onChangeHandler} />
-<label>
-	<span>Recovery Identity using json text</span>
-	<textarea name="textarea" id="" cols="30" rows="10" placeholder="Paste your Identity Here" />
-</label>
+<div class="card variant-ghost-secondary">
+	<header class="card-header">
+		<h3 class="h4">Restore Your Identity</h3>
+	</header>
+	<section class="px-4 pt-4">
+		<h5 class="h5 pb-1">Recover From File:</h5>
+		<FileDropzone
+			class="px-2"
+			name="Discreetly_Identity.json"
+			bind:files
+			on:change={onChangeHandler}
+		/>
+	</section>
+	<section class="px-4 pt-4">
+		<h5 class="h5 pb-1">Recover From JSON:</h5>
+		<textarea
+			name="textarea"
+			id=""
+			class="p-2"
+			cols="30"
+			rows="10"
+			placeholder="Paste your Identity Here"
+		/>
+	</section>
+</div>

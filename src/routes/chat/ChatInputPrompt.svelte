@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { currentSelectedRoom, rateLimitStore } from '$lib/stores';
-	import { genProof } from '$lib/crypto/prover';
+	import { genProof } from '$lib/crypto/rlnProver';
 	import type { Socket } from 'socket.io-client';
-	import { getIdentity, alert } from '$lib/utils';
+	import { getIdentity, alert, clearMessageHistory } from '$lib/utils';
 	import Send from 'svelte-material-icons/Send.svelte';
 
 	export let socket: Socket;
@@ -54,6 +54,25 @@
 		return true;
 	}
 
+	function help() {
+		alert('Commands: /clear, /help');
+	}
+
+	function processCommand(value: string) {
+		const [cmd, ...args] = value.split(' ');
+		switch (cmd) {
+			case '/help':
+				help();
+				break;
+			case '/clear':
+				clearMessageHistory($currentSelectedRoom.roomId!.toString());
+				break;
+			default:
+				help();
+				break;
+		}
+	}
+
 	function sendMessage() {
 		sendingMessage = true;
 		console.debug('Sending message: ', messageText);
@@ -65,6 +84,8 @@
 
 		const identity = getIdentity();
 		const room = $currentSelectedRoom;
+		if (room.encrypted) {
+		}
 		genProof(room, messageText, identity, currentEpoch, messageId, userMessageLimit)
 			.then((msg) => {
 				if ($rateLimitStore[$currentSelectedRoom.roomId!.toString()].lastEpoch == currentEpoch) {
@@ -101,8 +122,13 @@
 
 	function onPromptKeydown(event: KeyboardEvent): void {
 		if (['Enter'].includes(event.key)) {
+			const value = (event.currentTarget as HTMLInputElement).value;
 			event.preventDefault();
-			sendMessage();
+			if (value.startsWith('/')) {
+				processCommand(value);
+			} else {
+				sendMessage();
+			}
 		}
 	}
 </script>

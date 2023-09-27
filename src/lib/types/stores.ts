@@ -39,3 +39,20 @@ export interface rateLimitStoreI {
 		messagesSent: number;
 	};
 }
+
+export interface consoleMessageI {
+	message: string;
+	type: 'userinput' | 'error' | 'warning' | 'info';
+	response?: string;
+}
+
+export interface consoleStoreI {
+	messages: consoleMessageI[];
+	settings: {
+		[key: string]: boolean;
+	};
+}
+
+export interface roomKeyStoreI {
+	[key: string]: string;
+}
