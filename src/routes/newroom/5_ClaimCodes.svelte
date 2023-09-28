@@ -1,20 +1,11 @@
 <script lang=ts>
+	import type { RoomFormData } from '$lib/types';
   import { Step } from '@skeletonlabs/skeleton'
 
-  export let formData: {
-    roomName: string;
-    membershipType: string;
-    rateLimit: number;
-    messageLimit: number;
-    claimCodes: number;
-    roomType: string;
-    bandadaAddress: undefined;
-    bandadaGroupId: undefined;
-    bandadaApiKey: undefined;
-  };
+  export let formData: RoomFormData;
   </script>
 
-<Step>
+<Step locked={formData.claimCodes < 0}>
   <svelte:fragment slot="header">
     <div class="h3 text-center">Number of Claim Codes for {formData.roomName}</div>
   </svelte:fragment>

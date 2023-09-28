@@ -2,15 +2,16 @@
   import { createRoom } from '$lib/services/server';
   import { getIdentity } from '$lib/utils';
   import { selectedServer, configStore } from '$lib/stores'
-  import { Stepper, Step } from '@skeletonlabs/skeleton'
+  import { Stepper } from '@skeletonlabs/skeleton'
   import { goto } from '$app/navigation';
   import RoomName from './1_RoomName.svelte'
   import MembershipType from './2_MembershipType.svelte'
   import RateLimit from './3_RateLimit.svelte';
   import MessageLimit from './4_MessageLimit.svelte';
   import ClaimCodes from './5_ClaimCodes.svelte';
+  import type { RoomFormData } from '$lib/types';
 
-  let formData: any = {
+  let formData: RoomFormData = {
     roomName: "",
     membershipType: 'IDENTITY_LIST',
     rateLimit: 10,
@@ -21,6 +22,9 @@
     bandadaGroupId: undefined,
     bandadaApiKey: undefined,
   };
+
+  let createdCodes: string[] | undefined = [];
+  let submitted = false;
 
   function handleSubmit (): void {
     const identity = getIdentity();
@@ -39,7 +43,15 @@
       formData.bandadaAddress,
       formData.bandadaGroupId,
       formData.bandadaApiKey,
-      )
+      "DISCORD"
+      ).then((res) => {
+        console.log(res);
+        submitted = true;
+        createdCodes = res.claimCodes;
+        console.log(createdCodes)
+      });
+
+
   };
 
 </script>
@@ -49,7 +61,6 @@
   <Stepper class="max-w-sm sm:max-w-md md:max-w-3xl mx-auto mt-16"
   on:complete={() => {
     handleSubmit();
-    goto('/chat')
   }}
   buttonNext="variant-filled-surface-50-900-token"
   buttonComplete="variant-filled-success">
@@ -59,4 +70,16 @@
   <MessageLimit {formData} />
   <ClaimCodes {formData} />
 </Stepper>
+{#if submitted && createdCodes}
+  <div class="grid grid-flow-rows gap-7 my-5 max-w-md mx-auto">
+    <h1 class="text-3xl text-center">Your Room Codes</h1>
+    <div class="grid grid-flow-rows gap-7 my-5 max-w-md mx-auto">
+      {#each createdCodes as code}
+        <div class="grid grid-flow-rows gap-7 my-5 max-w-md mx-auto">
+          <i class="text-center">https://app.discreetly.chat/join/{Object.values(code)}</i>
+        </div>
+      {/each}
+    </div>
+  </div>
+{/if}
 </div>

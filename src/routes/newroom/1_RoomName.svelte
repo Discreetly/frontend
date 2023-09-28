@@ -1,17 +1,7 @@
 <script lang=ts>
+	import type { RoomFormData } from '$lib/types';
   import { Step } from '@skeletonlabs/skeleton'
-   export let formData: {
-    roomName: string;
-    membershipType: string;
-    rateLimit: number;
-    messageLimit: number;
-    claimCodes: number;
-    roomType: string;
-    bandadaAddress: undefined;
-    bandadaGroupId: undefined;
-    bandadaApiKey: undefined;
-  };
-
+  export let formData: RoomFormData;
 </script>
 
 <Step locked={formData.roomName === ''
