@@ -1,22 +1,44 @@
 <script lang="ts">
-	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
-	import { configStore, keyStore, passwordSet } from '$lib/stores';
+	import { decryptData, deriveKey, hashPassword } from '$lib/crypto/crypto';
+	import {
+		configStore,
+		identityKeyStore,
+		identityKeyStoreDecrypted,
+		keyExists,
+		keyStore,
+		passwordSet
+	} from '$lib/stores';
 	import { addConsoleMessage, clearConsoleMessages } from '$lib/utils/';
 	import { inviteCode } from '$lib/utils/inviteCode';
 
 	function help() {
-		addConsoleMessage('/clear Clears the console', 'info');
 		addConsoleMessage(' ', 'space');
-		addConsoleMessage('/join Joins a room via invite code, Example:', 'info');
-		addConsoleMessage('/join apple-banana-candy-donut', 'info');
+		addConsoleMessage('Commands: /clear, /join, /help, /unlock, /export');
 		addConsoleMessage(' ', 'space');
-		addConsoleMessage('Commands: /clear, /join, /help', 'info');
+		addConsoleMessage('`/clear` Clears the console');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('`/join invite-code` Joins a room via invite code, Example:');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('`/password Password`');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('`/clearPassword`');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('`/unlock Password`');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('`/lock`');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('`/backup`');
 	}
 
 	async function processCommand(command: string) {
 		const [cmd, ...args] = command.split(' ');
+		if (['/unlock', '/password'].includes(cmd)) {
+			addConsoleMessage(cmd, 'userinput');
+		} else {
+			addConsoleMessage(command, 'userinput');
+		}
 		switch (cmd) {
-			case '/help':
+			case 'help' || '/help':
 				help();
 				break;
 			case '/clear':
@@ -30,7 +52,7 @@
 							addConsoleMessage(err, 'error');
 							console.log(err.toString());
 						} else {
-							addConsoleMessage(`Added to: ${acceptedRoomNames.join(', ')}`, 'info');
+							addConsoleMessage(`Added to: ${acceptedRoomNames.join(', ')}`);
 						}
 					})
 					.catch((err) => {
@@ -43,16 +65,24 @@
 				const hashedNewPwd = await hashPassword(args[1]);
 				if (hashedOldPwd === $configStore.hashedPwd || $configStore.hashedPwd === undefined) {
 					$configStore.hashedPwd = hashedNewPwd;
-					addConsoleMessage('New Password Set', 'info');
+					addConsoleMessage('New Password Set');
 				} else {
 					addConsoleMessage('Invalid Old Password', 'error');
 					addConsoleMessage('/password OLDPASSWORD NEWPASSWORD', 'warning');
 				}
 				break;
+			case '/clearPassword':
+				$configStore.hashedPwd = null;
+				addConsoleMessage('Password Cleared');
+				break;
+			case '/lock':
+				$keyStore = null;
+				addConsoleMessage('Locked!');
+				break;
 			case '/unlock':
 				const hashedPwd = await hashPassword(args[0]);
 				if (hashedPwd === $configStore.hashedPwd) {
-					if ($keyStore && !(args[1] === 'force')) {
+					if ($keyExists && $keyStore && !(args[1] === 'force')) {
 						addConsoleMessage(
 							'Already Unlocked! use `/unlock PASSWORD force` to override this and derive the key again',
 							'warning'
@@ -62,7 +92,7 @@
 					deriveKey(args[0])
 						.then((key) => {
 							$keyStore = key;
-							addConsoleMessage('Unlocked!', 'info');
+							addConsoleMessage('Unlocked!');
 						})
 						.catch((err) => {
 							addConsoleMessage(`Could NOT derive key from password: ${err}`, 'error');
@@ -72,15 +102,22 @@
 				}
 				break;
 			case '/export' || '/backup':
-				addConsoleMessage('Exporting Identity', 'info');
+				addConsoleMessage('Exporting Identity');
 				if ($passwordSet) {
-					const identity = await decryptData($identityKeyStore, $keyStore);
-					const blob = new Blob([identity], { type: 'text/plain;charset=utf-8' });
-					saveAs(blob, 'identity.json');
-					addConsoleMessage('Identity Exported', 'info');
+					if ($keyExists && $keyStore) {
+						addConsoleMessage('Decrypting Data');
+						console.log($identityKeyStore, $keyStore);
+						const identity = $identityKeyStoreDecrypted;
+						if (identity) {
+							addConsoleMessage(identity);
+						}
+					} else {
+						addConsoleMessage('Please Unlock Keystore!', 'error');
+					}
 				} else {
 					addConsoleMessage('Password not set!', 'error');
 				}
+				addConsoleMessage('Exporting Identity Complete');
 				break;
 			default:
 				help();
@@ -92,7 +129,6 @@
 		if (['Enter'].includes(event.key)) {
 			if ((event.currentTarget as HTMLInputElement).value) {
 				const value = (event.currentTarget as HTMLInputElement).value;
-				addConsoleMessage(value, 'userinput');
 				if (value.startsWith('/')) {
 					processCommand(value);
 				}

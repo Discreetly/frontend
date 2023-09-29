@@ -66,7 +66,8 @@ export async function encryptData(plainText: string, key: CryptoKey): Promise<st
  * @param {CryptoKey} key - The cryptographic key for decryption.
  * @returns {Promise<string>} - Returns the decrypted text as a Promise.
  */
-export async function decryptData(encryptedData: string, key: CryptoKey): Promise<string> {
+export async function decryptData(encryptedData: string, key: CryptoKey): Promise<string | null> {
+	key = key as CryptoKey;
 	// Decode the base64 encrypted string
 	const rawData = atob(encryptedData);
 
@@ -78,11 +79,20 @@ export async function decryptData(encryptedData: string, key: CryptoKey): Promis
 	const iv = new TextEncoder().encode(rawIv);
 	const encrypted = new TextEncoder().encode(rawEncryptedData).buffer;
 
-	// Decrypt the data
-	const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
+	try {
+		if (!window) {
+			throw new Error('Window not found');
+		}
 
-	// Return the decrypted text
-	return new TextDecoder().decode(decrypted);
+		// Decrypt the data
+		const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
+
+		// Return the decrypted text
+		return new TextDecoder().decode(decrypted);
+	} catch (e) {
+		console.error(e);
+		throw new Error('Error decrypting data');
+	}
 }
 
 /**

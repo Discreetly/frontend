@@ -1,5 +1,5 @@
 import { storable, sessionable, encryptable } from './storeFactory';
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 import type {
 	ConfigurationI,
@@ -12,9 +12,7 @@ import type {
 	selectedRoomStoreI,
 	serverStoreI,
 	roomKeyStoreI,
-	keyStoreI,
-	DecryptedIdentityStoreI,
-	CryptedIdentityStoreI
+	keyStoreI
 } from '$lib/types';
 import { decryptData } from '$lib/crypto/crypto';
 
@@ -84,18 +82,6 @@ export const currentRoomMessages = derived(
  */
 export const rateLimitStore = sessionable({} as rateLimitStoreI, 'rateLimitStore');
 
-/* ------------------ Identity Stores ------------------*/
-/**
- * @description Identity store, this is the user's identity UNENCRYPTED
- * @deprecated Use identityKeyStore when you can, alert user to set password first
- */
-export const identityStore = storable({} as IdentityStoreI, 'identity');
-
-/**
- * @description Identity store, this is the user's identity ENCRYPTED
- */
-export const identityKeyStore = encryptable({} as CryptedIdentityStoreI, 'identity');
-
 /* ------------------ Configuration / Misc Stores ------------------*/
 
 /**
@@ -142,15 +128,45 @@ export const consoleStore = sessionable(
 	'consoleStore'
 );
 
-export const identityKeyStoreDecrypted = derived(identityKeyStore, ($identityKeyStore) => {
-	if (keyExists) {
-		try {
-			decryptData($identityKeyStore.identity as string, get(keyStore)!).then((decrypted) => {
-				return { identity: JSON.parse(decrypted) } as DecryptedIdentityStoreI;
-			});
-		} catch (e) {
-			console.error(`Error decrypting identity: ${e}`);
-			return { identity: {} as IdentityStoreI } as DecryptedIdentityStoreI;
+/* ------------------ Identity Stores ------------------*/
+/**
+ * @description Identity store, this is the user's identity UNENCRYPTED
+ * @deprecated Use identityKeyStore when you can, alert user to set password first
+ */
+export const identityStore = storable({} as IdentityStoreI, 'identity');
+
+/**
+ * @description Identity store, this is the user's identity ENCRYPTED
+ */
+export const identityKeyStore = encryptable('' as string, 'identity');
+
+/**
+ * @description Derived Store: The user's identity DECRYPTED in memory
+ */
+export const identityKeyStoreDecrypted: Readable<string | null | undefined> = derived(
+	[identityKeyStore, keyStore, keyExists],
+	([$identityKeyStore, $keyStore, $keyExists]) => {
+		const key = $keyStore;
+		if ($keyExists && key !== undefined && key !== null) {
+			try {
+				if (key !== undefined && key !== null) {
+					try {
+						decryptData($identityKeyStore as string, key).then((decrypted) => {
+							if (decrypted !== null) {
+								return JSON.parse(decrypted) as IdentityStoreI;
+							}
+						});
+					} catch (e) {
+						console.error(`Error decrypting identity: ${e}`);
+						return null;
+					}
+				} else {
+					return null;
+				}
+			} catch (e) {
+				console.error(`Error decrypting identity: ${e}`);
+				return null;
+			}
 		}
 	}
-});
+);

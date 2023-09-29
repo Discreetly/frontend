@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import ArrowRight from 'svelte-material-icons/ArrowRightBold.svelte';
 	import Text from 'svelte-material-icons/TextBox.svelte';
-	import Account from 'svelte-material-icons/AccountHardhat.svelte';
+	import Account from 'svelte-material-icons/AccountHardHat.svelte';
 	import { inviteCode } from '$lib/utils/inviteCode';
 	import { addConsoleMessage } from '$lib/utils/console';
 	import Console from '../console/ConsoleInputPrompt.svelte';
@@ -13,9 +13,9 @@
 	function identity() {
 		const idStatus = createIdentity();
 		if (idStatus == 'created') {
-			addConsoleMessage('Identity Generated 🎉', 'info');
+			addConsoleMessage('Identity Generated 🎉');
 		} else if (idStatus == 'exists') {
-			addConsoleMessage('Identity Exists Already ✅', 'info');
+			addConsoleMessage('Identity Exists Already ✅');
 		} else {
 			addConsoleMessage('Error Creating Identity ❌', 'error');
 		}
@@ -30,9 +30,9 @@
 		} else {
 			let { acceptedRoomNames, err } = await inviteCode($configStore.signUpStatus.inviteCode);
 			if (acceptedRoomNames) {
-				addConsoleMessage('Invite Code Accepted 🎉', 'info');
+				addConsoleMessage('Invite Code Accepted 🎉');
 				acceptedRoomNames.forEach((roomName) => {
-					addConsoleMessage(`Joined Room: ${roomName}`, 'info');
+					addConsoleMessage(`Joined Room: ${roomName}`);
 				});
 			}
 			if (err) {
@@ -43,9 +43,9 @@
 
 	onMount(() => {
 		if (identityExists) {
-			addConsoleMessage('Identity Exists Already ✅', 'info');
+			addConsoleMessage('Identity Exists Already ✅');
 		} else {
-			addConsoleMessage('Creating Identity...', 'info');
+			addConsoleMessage('Creating Identity...');
 			identity();
 		}
 

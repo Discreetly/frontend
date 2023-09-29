@@ -45,6 +45,10 @@
 	{:else}
 		<a class="btn btn-sm variant-ringed-secondary" href="/signup">Sign Up</a>
 	{/if}
+	<a
+		class="btn btn-sm variant-ringed-secondary font-medium text-sm hidden sm:inline me-2"
+		href="/console">Console</a
+	>
 	<svelte:fragment slot="trail">
 		<span class="inline sm:hidden me-2 text-primary-500">Alpha Version!</span>
 		<a href="/about" class="hidden sm:inline me-2"><Information size="1.2em" /></a>

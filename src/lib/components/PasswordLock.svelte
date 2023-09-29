@@ -13,6 +13,7 @@
 
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { deriveKey, encryptData, hashPassword } from '$lib/crypto/crypto';
+	import { onMount } from 'svelte';
 
 	const modalStore = getModalStore();
 
@@ -26,24 +27,12 @@
 			value: 'Discreetly',
 			valueAttr: { type: 'password', minlength: 3, required: true },
 			response: async (r: string) => {
+				console.log('Prompt Response: ', r);
 				const hashedPassword = await hashPassword(r);
 				$configStore.hashedPwd = hashedPassword;
+				console.debug(`Hashed Password: ${hashedPassword}`);
 				$keyStore = await deriveKey(r);
-				encryptData(
-					JSON.stringify({
-						_commitment: $identityStore._commitment,
-						_nullifier: $identityStore._nullifier,
-						_trapdoor: $identityStore._trapdoor,
-						_secret: $identityStore._secret
-					}),
-					$keyStore
-				).then((data) => {
-					$identityKeyStore.identity = data;
-				});
-				$identityStore._commitment = '';
-				$identityStore._nullifier = '';
-				$identityStore._trapdoor = '';
-				$identityStore._secret = '';
+				console.debug(`Derived Key: ${$keyStore}`);
 			}
 		};
 		modalStore.trigger(modal);
@@ -57,9 +46,15 @@
 			value: '',
 			valueAttr: { type: 'password', minlength: 3, required: true },
 			response: async (r: string) => {
-				const hashedPassword = await hashPassword(r);
-				$configStore.hashedPwd = hashedPassword;
-				$keyStore = await deriveKey(r);
+				if (r != 'false') {
+					console.log('Prompt Response: ', r);
+					const hashedPassword = await hashPassword(r);
+					if ($configStore.hashedPwd == hashedPassword) {
+						$keyStore = await deriveKey(r);
+					} else {
+						$keyStore = null;
+					}
+				}
 			}
 		};
 		modalStore.trigger(modal);
@@ -68,6 +63,13 @@
 	function lock() {
 		$keyStore = null;
 	}
+	onMount(() => {
+		console.debug(
+			'PasswordLock: ',
+			$passwordSet ? 'password set,' : 'password not set,',
+			$keyExists ? 'unlocked' : 'locked'
+		);
+	});
 </script>
 
 <div class={cls} id="lock">

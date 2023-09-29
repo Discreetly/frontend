@@ -33,19 +33,6 @@ export interface IdentityStoreI {
 	_secret: string;
 }
 
-export type EncryptedIdentityStoreI = string;
-
-export interface DecryptedIdentityStoreI {
-	identity: {
-		_commitment: string;
-		_trapdoor: string;
-		_nullifier: string;
-		_secret: string;
-	};
-}
-
-export type CryptedIdentityStoreI = EncryptedIdentityStoreI | DecryptedIdentityStoreI;
-
 export interface rateLimitStoreI {
 	[key: string]: {
 		lastEpoch: number;

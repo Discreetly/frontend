@@ -4,7 +4,7 @@ import type { consoleStoreI, consoleMessageI } from '$lib/types/';
 
 export const addConsoleMessage = (
 	message: string,
-	type: 'info' | 'userinput' | 'error' | 'warning' | 'space'
+	type: 'info' | 'userinput' | 'error' | 'warning' | 'space' = 'info'
 ) => {
 	let idx: number | undefined;
 	consoleStore.update((state) => {

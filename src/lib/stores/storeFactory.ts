@@ -83,11 +83,14 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 		if (storedValue) {
 			try {
 				const key = get(keyStore);
-				if (!key) {
+				if (!key || typeof key !== CryptoKey) {
 					throw new Error('Key store not initialized, cannot encrypt data');
 				}
+				console.debug('Encryptable State: ', storedValue, key);
 				decryptData(storedValue, key).then((decryptedData) => {
-					set(JSON.parse(decryptedData) as Type);
+					if (decryptedData !== null) {
+						set(JSON.parse(decryptedData) as Type);
+					}
 				});
 			} catch (e) {
 				console.warn(`Error reading local storage for key: ${localStorageKey}; ${e}`);

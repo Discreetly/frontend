@@ -10,7 +10,7 @@ export interface ConfigurationI {
 	experience?: Experiences;
 	beta?: boolean;
 	numMessagesToSave: number;
-	hashedPwd: string;
+	hashedPwd: string | null | undefined;
 }
 
 export interface RoomI extends RI {
