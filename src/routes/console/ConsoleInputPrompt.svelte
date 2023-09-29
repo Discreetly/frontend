@@ -1,33 +1,23 @@
 <script lang="ts">
 	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
-	import { configStore, keyStore } from '$lib/stores';
+	import { configStore, keyStore, passwordSet } from '$lib/stores';
 	import { addConsoleMessage, clearConsoleMessages } from '$lib/utils/';
 	import { inviteCode } from '$lib/utils/inviteCode';
 
-	function help(args?: string[]) {
-		args = args ?? [];
-		switch (args[0]) {
-			case 'clear' || '/clear':
-				addConsoleMessage('Clears the console', 'info');
-				break;
-			case 'join' || '/join':
-				addConsoleMessage('Joins a room via invite code', 'info');
-				addConsoleMessage('/join apple-banana-candy-donut', 'info');
-				break;
-			case 'help':
-				addConsoleMessage('Displays this message', 'info');
-				break;
-			default:
-				addConsoleMessage('Commands: /clear, /join, /help', 'info');
-				break;
-		}
+	function help() {
+		addConsoleMessage('/clear Clears the console', 'info');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('/join Joins a room via invite code, Example:', 'info');
+		addConsoleMessage('/join apple-banana-candy-donut', 'info');
+		addConsoleMessage(' ', 'space');
+		addConsoleMessage('Commands: /clear, /join, /help', 'info');
 	}
 
 	async function processCommand(command: string) {
 		const [cmd, ...args] = command.split(' ');
 		switch (cmd) {
 			case '/help':
-				help(args);
+				help();
 				break;
 			case '/clear':
 				clearConsoleMessages();
@@ -79,6 +69,17 @@
 						});
 				} else {
 					addConsoleMessage(`Invalid password!`, 'warning');
+				}
+				break;
+			case '/export' || '/backup':
+				addConsoleMessage('Exporting Identity', 'info');
+				if ($passwordSet) {
+					const identity = await decryptData($identityKeyStore, $keyStore);
+					const blob = new Blob([identity], { type: 'text/plain;charset=utf-8' });
+					saveAs(blob, 'identity.json');
+					addConsoleMessage('Identity Exported', 'info');
+				} else {
+					addConsoleMessage('Password not set!', 'error');
 				}
 				break;
 			default:

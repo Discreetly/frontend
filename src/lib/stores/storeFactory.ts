@@ -73,10 +73,7 @@ export function sessionable<Type>(data: Type, sessionStorageKey: string): Writab
 	};
 }
 
-export async function encryptable<Type>(
-	data: Type,
-	localStorageKey: string
-): Promise<Writable<Type>> {
+export function encryptable<Type>(data: Type, localStorageKey: string): Writable<Type> {
 	const store = writable<Type>(data);
 	const { subscribe, set } = store;
 	const isBrowser = typeof window !== 'undefined';
@@ -85,9 +82,13 @@ export async function encryptable<Type>(
 		const storedValue = localStorage.getItem(localStorageKey);
 		if (storedValue) {
 			try {
-				const key: CryptoKey = get(keyStore);
-				const decryptedData = await decryptData(storedValue, key);
-				set(JSON.parse(decryptedData) as Type);
+				const key = get(keyStore);
+				if (!key) {
+					throw new Error('Key store not initialized, cannot encrypt data');
+				}
+				decryptData(storedValue, key).then((decryptedData) => {
+					set(JSON.parse(decryptedData) as Type);
+				});
 			} catch (e) {
 				console.warn(`Error reading local storage for key: ${localStorageKey}; ${e}`);
 			}
@@ -97,21 +98,29 @@ export async function encryptable<Type>(
 	return {
 		subscribe,
 		set: async (value: Type) => {
-			const key: CryptoKey = get(keyStore);
-			const encryptedData = await encryptData(JSON.stringify(value), key);
-			if (isBrowser) {
-				localStorage.setItem(localStorageKey, encryptedData);
+			const key = get(keyStore);
+			if (!key) {
+				throw new Error('Key store not initialized, cannot encrypt data');
 			}
-			set(value);
+			encryptData(JSON.stringify(value), key).then((encryptedData) => {
+				if (isBrowser) {
+					localStorage.setItem(localStorageKey, encryptedData);
+				}
+				set(value);
+			});
 		},
 		update: async (callback: (value: Type) => Type) => {
 			const updatedStore = callback(get(store));
-			const key: CryptoKey = get(keyStore);
-			const encryptedData = await encryptData(JSON.stringify(updatedStore), key);
-			if (isBrowser) {
-				localStorage.setItem(localStorageKey, encryptedData);
+			const key = get(keyStore);
+			if (!key) {
+				throw new Error('Key store not initialized, cannot encrypt data');
 			}
-			set(updatedStore);
+			encryptData(JSON.stringify(updatedStore), key).then((encryptedData) => {
+				if (isBrowser) {
+					localStorage.setItem(localStorageKey, encryptedData);
+				}
+				set(updatedStore);
+			});
 		}
 	};
 }

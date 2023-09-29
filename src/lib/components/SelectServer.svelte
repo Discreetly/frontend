@@ -2,7 +2,7 @@
 	import { serverStore, selectedServer } from '$lib/stores';
 	import { getServerList, updateServer } from '$lib/utils';
 
-	import { Modal, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 
 	const modalStore = getModalStore();
 

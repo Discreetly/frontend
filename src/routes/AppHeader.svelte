@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
-	import { currentSelectedRoom, identityStore } from '$lib/stores';
+	import { configStore, currentSelectedRoom, identityStore, keyStore } from '$lib/stores';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	import Settings from 'svelte-material-icons/TuneVariant.svelte';
 	import Information from 'svelte-material-icons/Information.svelte';
 	import Console from 'svelte-material-icons/Console.svelte';
+	import PasswordLock from '$lib/components/PasswordLock.svelte';
 	$: identityExists = !!$identityStore._commitment;
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 
@@ -33,6 +34,7 @@
 			{/if}
 		</h1>
 	</svelte:fragment>
+
 	<a href="/about" class="btn btn-sm variant-ringed-secondary hidden sm:inline me-2">About</a>
 	{#if identityExists}
 		<a href="/chat" class="hidden btn btn-sm variant-ringed-secondary sm:inline me-2">Chat</a>
@@ -44,9 +46,11 @@
 		<a class="btn btn-sm variant-ringed-secondary" href="/signup">Sign Up</a>
 	{/if}
 	<svelte:fragment slot="trail">
-		<div class="hidden sm:inline me-2 text-primary-500">Alpha Version!</div>
-		<a href="/console" class="hidden sm:inline me-2"><Console size="1.2em" /></a>
+		<span class="inline sm:hidden me-2 text-primary-500">Alpha Version!</span>
 		<a href="/about" class="hidden sm:inline me-2"><Information size="1.2em" /></a>
+		<a href="/console" class="hidden sm:inline me-2"><Console size="1.2em" /></a>
+
+		<PasswordLock cls="hidden sm:inline me-2" />
 		{#if identityExists}
 			<a href="/settings"><Settings size="1.2em" /></a>
 		{/if}

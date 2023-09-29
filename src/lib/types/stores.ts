@@ -33,6 +33,19 @@ export interface IdentityStoreI {
 	_secret: string;
 }
 
+export type EncryptedIdentityStoreI = string;
+
+export interface DecryptedIdentityStoreI {
+	identity: {
+		_commitment: string;
+		_trapdoor: string;
+		_nullifier: string;
+		_secret: string;
+	};
+}
+
+export type CryptedIdentityStoreI = EncryptedIdentityStoreI | DecryptedIdentityStoreI;
+
 export interface rateLimitStoreI {
 	[key: string]: {
 		lastEpoch: number;
@@ -42,7 +55,7 @@ export interface rateLimitStoreI {
 
 export interface consoleMessageI {
 	message: string;
-	type: 'userinput' | 'error' | 'warning' | 'info';
+	type: 'userinput' | 'error' | 'warning' | 'info' | 'space';
 	response?: string;
 }
 
@@ -56,3 +69,5 @@ export interface consoleStoreI {
 export interface roomKeyStoreI {
 	[key: string]: string;
 }
+
+export type keyStoreI = CryptoKey | undefined | null;

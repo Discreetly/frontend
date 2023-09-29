@@ -1,5 +1,5 @@
-import { storable, sessionable } from './storeFactory';
-import { derived, writable } from 'svelte/store';
+import { storable, sessionable, encryptable } from './storeFactory';
+import { derived, get, writable } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 import type {
 	ConfigurationI,
@@ -11,8 +11,12 @@ import type {
 	roomStoreI,
 	selectedRoomStoreI,
 	serverStoreI,
-	roomKeyStoreI
+	roomKeyStoreI,
+	keyStoreI,
+	DecryptedIdentityStoreI,
+	CryptedIdentityStoreI
 } from '$lib/types';
+import { decryptData } from '$lib/crypto/crypto';
 
 /* ------------------ Server State ------------------*/
 /**
@@ -43,6 +47,9 @@ export const currentRoomsStore = derived(
  */
 export const selectedRoom = storable({} as selectedRoomStoreI, 'selectedRoom');
 
+/**
+ * @description Derived Store: The room object of the currently selected room
+ */
 export const currentSelectedRoom = derived(
 	[selectedRoom, selectedServer, roomsStore],
 	([$selectedRoom, $selectedServer, $roomsStore]) => {
@@ -57,14 +64,76 @@ export const messageStore = sessionable({} as messageStoreI, 'messages');
 
 export const pixelStore = sessionable({} as pixelStoreI, 'pixelmaps');
 
-/* ------------------ Misc State ------------------*/
 /**
- * @description Configuration and misc state
+ * @description Stores the encrypted key for each room keyed by the roomId
+ */
+export const roomKeyStore = encryptable({} as roomKeyStoreI, 'roomKeyStore');
+
+/**
+ * @description Derived Store: The messages of the currently selected room
+ */
+export const currentRoomMessages = derived(
+	[currentSelectedRoom, messageStore],
+	([$currentSelectedRoom, $messageStore]) => {
+		return $messageStore[$currentSelectedRoom.roomId.toString()];
+	}
+);
+
+/**
+ * @description Stores the rate limit information for each room keyed by the roomId; this is to track the number of messages sent in a given epoch to make sure the user doesn't break the rate limit. Modifying how his store works, or how the store is written to/read from, may allow the user to break the rate limit and be banned from the room.
+ */
+export const rateLimitStore = sessionable({} as rateLimitStoreI, 'rateLimitStore');
+
+/* ------------------ Identity Stores ------------------*/
+/**
+ * @description Identity store, this is the user's identity UNENCRYPTED
+ * @deprecated Use identityKeyStore when you can, alert user to set password first
+ */
+export const identityStore = storable({} as IdentityStoreI, 'identity');
+
+/**
+ * @description Identity store, this is the user's identity ENCRYPTED
+ */
+export const identityKeyStore = encryptable({} as CryptedIdentityStoreI, 'identity');
+
+/* ------------------ Configuration / Misc Stores ------------------*/
+
+/**
+ * @description The user's encryption/decryption key, stored only in memory, if the user refreshes the page, they need to re-enter their password. This is what all other encrypted stores use to encrypt/decrypt their data.
+ * !WARN NEVER CHANGE THE STORE TYPE OR YOU RISK EXPOSING THE KEY
+ */
+export const keyStore = writable({} as keyStoreI);
+
+/**
+ * @description Configuration store, stores the user's settings
  */
 export const configStore = storable(configDefaults as ConfigurationI, 'configStore');
 
-export const roomKeyStore = storable({} as roomKeyStoreI, 'roomKeyStore');
+export const passwordSet = derived(configStore, ($configStore) => {
+	if (!$configStore.hashedPwd) {
+		return false;
+	} else if ($configStore.hashedPwd === '') {
+		return false;
+	} else if ($configStore.hashedPwd === undefined) {
+		return false;
+	} else if ($configStore.hashedPwd.length > 1) {
+		return true;
+	}
+});
 
+export const keyExists = derived(keyStore, ($keyStore) => {
+	if ($keyStore?.extractable) {
+		console.debug('EncryptionKey exists');
+		return true;
+	} else {
+		console.debug('EncryptionKey does not exist');
+		return false;
+	}
+});
+
+/**
+ * @description Console store, primarily stores messages to be displayed in the console
+ */
 export const consoleStore = sessionable(
 	{
 		messages: [{ message: 'Welcome User', type: 'info' }],
@@ -73,20 +142,15 @@ export const consoleStore = sessionable(
 	'consoleStore'
 );
 
-export const keyStore = writable({} as CryptoKey);
-
-/**
- * @description Identity store, this is the user's identity
- */
-export const identityStore = storable({} as IdentityStoreI, 'identity');
-
-export const identityKeyStore = storable({} as IdentityStoreI, 'identity');
-
-export const currentRoomMessages = derived(
-	[currentSelectedRoom, messageStore],
-	([$currentSelectedRoom, $messageStore]) => {
-		return $messageStore[$currentSelectedRoom.roomId.toString()];
+export const identityKeyStoreDecrypted = derived(identityKeyStore, ($identityKeyStore) => {
+	if (keyExists) {
+		try {
+			decryptData($identityKeyStore.identity as string, get(keyStore)!).then((decrypted) => {
+				return { identity: JSON.parse(decrypted) } as DecryptedIdentityStoreI;
+			});
+		} catch (e) {
+			console.error(`Error decrypting identity: ${e}`);
+			return { identity: {} as IdentityStoreI } as DecryptedIdentityStoreI;
+		}
 	}
-);
-
-export const rateLimitStore = sessionable({} as rateLimitStoreI, 'rateLimitStore');
+});

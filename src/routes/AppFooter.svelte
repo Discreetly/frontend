@@ -15,6 +15,7 @@
 		<a href="/about">About</a>
 	</svelte:fragment>
 	<svelte:fragment slot="trail">
+		<p class="hidden sm:inline me-2 text-primary-500">Alpha Version!</p>
 		<p><a href="/testing" style="margin:0 !important">© 2023 Privacy & Scaling Explorations</a></p>
 	</svelte:fragment>
 </AppBar>

@@ -47,4 +47,8 @@
 		content: '#';
 		padding-right: 0.75rem;
 	}
+	.space::before {
+		content: '#';
+		color: rgb(var(--color-surface-500));
+	}
 </style>
