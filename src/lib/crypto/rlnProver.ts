@@ -102,6 +102,7 @@ async function genProof(
 			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENIFIER, commitment);
 			break;
 		case 'BANDADA_GROUP':
+			// TODO! CHECK IF ADMIN, if so use MerkleProofFromRoom
 			if (room.bandadaAddress === undefined) throw new Error('Bandada address not defined');
 			try {
 				merkleProof = await getMerkleProof(room.bandadaAddress, room.bandadaGroupId!, commitment);
