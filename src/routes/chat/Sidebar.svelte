@@ -2,8 +2,6 @@
 	import SelectRoom from '$lib/components/SelectRoom.svelte';
 	import SelectServer from '$lib/components/SelectServer.svelte';
 	import { currentSelectedRoom } from '$lib/stores';
-
-	$: identities = $currentSelectedRoom.identities;
 </script>
 
 <div id="sidebar" class="hidden sm:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">

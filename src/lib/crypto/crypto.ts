@@ -1,3 +1,5 @@
+import { addConsoleMessage } from '$lib/utils';
+
 /**
  * Derives an encryption key from a given password using PBKDF2.
  * The key is derived on password entry and stays in memory until page refresh
@@ -35,63 +37,52 @@ export async function deriveKey(password: string): Promise<CryptoKey> {
 	);
 }
 
-/**
- * Encrypts a plain text using AES-GCM algorithm.
- *
- * @param {string} plainText - The text to encrypt.
- * @param {CryptoKey} key - The cryptographic key for encryption.
- * @returns {Promise<string>} - Returns the encrypted text as a Promise.
- */
-export async function encryptData(plainText: string, key: CryptoKey): Promise<string> {
-	// Generate initialization vector (iv) for AES-GCM
-	const iv = window.crypto.getRandomValues(new Uint8Array(12));
+export async function encrypt(plainText: string, key: CryptoKey): Promise<string | null> {
+	if (key instanceof CryptoKey) {
+		const encoder = new TextEncoder();
+		const iv = window.crypto.getRandomValues(new Uint8Array(12));
 
-	// Convert plain text to byte array
-	const encoded = new TextEncoder().encode(plainText);
+		const encryptedContent = await window.crypto.subtle.encrypt(
+			{ name: 'AES-GCM', iv: iv },
+			key,
+			encoder.encode(plainText)
+		);
+		console.log(encryptedContent);
 
-	// Encrypt the text
-	const encrypted = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+		const encryptedContentArr = new Uint8Array(encryptedContent);
+		const encryptedBytes = [...iv, ...encryptedContentArr];
 
-	// Convert encrypted data to Uint8Array and concatenate it with iv
-	const encryptedData = new Uint8Array(encrypted);
-
-	// Return encrypted data as a base64 encoded string
-	return btoa(String.fromCharCode(...iv) + String.fromCharCode(...encryptedData));
+		return btoa(String.fromCharCode(...encryptedBytes));
+	} else {
+		addConsoleMessage('No Password Set, please set a password with /setpassword', 'error');
+		console.error('No password set, please set a password first');
+		return 'nopassword';
+	}
 }
 
-/**
- * Decrypts an encrypted text using AES-GCM algorithm.
- *
- * @param {string} encryptedData - The encrypted text.
- * @param {CryptoKey} key - The cryptographic key for decryption.
- * @returns {Promise<string>} - Returns the decrypted text as a Promise.
- */
-export async function decryptData(encryptedData: string, key: CryptoKey): Promise<string | null> {
-	key = key as CryptoKey;
-	// Decode the base64 encrypted string
-	const rawData = atob(encryptedData);
+export async function decrypt(cipherText: string, key: CryptoKey): Promise<string> {
+	if (cipherText === '') {
+		return '';
+	}
+	if (key instanceof CryptoKey) {
+		const decoder = new TextDecoder();
+		console.log(cipherText);
+		const encryptedBytes = Uint8Array.from(atob(cipherText), (c) => c.charCodeAt(0));
 
-	// Extract Initialization Vector (iv) and encrypted data
-	const rawIv = rawData.slice(0, 12);
-	const rawEncryptedData = rawData.slice(12);
+		const iv = encryptedBytes.slice(0, 12);
+		const encryptedContent = encryptedBytes.slice(12);
 
-	// Convert them to byte arrays
-	const iv = new TextEncoder().encode(rawIv);
-	const encrypted = new TextEncoder().encode(rawEncryptedData).buffer;
+		const decryptedContent = await window.crypto.subtle.decrypt(
+			{ name: 'AES-GCM', iv: iv },
+			key as CryptoKey,
+			encryptedContent
+		);
 
-	try {
-		if (!window) {
-			throw new Error('Window not found');
-		}
-
-		// Decrypt the data
-		const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
-
-		// Return the decrypted text
-		return new TextDecoder().decode(decrypted);
-	} catch (e) {
-		console.error(e);
-		throw new Error('Error decrypting data');
+		return decoder.decode(decryptedContent);
+	} else {
+		addConsoleMessage('No Password Set, please set a password with /setpassword', 'error');
+		console.error('No password set, please set a password first');
+		return 'nopassword';
 	}
 }
 
@@ -101,7 +92,7 @@ export async function decryptData(encryptedData: string, key: CryptoKey): Promis
  * @param {string} password - The password to hash.
  * @returns {Promise<string>} - Returns the hashed password as a Promise.
  */
-export async function hashPassword(password: string): Promise<string> {
+export async function hashPassword(password: string): Promise<string | null> {
 	// Convert the password to a byte array
 	const textEncoder = new TextEncoder();
 	const passwordBytes = textEncoder.encode(password);

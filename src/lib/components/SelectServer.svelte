@@ -26,8 +26,8 @@
 	};
 </script>
 
-<div class="m-2 sm:md-3 flex flex-row">
-	<select class="select variant-ghost" bind:value={$selectedServer} title="Choose a server">
+<div class="input-group input-group-divider grid-cols-[1fr_auto]">
+	<select class="select" bind:value={$selectedServer} title="Choose a server" id="selectServer">
 		{#each Object.entries($serverStore) as [key, s]}
 			<option value={key} title={key}>{s.name}</option>
 		{/each}
@@ -35,7 +35,7 @@
 	<button
 		type="button"
 		title="Add Server"
-		class="btn btn-sm variant-ghost ms-2 text-xl"
+		class="text-xl input-group-shim"
 		on:click={() => {
 			modalStore.trigger(addServerModal);
 		}}>+</button

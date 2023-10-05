@@ -1,17 +1,17 @@
 /* Write your global styles here, in PostCSS syntax */
 @font-face {
-font-family: "Space Grotesk";
-src: url("/fonts/Space_Grotesk/SpaceGrotesk-VariableFont_wght.ttf") format("truetype");
+	font-family: 'Space Grotesk';
+	src: url('/fonts/Space_Grotesk/SpaceGrotesk-VariableFont_wght.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: "Space Mono";
-	src: url("/fonts/Space_Mono/SpaceMono-Regular.ttf") format("truetype");
+	font-family: 'Space Mono';
+	src: url('/fonts/Space_Mono/SpaceMono-Regular.ttf') format('truetype');
 }
 
 @font-face {
-font-family: "Nippo";
-src: url("/fonts/Nippo/Nippo-Variable.ttf") format("truetype");
+	font-family: 'Nippo';
+	src: url('/fonts/Nippo/Nippo-Variable.ttf') format('truetype');
 }
 @tailwind base;
 :root {
@@ -57,10 +57,15 @@ src: url("/fonts/Nippo/Nippo-Variable.ttf") format("truetype");
 @tailwind utilities;
 
 .dark body {
-  background: rgb(var(--color-surface-700));
+	background: rgb(var(--color-surface-700));
 }
 
-.h1, .h2, .h3, .h4, .h5, .h6 {
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
 	font-weight: 350;
 }
 
@@ -70,9 +75,19 @@ src: url("/fonts/Nippo/Nippo-Variable.ttf") format("truetype");
 }
 
 svg.mirror {
-		transform: scaleX(-1);
-	}
+	transform: scaleX(-1);
+}
 
-	input:focus-visible {
-		outline: none;
-	}
+input:focus-visible {
+	outline: none;
+}
+
+.btn {
+	font-family: 'Nippo';
+}
+.input,
+.textarea,
+.select {
+	font-family: 'Nippo';
+	font-weight: 300;
+}

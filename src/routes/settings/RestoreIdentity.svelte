@@ -60,28 +60,32 @@
 	}
 </script>
 
-<div class="card variant-ghost-secondary">
+<div class="card variant-ghost-tertiary">
 	<header class="card-header">
 		<h3 class="h4">Restore Your Identity</h3>
 	</header>
 	<section class="px-4 pt-4">
-		<h5 class="h5 pb-1">Recover From File:</h5>
-		<FileDropzone
-			class="px-2"
-			name="Discreetly_Identity.json"
-			bind:files
-			on:change={onChangeHandler}
-		/>
+		<label class="label w-full pb-1">
+			<span class="h5"> Recover From File:</span>
+			<FileDropzone
+				class="px-2"
+				name="Discreetly_Identity.json"
+				bind:files
+				on:change={onChangeHandler}
+			/></label
+		>
 	</section>
 	<section class="px-4 pt-4">
-		<h5 class="h5 pb-1">Recover From JSON:</h5>
-		<textarea
-			name="textarea"
-			id=""
-			class="p-2"
-			cols="30"
-			rows="10"
-			placeholder="Paste your Identity Here"
-		/>
+		<label class="label w-full pb-5 flex flex-col">
+			<span class="h5"> Recover From JSON:</span>
+			<textarea
+				name="textarea"
+				id=""
+				class="mb-4 p-2 rounded-token"
+				cols="30"
+				rows="10"
+				placeholder="Paste your Identity Here"
+			/></label
+		>
 	</section>
 </div>

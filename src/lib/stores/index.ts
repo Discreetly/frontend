@@ -1,5 +1,5 @@
 import { storable, sessionable, encryptable } from './storeFactory';
-import { derived, get, writable, type Readable, type Writable } from 'svelte/store';
+import { derived, writable, type Readable } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 import type {
 	ConfigurationI,
@@ -14,7 +14,7 @@ import type {
 	roomKeyStoreI,
 	keyStoreI
 } from '$lib/types';
-import { decryptData } from '$lib/crypto/crypto';
+import { decrypt } from '$lib/crypto/crypto';
 
 /* ------------------ Server State ------------------*/
 /**
@@ -80,7 +80,7 @@ export const currentRoomMessages = derived(
 /**
  * @description Stores the rate limit information for each room keyed by the roomId; this is to track the number of messages sent in a given epoch to make sure the user doesn't break the rate limit. Modifying how his store works, or how the store is written to/read from, may allow the user to break the rate limit and be banned from the room.
  */
-export const rateLimitStore = sessionable({} as rateLimitStoreI, 'rateLimitStore');
+export const rateLimitStore = storable({} as rateLimitStoreI, 'rateLimitStore');
 
 /* ------------------ Configuration / Misc Stores ------------------*/
 
@@ -107,20 +107,10 @@ export const passwordSet = derived(configStore, ($configStore) => {
 	}
 });
 
-export const keyExists = derived(keyStore, ($keyStore) => {
-	if ($keyStore?.extractable) {
-		console.debug('EncryptionKey exists');
-		return true;
-	} else {
-		console.debug('EncryptionKey does not exist');
-		return false;
-	}
-});
-
 /**
  * @description Console store, primarily stores messages to be displayed in the console
  */
-export const consoleStore = sessionable(
+export const consoleStore = storable(
 	{
 		messages: [{ message: 'Welcome User', type: 'info' }],
 		settings: {}
@@ -138,35 +128,32 @@ export const identityStore = storable({} as IdentityStoreI, 'identity');
 /**
  * @description Identity store, this is the user's identity ENCRYPTED
  */
-export const identityKeyStore = encryptable('' as string, 'identity');
+export const identityKeyStore = encryptable('' as string, 'identityencrypted');
 
 /**
  * @description Derived Store: The user's identity DECRYPTED in memory
  */
-export const identityKeyStoreDecrypted: Readable<string | null | undefined> = derived(
-	[identityKeyStore, keyStore, keyExists],
-	([$identityKeyStore, $keyStore, $keyExists]) => {
+export const identityKeyStoreDecrypted: Readable<IdentityStoreI | null | undefined> = derived(
+	[identityKeyStore, keyStore],
+	([$identityKeyStore, $keyStore]) => {
 		const key = $keyStore;
-		if ($keyExists && key !== undefined && key !== null) {
+		if (key !== undefined && key !== null && key instanceof CryptoKey) {
 			try {
-				if (key !== undefined && key !== null) {
-					try {
-						decryptData($identityKeyStore as string, key).then((decrypted) => {
-							if (decrypted !== null) {
-								return JSON.parse(decrypted) as IdentityStoreI;
-							}
-						});
-					} catch (e) {
-						console.error(`Error decrypting identity: ${e}`);
+				decrypt($identityKeyStore, key).then((decrypted) => {
+					console.log(decrypted);
+					if (decrypted !== null && decrypted !== undefined) {
+						return JSON.parse(decrypted) as IdentityStoreI;
+					} else {
 						return null;
 					}
-				} else {
-					return null;
-				}
+				});
 			} catch (e) {
 				console.error(`Error decrypting identity: ${e}`);
 				return null;
 			}
+		} else {
+			console.warn('No password set, please set a password first');
+			return null;
 		}
 	}
 );

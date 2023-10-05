@@ -79,33 +79,33 @@
 	}
 </script>
 
-<div class="grid place-content-center mb-2 sm:mb-4">
-	<label class="label">
-		<span>Select or Add a Server</span>
+<div class="flex flex-col items-center px-2 mb-2 sm:mb-4">
+	<label class="label w-full" for="selectServer"
+		><span class="h5">Select or Add a Server</span>
 		<SelectServer />
 	</label>
-	<label class="label mt-3">
-		<span>Invite Code</span>
-		<div class="m-2 sm:md-3">
-			<input
-				class="input max-w-md mb-2 variant-ghost"
-				type="text"
-				placeholder="Invite Code"
-				bind:value={code}
-				on:keydown={(event) => inviteCodeKeyPress(event)}
-			/>
-			{#if !loading}
-				<button
-					class="btn variant-ghost-success"
-					type="button"
-					disabled={!code}
-					on:click={() => addCode(code)}>Submit</button
-				>
-			{:else}
-				<p class="italic">Loading...</p>
-			{/if}
-		</div>
+	<label class="label mt-3" for="inviteCode">
+		<span class="h5">Invite Code</span>
+		<input
+			class="input"
+			type="text"
+			placeholder="Invite Code"
+			id="inviteCode"
+			bind:value={code}
+			on:keydown={(event) => inviteCodeKeyPress(event)}
+		/>
+		{#if !loading}
+			<button
+				class="btn variant-ghost-success"
+				type="button"
+				disabled={!code}
+				on:click={() => addCode(code)}>Submit</button
+			>
+		{:else}
+			<p class="italic">Loading...</p>
+		{/if}
 	</label>
+
 	{#if err}
 		<aside class="p">
 			<div>

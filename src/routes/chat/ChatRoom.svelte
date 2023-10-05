@@ -26,11 +26,12 @@
 	let connected: boolean = false;
 	let lastRoom = '';
 	let onlineMembers = '?';
+	let epochUpdater: NodeJS.Timeout;
 	$: currentEpoch = 0;
 	$: timeLeftInEpoch = '0';
-	$: roomId = $currentSelectedRoom.roomId!.toString();
-	$: userMessageLimit = $currentSelectedRoom.userMessageLimit ?? 1;
-	$: roomRateLimit = $currentSelectedRoom.rateLimit ?? 0;
+	$: roomId = $currentSelectedRoom?.roomId!.toString();
+	$: userMessageLimit = $currentSelectedRoom?.userMessageLimit ?? 1;
+	$: roomRateLimit = $currentSelectedRoom?.rateLimit ?? 0;
 	$: if (!$rateLimitStore[roomId]) {
 		console.debug('Resetting rate limit store for room', roomId);
 		$rateLimitStore[roomId] = {
@@ -70,6 +71,11 @@
 
 	function updateEpoch() {
 		if ($currentSelectedRoom === undefined) {
+			if ($currentRoomsStore[0] === undefined) {
+				console.warn('No rooms available');
+				clearInterval(epochUpdater);
+				return;
+			}
 			$currentSelectedRoom = $currentRoomsStore[0];
 		}
 		currentEpoch = Math.floor(Date.now() / $currentSelectedRoom.rateLimit!);
@@ -141,7 +147,7 @@
 			scrollChatToBottom();
 		});
 
-		setInterval(() => {
+		epochUpdater = setInterval(() => {
 			updateEpoch();
 		}, 100);
 	});
@@ -195,7 +201,12 @@
 		<!-- Prompt -->
 	</div>
 {:else}
-	<Loading />
+	<div class="grid place-content-center">
+		<h6 class="h2 text-center mb-10">You aren't in any rooms...yet</h6>
+		<a href="https://discord.gg/brJQ36KVxk" class="h2 btn btn-sm variant-ringed-secondary"
+			>Join our Discord for help</a
+		>
+	</div>
 {/if}
 
 <style>

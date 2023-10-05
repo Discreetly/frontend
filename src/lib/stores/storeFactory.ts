@@ -2,7 +2,7 @@
 import { writable, get } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import { keyStore } from '.';
-import { encryptData, decryptData } from '$lib/crypto/crypto';
+import { decrypt, encrypt } from '$lib/crypto/crypto';
 
 export function storable<Type>(data: Type, localStorageKey: string): Writable<Type> {
 	const store = writable<Type>(data);
@@ -87,7 +87,7 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 					throw new Error('Key store not initialized, cannot encrypt data');
 				}
 				console.debug('Encryptable State: ', storedValue, key);
-				decryptData(storedValue, key).then((decryptedData) => {
+				decrypt(storedValue, key).then((decryptedData) => {
 					if (decryptedData !== null) {
 						set(JSON.parse(decryptedData) as Type);
 					}
@@ -105,7 +105,7 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 			if (!key) {
 				throw new Error('Key store not initialized, cannot encrypt data');
 			}
-			encryptData(JSON.stringify(value), key).then((encryptedData) => {
+			encrypt(JSON.stringify(value), key).then((encryptedData) => {
 				if (isBrowser) {
 					localStorage.setItem(localStorageKey, encryptedData);
 				}
@@ -118,7 +118,7 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 			if (!key) {
 				throw new Error('Key store not initialized, cannot encrypt data');
 			}
-			encryptData(JSON.stringify(updatedStore), key).then((encryptedData) => {
+			encrypt(JSON.stringify(updatedStore), key).then((encryptedData) => {
 				if (isBrowser) {
 					localStorage.setItem(localStorageKey, encryptedData);
 				}

@@ -18,7 +18,8 @@
 		<div class="flex flex-col">
 			<select
 				id="action-representation"
-				class="select"
+				class="select py-2"
+				size="5"
 				bind:value={$configStore.actionRepresentation}
 			>
 				<option value={ActionRepresentationE.AP}>Action Points</option>

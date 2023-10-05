@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { decryptData, deriveKey, hashPassword } from '$lib/crypto/crypto';
+	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
 	import {
 		configStore,
 		identityKeyStore,
 		identityKeyStoreDecrypted,
-		keyExists,
 		keyStore,
 		passwordSet
 	} from '$lib/stores';
 	import { addConsoleMessage, clearConsoleMessages } from '$lib/utils/';
 	import { inviteCode } from '$lib/utils/inviteCode';
+
+	export let placeholder: string = 'Enter / Command';
 
 	function help() {
 		addConsoleMessage(' ', 'space');
@@ -82,21 +83,15 @@
 			case '/unlock':
 				const hashedPwd = await hashPassword(args[0]);
 				if (hashedPwd === $configStore.hashedPwd) {
-					if ($keyExists && $keyStore && !(args[1] === 'force')) {
+					if ($keyStore && !(args[1] === 'force')) {
 						addConsoleMessage(
 							'Already Unlocked! use `/unlock PASSWORD force` to override this and derive the key again',
 							'warning'
 						);
 						break;
 					}
-					deriveKey(args[0])
-						.then((key) => {
-							$keyStore = key;
-							addConsoleMessage('Unlocked!');
-						})
-						.catch((err) => {
-							addConsoleMessage(`Could NOT derive key from password: ${err}`, 'error');
-						});
+					$keyStore = await deriveKey(args[0]);
+					addConsoleMessage('Unlocked!');
 				} else {
 					addConsoleMessage(`Invalid password!`, 'warning');
 				}
@@ -104,12 +99,12 @@
 			case '/export' || '/backup':
 				addConsoleMessage('Exporting Identity');
 				if ($passwordSet) {
-					if ($keyExists && $keyStore) {
+					if ($keyStore) {
 						addConsoleMessage('Decrypting Data');
 						console.log($identityKeyStore, $keyStore);
 						const identity = $identityKeyStoreDecrypted;
 						if (identity) {
-							addConsoleMessage(identity);
+							addConsoleMessage(JSON.stringify(identity));
 						}
 					} else {
 						addConsoleMessage('Please Unlock Keystore!', 'error');
@@ -142,6 +137,6 @@
 	id="commandInput"
 	class="input py-1 px-2"
 	type="text"
-	placeholder="Enter / Command"
+	{placeholder}
 	on:keypress={handleInput}
 />

@@ -7,12 +7,12 @@
 	import Account from 'svelte-material-icons/AccountHardHat.svelte';
 	import { inviteCode } from '$lib/utils/inviteCode';
 	import { addConsoleMessage } from '$lib/utils/console';
-	import Console from '../console/ConsoleInputPrompt.svelte';
+	import Console from '../console/Console.svelte';
 	$: identityExists = !!$identityStore._commitment;
 	// index of console messages that is awaiting a response
 	function identity() {
 		const idStatus = createIdentity();
-		if (idStatus == 'created') {
+		if (idStatus === 'created') {
 			addConsoleMessage('Identity Generated 🎉');
 		} else if (idStatus == 'exists') {
 			addConsoleMessage('Identity Exists Already ✅');
@@ -53,16 +53,18 @@
 	});
 </script>
 
-<Console />
-<a href="/settings" class="btn btn-sm variant-ghost-primary">
-	<span>Restore Identity</span>
-	<Account />
-</a>
-<a href="/about" class="btn btn-sm variant-ghost-secondary ms-2 mt-2">
-	<span>Read More</span>
-	<Text />
-</a>
-<a href="/about" class="btn btn-sm variant-ghost-success ms-2 mt-2">
-	<span>Continue</span>
-	<ArrowRight />
-</a>
+<Console placeholder="/join invite-code-goes-here" />
+<div>
+	<a href="/settings" class="btn btn-sm variant-ghost-primary">
+		<span>Restore Identity</span>
+		<Account />
+	</a>
+	<a href="/about" class="btn btn-sm variant-ghost-secondary ms-2 mt-2">
+		<span>Read More</span>
+		<Text />
+	</a>
+	<a href="/chat" class="btn btn-sm variant-ghost-success ms-2 mt-2">
+		<span>Continue</span>
+		<ArrowRight />
+	</a>
+</div>

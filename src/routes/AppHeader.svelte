@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
+	import { page } from '$app/stores';
 	import { configStore, currentSelectedRoom, identityStore, keyStore } from '$lib/stores';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
 	import Settings from 'svelte-material-icons/TuneVariant.svelte';
 	import Information from 'svelte-material-icons/Information.svelte';
 	import Console from 'svelte-material-icons/Console.svelte';
-	import PasswordLock from '$lib/components/PasswordLock.svelte';
+	import PasswordLock from '$lib/components/Padlock.svelte';
+	import Chat from 'svelte-material-icons/Chat.svelte';
 	$: identityExists = !!$identityStore._commitment;
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 
@@ -35,29 +37,35 @@
 		</h1>
 	</svelte:fragment>
 
-	<a href="/about" class="btn btn-sm variant-ringed-secondary hidden sm:inline me-2">About</a>
+	<a href="/about" class="btn btn-sm variant-ringed-secondary hidden sm:inline">About</a>
 	{#if identityExists}
-		<a href="/chat" class="hidden btn btn-sm variant-ringed-secondary sm:inline me-2">Chat</a>
+		<a href="/chat" class="hidden btn btn-sm variant-ringed-secondary sm:inline">Chat</a>
 		<a
-			class="btn btn-sm variant-ringed-secondary font-medium text-sm inline sm:hidden me-2"
+			class="btn btn-sm variant-ringed-secondary font-medium text-sm inline sm:hidden"
 			on:click={drawerOpen}>{roomName}</a
 		>
 	{:else}
 		<a class="btn btn-sm variant-ringed-secondary" href="/signup">Sign Up</a>
 	{/if}
 	<a
-		class="btn btn-sm variant-ringed-secondary font-medium text-sm hidden sm:inline me-2"
+		class="btn btn-sm variant-ringed-secondary font-medium text-sm hidden sm:inline"
 		href="/console">Console</a
 	>
 	<svelte:fragment slot="trail">
-		<span class="inline sm:hidden me-2 text-primary-500">Alpha Version!</span>
-		<a href="/about" class="hidden sm:inline me-2"><Information size="1.2em" /></a>
-		<a href="/console" class="hidden sm:inline me-2"><Console size="1.2em" /></a>
+		<a href="/about" class="hidden sm:inline"><Information size="1.2em" /></a>
+		{#if identityExists && $page.url.pathname !== '/chat'}
+			<a href="/chat" class="inline"><Chat size="1.2em" /></a>
+		{/if}
+		{#if $page.url.pathname !== '/console'}
+			<a href="/console" class="inline"><Console size="1.2em" /></a>
+		{/if}
 
-		<PasswordLock cls="hidden sm:inline me-2" />
+		<PasswordLock cls="hidden sm:inline" />
 		{#if identityExists}
 			<a href="/settings"><Settings size="1.2em" /></a>
 		{/if}
-		<LightSwitch />
+		<div class="hidden sm:inline">
+			<LightSwitch />
+		</div>
 	</svelte:fragment>
 </AppBar>

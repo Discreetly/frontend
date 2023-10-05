@@ -3,6 +3,6 @@
 </script>
 
 <div class="grid place-content-center">
-	<h5 class="h6">Loading...</h5>
+	<h6 class="h3 text-center mb-10">Loading...</h6>
 	<ProgressRadial />
 </div>

@@ -1,5 +1,4 @@
 <script>
-	import Button from '$lib/components/button.svelte';
 	import Demo from '$lib/components/Demo.svelte';
 	import Introduction from '$lib/components/Introduction.svelte';
 </script>
@@ -41,7 +40,13 @@
 			>RLN</a
 		>.
 	</p>
-	<a href="https://discord.gg/brJQ36KVxk" class="btn variant-ghost-secondary">Join our Discord</a>
+	<div class="flex gap-3 justify-between my-6">
+		<a href="https://discord.gg/brJQ36KVxk" class="btn variant-ghost-secondary">Join our Discord</a>
+		<a
+			href="https://discord.com/api/oauth2/authorize?client_id=1142162852132700200&permissions=2147483648&scope=bot"
+			class="btn variant-ghost-primary">Add our Discord Bot to Your Server Today!</a
+		>
+	</div>
 	<div>
 		<Demo />
 	</div>
