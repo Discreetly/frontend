@@ -1,34 +1,27 @@
 <script lang="ts">
 	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
+	import { configStore, identityKeyStore, keyStore, passwordSet } from '$lib/stores';
 	import {
-		configStore,
-		identityKeyStore,
-		identityKeyStoreDecrypted,
-		keyStore,
-		passwordSet
-	} from '$lib/stores';
-	import { addConsoleMessage, clearConsoleMessages } from '$lib/utils/';
+		addConsoleMessage,
+		clearConsoleMessages,
+		doesIdentityExist,
+		setPassword
+	} from '$lib/utils/';
 	import { inviteCode } from '$lib/utils/inviteCode';
+	import { createIdentity } from '$lib/utils/';
 
 	export let placeholder: string = 'Enter / Command';
 
 	function help() {
-		addConsoleMessage(' ', 'space');
-		addConsoleMessage('Commands: /clear, /join, /help, /unlock, /export');
-		addConsoleMessage(' ', 'space');
+		addConsoleMessage('-----HELP-----');
 		addConsoleMessage('`/clear` Clears the console');
-		addConsoleMessage(' ', 'space');
 		addConsoleMessage('`/join invite-code` Joins a room via invite code, Example:');
-		addConsoleMessage(' ', 'space');
 		addConsoleMessage('`/password Password`');
-		addConsoleMessage(' ', 'space');
 		addConsoleMessage('`/clearPassword`');
-		addConsoleMessage(' ', 'space');
 		addConsoleMessage('`/unlock Password`');
-		addConsoleMessage(' ', 'space');
 		addConsoleMessage('`/lock`');
-		addConsoleMessage(' ', 'space');
 		addConsoleMessage('`/backup`');
+		addConsoleMessage('`/status`');
 	}
 
 	async function processCommand(command: string) {
@@ -39,7 +32,7 @@
 			addConsoleMessage(command, 'userinput');
 		}
 		switch (cmd) {
-			case 'help' || '/help':
+			case '/help':
 				help();
 				break;
 			case '/clear':
@@ -63,10 +56,20 @@
 				break;
 			case '/password':
 				const hashedOldPwd = await hashPassword(args[0]);
-				const hashedNewPwd = await hashPassword(args[1]);
-				if (hashedOldPwd === $configStore.hashedPwd || $configStore.hashedPwd === undefined) {
-					$configStore.hashedPwd = hashedNewPwd;
-					addConsoleMessage('New Password Set');
+				if (hashedOldPwd === $configStore.hashedPwd) {
+					const status = await setPassword(args[1]);
+					if (status === 'success') {
+						addConsoleMessage('Password Changed');
+					} else {
+						addConsoleMessage(`Error Changing Password: ${status}`, 'error');
+					}
+				} else if ($configStore.hashedPwd === null || $configStore.hashedPwd === undefined) {
+					const status = await setPassword(args[0]);
+					if (status === 'success') {
+						addConsoleMessage('New Password Set');
+					} else {
+						addConsoleMessage(`Error Changing Password: ${status}`, 'error');
+					}
 				} else {
 					addConsoleMessage('Invalid Old Password', 'error');
 					addConsoleMessage('/password OLDPASSWORD NEWPASSWORD', 'warning');
@@ -96,13 +99,11 @@
 					addConsoleMessage(`Invalid password!`, 'warning');
 				}
 				break;
-			case '/export' || '/backup':
+			case '/export':
 				addConsoleMessage('Exporting Identity');
 				if ($passwordSet) {
 					if ($keyStore) {
-						addConsoleMessage('Decrypting Data');
-						console.log($identityKeyStore, $keyStore);
-						const identity = $identityKeyStoreDecrypted;
+						const identity = $identityKeyStore;
 						if (identity) {
 							addConsoleMessage(JSON.stringify(identity));
 						}
@@ -113,6 +114,32 @@
 					addConsoleMessage('Password not set!', 'error');
 				}
 				addConsoleMessage('Exporting Identity Complete');
+				break;
+			case '/status':
+				addConsoleMessage('Identity Status');
+				addConsoleMessage(`Password Set: ${$configStore.hashedPwd}`);
+				addConsoleMessage(`Keystore: ${JSON.stringify($keyStore)}`);
+				addConsoleMessage(`Identity: ${$identityKeyStore}`);
+				break;
+			case '/createIdentity':
+				const idStatus = doesIdentityExist();
+				if (idStatus === 'safe') {
+					addConsoleMessage('✅ Identity Exists Already');
+				} else if (idStatus === 'unsafe') {
+					addConsoleMessage('⚠️ Identity Unsafe! Please set a password using /password');
+				} else {
+					addConsoleMessage('Creating Identity...');
+					const idStatus = createIdentity();
+					if (idStatus === 'created') {
+						addConsoleMessage('🎉 Identity Generated ');
+					} else if (idStatus == 'exists') {
+						addConsoleMessage('✅ Identity Exists Already');
+					} else if (idStatus == 'unsafe') {
+						addConsoleMessage('⚠️ Identity Unsafe! Please set a password using /password');
+					} else {
+						addConsoleMessage('❌ Error Creating Identity', 'error');
+					}
+				}
 				break;
 			default:
 				help();

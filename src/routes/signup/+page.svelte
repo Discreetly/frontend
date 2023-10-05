@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { identityStore, configStore, consoleStore } from '$lib/stores';
-	import { createIdentity } from '$lib/utils/';
+	import { createIdentity, doesIdentityExist } from '$lib/utils/';
 	import { onMount } from 'svelte';
 	import ArrowRight from 'svelte-material-icons/ArrowRightBold.svelte';
 	import Text from 'svelte-material-icons/TextBox.svelte';
@@ -8,16 +8,15 @@
 	import { inviteCode } from '$lib/utils/inviteCode';
 	import { addConsoleMessage } from '$lib/utils/console';
 	import Console from '../console/Console.svelte';
-	$: identityExists = !!$identityStore._commitment;
-	// index of console messages that is awaiting a response
-	function identity() {
-		const idStatus = createIdentity();
-		if (idStatus === 'created') {
-			addConsoleMessage('Identity Generated 🎉');
-		} else if (idStatus == 'exists') {
-			addConsoleMessage('Identity Exists Already ✅');
-		} else {
-			addConsoleMessage('Error Creating Identity ❌', 'error');
+
+	function checkForIdentity() {
+		const idStatus = doesIdentityExist();
+		if (idStatus === 'safe') {
+			addConsoleMessage('✅ Identity Found');
+		} else if (idStatus === 'unsafe') {
+			addConsoleMessage('⚠️ Identity Found, but it is unsafe');
+		} else if (idStatus === 'none') {
+			addConsoleMessage('❌ No Identity Found');
 		}
 	}
 
@@ -42,13 +41,7 @@
 	}
 
 	onMount(() => {
-		if (identityExists) {
-			addConsoleMessage('Identity Exists Already ✅');
-		} else {
-			addConsoleMessage('Creating Identity...');
-			identity();
-		}
-
+		checkForIdentity();
 		code();
 	});
 </script>

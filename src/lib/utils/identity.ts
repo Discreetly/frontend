@@ -1,24 +1,45 @@
 import { get } from 'svelte/store';
-import { identityKeyStore, identityKeyStoreDecrypted, identityStore, keyStore } from '../stores';
+import { configStore, identityKeyStore, identityStore, keyStore } from '../stores';
 import { Identity } from '@semaphore-protocol/identity';
 import type { IdentityStoreI } from '$lib/types';
-import { encrypt } from '$lib/crypto/crypto';
+import { addConsoleMessage } from './console';
 
-export function createIdentity(regenerate = false) {
-	if (!get(identityKeyStoreDecrypted)?._commitment || regenerate) {
+export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsafe' | 'error' {
+	const old_id = get(identityKeyStore) as unknown as IdentityStoreI;
+	if (!old_id._commitment || regenerate) {
 		console.debug('Creating identity');
-		try {
-			identityKeyStore.set(JSON.stringify(new Identity()));
-			if (identityKeyStoreDecrypted !== null) {
-				console.log('Identity Created! Congrats on your new journey');
-				return 'created';
+		const identity = new Identity() as unknown as IdentityStoreI;
+		const config = get(configStore);
+		const key = get(keyStore);
+		if (config.hashedPwd && config.hashedPwd.length > 0) {
+			if (key) {
+				try {
+					identityKeyStore.set(identity);
+					if (get(identityKeyStore)._commitment !== null) {
+						console.log('Identity Created! Congrats on your new journey');
+						return 'created';
+					} else {
+						console.error('Error creating identity');
+						return 'error';
+					}
+				} catch (e) {
+					console.error(`Error creating identity: ${e}`);
+					return 'error';
+				}
 			} else {
-				console.error('Error creating identity');
+				addConsoleMessage(
+					'Unlock your identity with /unlock or click on the lock in the corner',
+					'error'
+				);
 				return 'error';
 			}
-		} catch (e) {
-			console.error(`Error creating identity: ${e}`);
-			return 'error';
+		} else {
+			addConsoleMessage(
+				'For your security please set a password with /password or click on the lock in the corner',
+				'warning'
+			);
+			identityStore.set(identity);
+			return 'unsafe';
 		}
 	} else {
 		console.warn('Identity already exists');
@@ -27,7 +48,7 @@ export function createIdentity(regenerate = false) {
 }
 
 export function getIdentity(): IdentityStoreI {
-	const decryptedIdentity = get(identityKeyStoreDecrypted) as unknown as IdentityStoreI;
+	const decryptedIdentity = get(identityKeyStore) as unknown as IdentityStoreI;
 	if (decryptedIdentity !== null) {
 		return decryptedIdentity;
 	} else {
@@ -43,7 +64,7 @@ export function getIdentity(): IdentityStoreI {
 }
 
 export function getCommitment() {
-	const id = get(identityKeyStoreDecrypted);
+	const id = get(identityKeyStore) as IdentityStoreI;
 	const id_old = get(identityStore);
 	if (id !== null && id !== undefined) {
 		return id._commitment;
@@ -55,7 +76,7 @@ export function getCommitment() {
 }
 
 export function getIdentityBackup() {
-	const id = get(identityKeyStoreDecrypted);
+	const id = get(identityKeyStore);
 	const id_old = get(identityStore);
 	if (id !== null && id !== undefined) {
 		return JSON.stringify(id);
@@ -66,35 +87,24 @@ export function getIdentityBackup() {
 	}
 }
 
-export function doesIdentityExist(): boolean {
-	const id = get(identityKeyStoreDecrypted);
+export function doesIdentityExist(): 'safe' | 'unsafe' | 'none' {
+	const id = get(identityKeyStore);
 	const id_old = get(identityStore);
-	if (id !== null && id !== undefined) {
-		return true;
+	console.log(id, id_old);
+	if (id._commitment !== null && id._commitment !== undefined) {
+		return 'safe';
 	}
-	if (id_old !== null && id_old !== undefined) {
+	if (id_old._commitment !== null && id_old._commitment !== undefined) {
 		console.warn('PLEASE ADD A PASSWORD');
-		return true;
+		return 'unsafe';
 	}
-	return false;
+	return 'none';
 }
 
-export function encryptIdentity(identity: Identity) {
+export function encryptIdentity(identity: IdentityStoreI) {
 	const key = get(keyStore);
 	if (key !== undefined && key !== null) {
-		encrypt(
-			JSON.stringify({
-				_commitment: identity['_commitment'],
-				_nullifier: identity['_nullifier'],
-				_trapdoor: identity['_trapdoor'],
-				_secret: identity['_secret']
-			}),
-			key
-		).then((data) => {
-			if (data !== null) {
-				identityKeyStore.set(data);
-			}
-		});
+		identityKeyStore.set(identity as unknown as IdentityStoreI);
 		identityStore.set({
 			_commitment: '',
 			_trapdoor: '',

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import ChatRoomHeader from './ChatRoomHeader.svelte';
-	import Loading from '$lib/components/loading.svelte';
 	import {
 		currentSelectedRoom,
 		rateLimitStore,

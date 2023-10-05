@@ -20,11 +20,7 @@
 			value: '',
 			valueAttr: { type: 'password', minlength: 3, required: true },
 			response: async (r: string) => {
-				const hashedPassword = await hashPassword(r);
-				$configStore.hashedPwd = hashedPassword;
-				console.debug(`Hashed Password: ${hashedPassword}`);
-				$keyStore = await deriveKey(r);
-				console.debug(`Derived Key: ${$keyStore}`);
+				setPassword(r);
 			}
 		};
 		modalStore.trigger(modal);
@@ -39,11 +35,9 @@
 			valueAttr: { type: 'password', minlength: 3, required: true },
 			response: async (r: string) => {
 				if (r != 'false') {
-					console.log('Prompt Response: ', r);
 					const hashedPassword = await hashPassword(r);
 					if ($configStore.hashedPwd == hashedPassword) {
 						$keyStore = await deriveKey(r);
-						console.debug(`Derived Key: ${$keyStore}`);
 					} else {
 						$keyStore = null;
 					}

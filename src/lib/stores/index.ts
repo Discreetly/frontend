@@ -128,32 +128,4 @@ export const identityStore = storable({} as IdentityStoreI, 'identity');
 /**
  * @description Identity store, this is the user's identity ENCRYPTED
  */
-export const identityKeyStore = encryptable('' as string, 'identityencrypted');
-
-/**
- * @description Derived Store: The user's identity DECRYPTED in memory
- */
-export const identityKeyStoreDecrypted: Readable<IdentityStoreI | null | undefined> = derived(
-	[identityKeyStore, keyStore],
-	([$identityKeyStore, $keyStore]) => {
-		const key = $keyStore;
-		if (key !== undefined && key !== null && key instanceof CryptoKey) {
-			try {
-				decrypt($identityKeyStore, key).then((decrypted) => {
-					console.log(decrypted);
-					if (decrypted !== null && decrypted !== undefined) {
-						return JSON.parse(decrypted) as IdentityStoreI;
-					} else {
-						return null;
-					}
-				});
-			} catch (e) {
-				console.error(`Error decrypting identity: ${e}`);
-				return null;
-			}
-		} else {
-			console.warn('No password set, please set a password first');
-			return null;
-		}
-	}
-);
+export const identityKeyStore = encryptable({} as IdentityStoreI, 'identityencrypted');

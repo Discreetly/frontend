@@ -90,6 +90,8 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 				decrypt(storedValue, key).then((decryptedData) => {
 					if (decryptedData !== null) {
 						set(JSON.parse(decryptedData) as Type);
+					} else {
+						console.error('Error decrypting data');
 					}
 				});
 			} catch (e) {
@@ -106,10 +108,14 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 				throw new Error('Key store not initialized, cannot encrypt data');
 			}
 			encrypt(JSON.stringify(value), key).then((encryptedData) => {
-				if (isBrowser) {
-					localStorage.setItem(localStorageKey, encryptedData);
+				if (encryptedData !== null) {
+					if (isBrowser) {
+						localStorage.setItem(localStorageKey, encryptedData);
+					}
+					set(value);
+				} else {
+					console.error('Error encrypting data');
 				}
-				set(value);
 			});
 		},
 		update: async (callback: (value: Type) => Type) => {
@@ -119,10 +125,14 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 				throw new Error('Key store not initialized, cannot encrypt data');
 			}
 			encrypt(JSON.stringify(updatedStore), key).then((encryptedData) => {
-				if (isBrowser) {
-					localStorage.setItem(localStorageKey, encryptedData);
+				if (encryptedData !== null) {
+					if (isBrowser) {
+						localStorage.setItem(localStorageKey, encryptedData);
+					}
+					set(updatedStore);
+				} else {
+					console.error('Error encrypting data');
 				}
-				set(updatedStore);
 			});
 		}
 	};

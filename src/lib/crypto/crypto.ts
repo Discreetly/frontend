@@ -56,11 +56,11 @@ export async function encrypt(plainText: string, key: CryptoKey): Promise<string
 	} else {
 		addConsoleMessage('No Password Set, please set a password with /setpassword', 'error');
 		console.error('No password set, please set a password first');
-		return 'nopassword';
+		return null;
 	}
 }
 
-export async function decrypt(cipherText: string, key: CryptoKey): Promise<string> {
+export async function decrypt(cipherText: string, key: CryptoKey): Promise<string | null> {
 	if (cipherText === '') {
 		return '';
 	}
@@ -82,7 +82,7 @@ export async function decrypt(cipherText: string, key: CryptoKey): Promise<strin
 	} else {
 		addConsoleMessage('No Password Set, please set a password with /setpassword', 'error');
 		console.error('No password set, please set a password first');
-		return 'nopassword';
+		return null;
 	}
 }
 
