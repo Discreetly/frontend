@@ -60,7 +60,7 @@
 			<a href="/console" class="inline"><Console size="1.2em" /></a>
 		{/if}
 
-		<PasswordLock cls="hidden sm:inline" />
+		<PasswordLock cls="inline" />
 		{#if identityExists}
 			<a href="/settings"><Settings size="1.2em" /></a>
 		{/if}

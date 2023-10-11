@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { currentSelectedRoom, rateLimitStore } from '$lib/stores';
+	import { currentSelectedRoom, keyStore, rateLimitStore, roomKeyStore } from '$lib/stores';
 	import { genProof } from '$lib/crypto/rlnProver';
 	import type { Socket } from 'socket.io-client';
-	import { getIdentity, alert, clearMessageHistory } from '$lib/utils';
+	import { getIdentity, alertToast, clearMessageHistory, alertAll } from '$lib/utils';
 	import Send from 'svelte-material-icons/Send.svelte';
+	import { decrypt, encrypt } from '$lib/crypto/crypto';
 
 	export let socket: Socket;
 	export let connected: boolean;
@@ -31,23 +32,23 @@
 
 	function checkStatus(): boolean {
 		if (!connected) {
-			alert('NOT CONNECTED TO CHAT SERVER');
+			alertToast('NOT CONNECTED TO CHAT SERVER');
 			sendingMessage = false;
 			return false;
 		}
 		if (messageText.length < 1) {
-			alert('MESSAGE IS EMPTY');
+			alertToast('MESSAGE IS EMPTY');
 			sendingMessage = false;
 			return false;
 		}
 		if (messageText.length > 2000) {
-			alert('MESSAGE IS TOO LONG');
+			alertToast('MESSAGE IS TOO LONG, SENDING MAY FAIL UNDER NETWORK CONSTRAINED CONDITIONS');
 			sendingMessage = false;
 			return false;
 		}
 		// This is 100% thanks to Violet for spamming the chat with spaces
 		if (messageText.replaceAll(' ', '') == '') {
-			alert('MESSAGE IS EMPTY');
+			alertToast('MESSAGE IS EMPTY');
 			sendingMessage = false;
 			return false;
 		}
@@ -55,7 +56,7 @@
 	}
 
 	function help() {
-		alert('Commands: /clear, /help');
+		alertToast('Commands: /clear, /help');
 	}
 
 	function processCommand(value: string) {
@@ -73,51 +74,95 @@
 		}
 	}
 
-	function sendMessage() {
-		sendingMessage = true;
-		console.debug('Sending message: ', messageText);
-		setTimeout(() => {
-			sendingMessage = false;
-		}, 2500);
-
-		if (!checkStatus()) return;
-
-		const identity = getIdentity();
-		const room = $currentSelectedRoom;
-		if (room.encrypted) {
+	// Helper function to handle encrypted room messages
+	async function handleEncryptedMessage(
+		messageText: string,
+		roomId: string,
+		keyStore: any,
+		roomKeyStore: any
+	): Promise<string> {
+		if (!roomKeyStore[roomId]) {
+			throw new Error('ROOM IS ENCRYPTED BUT NO PASSWORD WAS FOUND');
 		}
-		genProof(room, messageText, identity, currentEpoch, messageId, userMessageLimit)
-			.then((msg) => {
-				if ($rateLimitStore[$currentSelectedRoom.roomId!.toString()].lastEpoch == currentEpoch) {
-					$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent++;
-					console.debug(
-						$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent,
-						'messages sent this epoch'
-					);
-				} else {
-					$rateLimitStore[$currentSelectedRoom.roomId!.toString()].lastEpoch = currentEpoch;
-					$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent = 1;
-					console.debug(
-						$rateLimitStore[$currentSelectedRoom.roomId!.toString()].messagesSent,
-						'messages sent this epoch'
-					);
-				}
-				socket.emit('validateMessage', msg);
-				console.debug('Sending message: ', msg);
-				messageText = '';
-				sendingMessage = false;
-			})
-			.catch((err) => {
-				if (err.message.includes('Merkle Proof')) {
-					alert(
-						"Could not generate Merkle Proof. You either don't belong in the room or you don't have an updated member list."
-					);
-				} else {
-					alert(err);
-				}
-				console.error('Error sending message: ', err);
-				sendingMessage = false;
-			});
+		if (!keyStore) {
+			throw new Error('NO KEYSTORE FOUND');
+		}
+
+		const key = await decrypt(roomKeyStore[roomId], keyStore);
+		if (!key) {
+			throw new Error('NO KEY FOUND');
+		}
+		const encryptedMessage = await encrypt(messageText, key as unknown as CryptoKey);
+		if (encryptedMessage == null) {
+			throw new Error('ENCRYPTION FAILED');
+		} else {
+			return encryptedMessage;
+		}
+	}
+
+	// Helper function to handle rate limiting
+	function handleRateLimiting(currentEpoch: number, roomId: string, rateLimitStore: any) {
+		const rateInfo = rateLimitStore[roomId];
+		if (rateInfo.lastEpoch === currentEpoch) {
+			rateInfo.messagesSent++;
+		} else {
+			rateInfo.lastEpoch = currentEpoch;
+			rateInfo.messagesSent = 1;
+		}
+		console.debug(rateInfo.messagesSent, 'messages sent this epoch');
+	}
+
+	async function sendMessage() {
+		try {
+			sendingMessage = true;
+			console.debug('Sending message: ', messageText);
+
+			if (!checkStatus()) return;
+
+			const identity = getIdentity();
+			const room = $currentSelectedRoom;
+
+			if (!identity) {
+				throw new Error('NO IDENTITY FOUND');
+			}
+
+			let messageToSend: string = messageText;
+
+			if (room.encrypted) {
+				messageToSend = await handleEncryptedMessage(
+					messageText,
+					room.roomId!.toString(),
+					$keyStore,
+					$roomKeyStore
+				);
+			}
+
+			const msg = await genProof(
+				room,
+				messageToSend,
+				identity,
+				currentEpoch,
+				messageId,
+				userMessageLimit
+			);
+
+			handleRateLimiting(currentEpoch, room.roomId!.toString(), $rateLimitStore);
+
+			socket.emit('validateMessage', msg);
+			console.debug('Sending message: ', msg);
+			messageText = '';
+		} catch (err: any) {
+			console.error('Error sending message: ', err);
+			if (err.message.includes('Merkle Proof')) {
+				alertToast(
+					"Couldn't generate Merkle Proof. Maybe you don't belong in the room or don't have an updated member list."
+				);
+			} else {
+				alertToast(err as string);
+			}
+		} finally {
+			sendingMessage = false;
+		}
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {

@@ -12,12 +12,9 @@
 	$: identityExists = !!$identityStore._commitment;
 	let tabSet: number = 0;
 	onMount(() => {
-		console.log('Page: ', $page);
 		if ($page.url.hash) {
 			const hash = $page.url.hash.replace('#', '');
-			console.log('Hash: ', hash);
 			if (hash === 'join-more') {
-				console.log('setting tab to join');
 				tabSet = 1;
 			}
 		}

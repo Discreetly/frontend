@@ -31,7 +31,7 @@ export const selectedServer = storable('' as string, 'selectedServer');
 /**
  * @description Room information keyed by the roomId
  */
-export const roomsStore = storable({} as roomStoreI, 'roomsStore');
+export const roomsStore = storable({} as roomStoreI, 'rooms');
 
 export const currentRoomsStore = derived(
 	[selectedServer, roomsStore],
@@ -65,7 +65,7 @@ export const pixelStore = sessionable({} as pixelStoreI, 'pixelmaps');
 /**
  * @description Stores the encrypted key for each room keyed by the roomId
  */
-export const roomKeyStore = encryptable({} as roomKeyStoreI, 'roomKeyStore');
+export const roomKeyStore = encryptable({} as roomKeyStoreI, 'roomKey');
 
 /**
  * @description Derived Store: The messages of the currently selected room
@@ -80,7 +80,7 @@ export const currentRoomMessages = derived(
 /**
  * @description Stores the rate limit information for each room keyed by the roomId; this is to track the number of messages sent in a given epoch to make sure the user doesn't break the rate limit. Modifying how his store works, or how the store is written to/read from, may allow the user to break the rate limit and be banned from the room.
  */
-export const rateLimitStore = storable({} as rateLimitStoreI, 'rateLimitStore');
+export const rateLimitStore = storable({} as rateLimitStoreI, 'rateLimit');
 
 /* ------------------ Configuration / Misc Stores ------------------*/
 
@@ -93,7 +93,7 @@ export const keyStore = writable({} as keyStoreI);
 /**
  * @description Configuration store, stores the user's settings
  */
-export const configStore = storable(configDefaults as ConfigurationI, 'configStore');
+export const configStore = storable(configDefaults as ConfigurationI, 'config');
 
 export const passwordSet = derived(configStore, ($configStore) => {
 	if (!$configStore.hashedPwd) {
@@ -115,7 +115,7 @@ export const consoleStore = storable(
 		messages: [{ message: 'Welcome User', type: 'info' }],
 		settings: {}
 	} as consoleStoreI,
-	'consoleStore'
+	'console'
 );
 
 /* ------------------ Identity Stores ------------------*/

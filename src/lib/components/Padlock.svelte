@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { passwordSet, configStore, keyStore, identityStore, identityKeyStore } from '$lib/stores';
+	import { passwordSet, configStore, keyStore } from '$lib/stores';
 	import Lock from 'svelte-material-icons/Lock.svelte';
 	import LockOpen from 'svelte-material-icons/LockOpenVariant.svelte';
 	import NoPassword from 'svelte-material-icons/LockOff.svelte';
@@ -7,12 +7,13 @@
 	import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
 	import { onMount } from 'svelte';
+	import { setPassword } from '$lib/utils';
 
 	const modalStore = getModalStore();
 
 	export let cls: string = '';
 
-	function setPassword() {
+	function setPasswordModal() {
 		const modal: ModalSettings = {
 			type: 'prompt',
 			title: 'Set a Password',
@@ -61,7 +62,7 @@
 
 <div class={cls} id="lock">
 	{#if $passwordSet}
-		{#if $keyStore !== null && $keyStore !== undefined}
+		{#if $keyStore instanceof CryptoKey}
 			<div on:click={lock} title="Unlocked, click to lock">
 				<LockOpen class="text-warning-300-600-token" />
 			</div>
@@ -69,7 +70,7 @@
 			<div on:click={unlock} title="Locked" class="text-success-500"><Lock /></div>
 		{/if}
 	{:else}
-		<div on:click={setPassword} title="Password not set">
+		<div on:click={setPasswordModal} title="Password not set">
 			<NoPassword class="text-primary-500" />
 		</div>
 	{/if}

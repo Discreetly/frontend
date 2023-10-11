@@ -90,7 +90,6 @@ export function getIdentityBackup() {
 export function doesIdentityExist(): 'safe' | 'unsafe' | 'none' {
 	const id = get(identityKeyStore);
 	const id_old = get(identityStore);
-	console.log(id, id_old);
 	if (id._commitment !== null && id._commitment !== undefined) {
 		return 'safe';
 	}
@@ -105,11 +104,6 @@ export function encryptIdentity(identity: IdentityStoreI) {
 	const key = get(keyStore);
 	if (key !== undefined && key !== null) {
 		identityKeyStore.set(identity as unknown as IdentityStoreI);
-		identityStore.set({
-			_commitment: '',
-			_trapdoor: '',
-			_nullifier: '',
-			_secret: ''
-		});
+		identityStore.set({} as unknown as IdentityStoreI);
 	}
 }
