@@ -33,6 +33,13 @@ epoch length(s): ${(room.rateLimit ? room.rateLimit : 1) / 1000},
 			</span>
 		</div>
 	{/each}
+	{#if $currentRoomsStore.length === 0}
+		<div class="my-1 md:my-2 py-1 px-2 md:py-3 md:px-4">
+			<span class="flex-auto">
+				<dt>No rooms found</dt>
+			</span>
+		</div>
+	{/if}
 </dl>
 
 <style>

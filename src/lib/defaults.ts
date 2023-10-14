@@ -1,14 +1,29 @@
-import type { ConfigurationI } from './types';
+import type { ConfigurationI, serverStoreI } from './types';
 import { IdentityStoreE } from './types';
+import { dev } from '$app/environment';
 
-export const defaultServers = {
-	'https://server.discreetly.chat/': {
-		name: 'Discreetly Server',
-		url: 'https://server.discreetly.chat/'
-	}
-};
+let defaultServers: serverStoreI;
 
-export const configDefaults: ConfigurationI = {
+if (dev) {
+	defaultServers = {
+		'https://server.discreetly.chat/': {
+			name: 'Discreetly Server',
+			url: 'https://server.discreetly.chat/'
+		},
+		'https://localhost:3000/': {
+			name: 'Localhost',
+			url: 'https://localhost:3000/'
+		}
+	};
+} else {
+	defaultServers = {
+		'https://server.discreetly.chat/': {
+			name: 'Discreetly Server',
+			url: 'https://server.discreetly.chat/'
+		}
+	};
+}
+const configDefaults: ConfigurationI = {
 	signUpStatus: {
 		completedSignup: false,
 		identityBackedUp: false
@@ -18,3 +33,5 @@ export const configDefaults: ConfigurationI = {
 	hashedPwd: undefined,
 	beta: false
 };
+
+export { defaultServers, configDefaults };

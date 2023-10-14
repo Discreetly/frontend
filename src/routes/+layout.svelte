@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Modal, initializeStores } from '@skeletonlabs/skeleton';
-	import { Toast } from '@skeletonlabs/skeleton';
+	import { Toast, storePopup } from '@skeletonlabs/skeleton';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import '../app.postcss';
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
@@ -22,6 +23,8 @@
 	(BigInt.prototype as any).toJSON = function () {
 		return this.toString();
 	};
+
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	onMount(async () => {
 		console.log('Starting Up Application');
@@ -50,27 +53,77 @@
 <Toast position="t" background="variant-filled-primary" />
 <Drawer position="top" padding="p-4" rounded="rounded-token">
 	{#if $drawerStore.id === 'roomselect'}
-		<SelectServer />
-		<SelectRoom />
+		<h3 class="h5 p-2">Change Server:<SelectServer /></h3>
+		<h3 class="h5 p-2">Select Room:<SelectRoom /></h3>
 	{:else if $drawerStore.id === 'console'}
 		<Console />
 	{/if}
 </Drawer>
 
-<div class="w-full h-screen flex flex-col overflow-hidden">
-	<div class="flex-none z-10"><AppHeader /></div>
-	<div class="grid grid-cols-[1fr,auto] h-full min-w-full justify-between">
-		<main class="flex flex-col justify-between">
-			<slot class="flex flex-col justify-center">
-				<Loading />
-			</slot>
-			<div class="block lg:hidden">
-				<AppFooter />
-			</div>
-		</main>
-		<div class="hidden lg:block"><Sidebar /></div>
+<div class="w-full h-screen" id="pagewrapper">
+	<div id="headerwrapper"><AppHeader /></div>
+	<main>
+		<slot class="flex flex-col justify-center">
+			<Loading />
+		</slot>
+	</main>
+	<div id="footer">
+		<AppFooter />
 	</div>
+	<div id="sidebar" class="hidden lg:block"><Sidebar /></div>
 </div>
 
 <style>
+	#pagewrapper {
+		display: grid;
+		grid-template-areas: 'header header' 'main sidebar' 'footer sidebar';
+		grid-template-rows: auto 1fr auto;
+		grid-template-columns: 1fr auto;
+		grid-column-gap: 0px;
+		grid-row-gap: 0px;
+	}
+	#headerwrapper {
+		grid-area: header;
+		position: sticky;
+		top: 0;
+		z-index: 1;
+	}
+	main {
+		grid-area: main;
+		overflow-y: auto;
+	}
+	#sidebar {
+		grid-area: sidebar;
+		position: sticky;
+	}
+
+	@media screen and (max-width: 768px) {
+		#pagewrapper {
+			grid-template-areas: 'header header' 'main main' 'footer footer';
+			grid-template-rows: auto 1fr auto;
+			grid-template-columns: 1fr;
+		}
+		#sidebar {
+			display: none;
+		}
+
+		#footer {
+			display: block;
+		}
+	}
+
+	@media screen and (min-width: 768px) {
+		#pagewrapper {
+			grid-template-areas: 'header header' 'main sidebar' 'main sidebar';
+			grid-template-rows: auto 1fr auto;
+			grid-template-columns: 1fr auto;
+		}
+		#sidebar {
+			display: block;
+		}
+
+		#footer {
+			display: none;
+		}
+	}
 </style>

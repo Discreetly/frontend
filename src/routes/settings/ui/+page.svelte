@@ -1,5 +1,8 @@
 <script>
+	import Container from '../../../lib/components/Container.svelte';
 	import ActionRepresentation from './ActionRepresentation.svelte';
 </script>
 
-<ActionRepresentation />
+<Container heading="UI Settings">
+	<ActionRepresentation />
+</Container>

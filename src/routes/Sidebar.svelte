@@ -13,6 +13,7 @@
 	import Lock from 'svelte-material-icons/Lock.svelte';
 	import LockOpen from 'svelte-material-icons/LockOpenVariant.svelte';
 	import NoPassword from 'svelte-material-icons/LockOff.svelte';
+	import Plus from 'svelte-material-icons/Plus.svelte';
 	import { hashPassword, deriveKey } from '$lib/crypto/crypto';
 	import { configStore, keyStore, passwordSet } from '$lib/stores';
 	import { alertAll } from '$lib/utils';
@@ -64,6 +65,11 @@
 	<AppRailAnchor href="/about" selected={$page.url.pathname === '/about'} title="About">
 		<svelte:fragment slot="lead"><Information class="rail-icon" /></svelte:fragment>
 		<span>About</span>
+	</AppRailAnchor>
+
+	<AppRailAnchor href="/gateways" selected={$page.url.pathname === '/gateways'} title="About">
+		<svelte:fragment slot="lead"><Plus class="rail-icon" /></svelte:fragment>
+		<span>Join More</span>
 	</AppRailAnchor>
 
 	<AppRailAnchor href="/console" selected={$page.url.pathname === '/console'} title="About">

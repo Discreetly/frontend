@@ -1,5 +1,8 @@
 <script lang="ts">
+	import Container from '$lib/components/Container.svelte';
 	import JoinMore from './JoinMore.svelte';
 </script>
 
-<JoinMore />
+<Container heading="Join More Communities">
+	<JoinMore />
+</Container>

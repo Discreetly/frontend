@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Container from '../../../lib/components/Container.svelte';
 	import { setPassword } from '$lib/utils';
 	import { passwordSet } from '$lib/stores';
 
@@ -12,16 +13,17 @@
 	}
 </script>
 
-<div class="max-w-lg mx-auto">
-	{#if !$passwordSet}
-		<h2 class="h3 mb-3">Set A Password!</h2>
+{#if !$passwordSet}
+	<Container heading="Set A Password">
 		<p class="mt-3">
 			In order to secure your identity and other sensitive data that is stored in your browser, we
 			need you to set a password.
 		</p>
 		<p class="my-3">
-			This password is only used locally, there is not username and password for your account, so
-			don't forget to <a href="/settings/backup" title="Backup Identity">backup your identity</a>.
+			This password is only used locally, there is no username and password for your account, so
+			don't forget to <a class="link" href="/settings/identity/backup" title="Backup Identity"
+				>backup your identity</a
+			>.
 		</p>
 		<form on:submit|preventDefault={() => onSubmit()} class="flex flex-col w-full">
 			<label for="setPasswordInput" class="label" />
@@ -41,7 +43,7 @@
 				type="submit">Set Password</button
 			>
 		</form>
-	{:else}
-		<h2 class="h3">Password Set!</h2>
-	{/if}
-</div>
+	</Container>
+{:else}
+	<h2 class="h3">Password Set!</h2>
+{/if}

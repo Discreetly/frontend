@@ -42,11 +42,11 @@
 			href="/chat"
 			role="button"
 			tabindex="0"
-			class="hidden btn btn-sm variant-ringed-secondary sm:inline">Chat</a
+			class="hidden btn btn-sm variant-ringed-secondary md:inline">Chat</a
 		>
 		<!-- svelte-ignore a11y-missing-attribute -->
 		<a
-			class="btn btn-sm variant-ringed-secondary font-medium text-sm inline sm:hidden"
+			class="btn btn-sm variant-ringed-secondary font-medium text-sm inline md:hidden"
 			on:click={drawerOpen}
 			on:keypress={() => {
 				drawerOpen();
