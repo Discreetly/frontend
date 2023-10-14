@@ -1,21 +1,17 @@
 <script lang="ts">
-	import { AppBar } from '@skeletonlabs/skeleton';
-	import { LightSwitch } from '@skeletonlabs/skeleton';
-	import { page } from '$app/stores';
-	import { configStore, currentSelectedRoom, identityStore, keyStore } from '$lib/stores';
+	import { AppBar, type DrawerSettings } from '@skeletonlabs/skeleton';
+	import { currentSelectedRoom, identityExists } from '$lib/stores';
 	import { getDrawerStore } from '@skeletonlabs/skeleton';
-	import Settings from 'svelte-material-icons/TuneVariant.svelte';
-	import Information from 'svelte-material-icons/Information.svelte';
-	import Console from 'svelte-material-icons/Console.svelte';
-	import PasswordLock from '$lib/components/Padlock.svelte';
-	import Chat from 'svelte-material-icons/Chat.svelte';
-	$: identityExists = !!$identityStore._commitment;
+
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 
 	const drawerStore = getDrawerStore();
+
+	const settings: DrawerSettings = { id: 'roomselect' };
+
 	// Open the drawer:
 	function drawerOpen(): void {
-		drawerStore.open();
+		drawerStore.open(settings);
 	}
 </script>
 
@@ -29,43 +25,43 @@
 >
 	<svelte:fragment slot="lead">
 		<h1 class="h4 text-primary-500">
-			{#if identityExists}
-				<a href="/chat"><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a>
+			{#if $identityExists}
+				<a href="/chat" role="button" tabindex="0"
+					><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a
+				>
 			{:else}
-				<a href="/"><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a>
+				<a href="/" role="button" tabindex="0"
+					><img class="max-h-7" src="/logo-text.png" alt="discreetly" /></a
+				>
 			{/if}
 		</h1>
 	</svelte:fragment>
 
-	<a href="/about" class="btn btn-sm variant-ringed-secondary hidden sm:inline">About</a>
-	{#if identityExists}
-		<a href="/chat" class="hidden btn btn-sm variant-ringed-secondary sm:inline">Chat</a>
+	{#if $identityExists}
+		<a
+			href="/chat"
+			role="button"
+			tabindex="0"
+			class="hidden btn btn-sm variant-ringed-secondary sm:inline">Chat</a
+		>
+		<!-- svelte-ignore a11y-missing-attribute -->
 		<a
 			class="btn btn-sm variant-ringed-secondary font-medium text-sm inline sm:hidden"
-			on:click={drawerOpen}>{roomName}</a
+			on:click={drawerOpen}
+			on:keypress={() => {
+				drawerOpen();
+			}}
+			role="button"
+			tabindex="0"
 		>
+			{roomName}
+		</a>
 	{:else}
-		<a class="btn btn-sm variant-ringed-secondary" href="/signup">Sign Up</a>
+		<a class="btn btn-sm variant-ringed-secondary" href="/signup" role="button" tabindex="0"
+			>Sign Up</a
+		>
 	{/if}
-	<a
-		class="btn btn-sm variant-ringed-secondary font-medium text-sm hidden sm:inline"
-		href="/console">Console</a
-	>
 	<svelte:fragment slot="trail">
-		<a href="/about" class="hidden sm:inline"><Information size="1.2em" /></a>
-		{#if identityExists && $page.url.pathname !== '/chat'}
-			<a href="/chat" class="inline"><Chat size="1.2em" /></a>
-		{/if}
-		{#if $page.url.pathname !== '/console'}
-			<a href="/console" class="inline"><Console size="1.2em" /></a>
-		{/if}
-
-		<PasswordLock cls="inline" />
-		{#if identityExists}
-			<a href="/settings"><Settings size="1.2em" /></a>
-		{/if}
-		<div class="hidden sm:inline">
-			<LightSwitch />
-		</div>
+		<div class="hidden sm:inline text-primary-500">Alpha Version!</div>
 	</svelte:fragment>
 </AppBar>

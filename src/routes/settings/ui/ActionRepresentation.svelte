@@ -2,6 +2,8 @@
 	import AP from '$lib/components/AP.svelte';
 	import { configStore } from '$lib/stores';
 	import { ActionRepresentationE } from '$lib/types';
+	import { RangeSlider } from '@skeletonlabs/skeleton';
+	import { max } from 'date-fns';
 	$: if ($configStore.actionRepresentation == undefined) {
 		$configStore.actionRepresentation = ActionRepresentationE.AP;
 	}
@@ -12,7 +14,7 @@
 
 <div class="card variant-soft-secondary">
 	<header class="card-header">
-		<h4 class="h4">Action Representation</h4>
+		<h3 class="h4">Action Representation</h3>
 	</header>
 	<section class="p-2 mb-2 sm:p-4 sm:mb-4">
 		<div class="flex flex-col">
@@ -31,14 +33,18 @@
 			<div class="border-t mt-2 pt-2 mb-2 sm:mb-4 flex flex-col place-items-center">
 				<h6 class="h6">Demo</h6>
 				<AP {health} {maxHealth} />
-				<label
-					><div>Health: {health}</div>
-					<input type="range" min="0" max={maxHealth} bind:value={health} />
-				</label>
-				<label
-					><div>Max Health: {maxHealth}</div>
-					<input type="range" min="1" max={10} bind:value={maxHealth} />
-				</label>
+				<RangeSlider name="range-slider" bind:value={health} max={maxHealth} step={1} ticked>
+					<div class="flex justify-between items-center">
+						<div class="font-bold">Health</div>
+						<div class="text-xs">{health} / {maxHealth}</div>
+					</div>
+				</RangeSlider>
+				<RangeSlider name="range-slider" bind:value={maxHealth} max={10} step={1} ticked>
+					<div class="flex justify-between items-center">
+						<div class="font-bold">Max Health</div>
+						<div class="text-xs">{maxHealth} / {10}</div>
+					</div>
+				</RangeSlider>
 			</div>
 		</div>
 	</section>

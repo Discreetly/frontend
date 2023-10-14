@@ -17,7 +17,6 @@
 		addConsoleMessage('`/clear` Clears the console');
 		addConsoleMessage('`/join invite-code` Joins a room via invite code, Example:');
 		addConsoleMessage('`/password Password`');
-		addConsoleMessage('`/clearPassword`');
 		addConsoleMessage('`/unlock Password`');
 		addConsoleMessage('`/lock`');
 		addConsoleMessage('`/backup`');
@@ -74,10 +73,6 @@
 					addConsoleMessage('Invalid Old Password', 'error');
 					addConsoleMessage('/password OLDPASSWORD NEWPASSWORD', 'warning');
 				}
-				break;
-			case '/clearPassword':
-				$configStore.hashedPwd = null;
-				addConsoleMessage('Password Cleared');
 				break;
 			case '/lock':
 				$keyStore = null;

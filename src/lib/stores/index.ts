@@ -129,3 +129,14 @@ export const identityStore = storable({} as IdentityStoreI, 'identity');
  * @description Identity store, this is the user's identity ENCRYPTED
  */
 export const identityKeyStore = encryptable({} as IdentityStoreI, 'identityencrypted');
+
+export const identityExists = derived(
+	[identityStore, identityKeyStore],
+	([$identityStore, $identityKeyStore]) => {
+		if ($identityStore._commitment || $identityKeyStore._commitment) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+);

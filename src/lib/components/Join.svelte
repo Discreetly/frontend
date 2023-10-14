@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SelectServer from '$lib/components/SelectServer.svelte';
+	import { alertAll } from '$lib/utils';
 	import { inviteCode } from '$lib/utils/inviteCode';
 
 	export let code = '';
@@ -12,13 +13,13 @@
 		inviteCode(code)
 			.then(({ acceptedRoomNames, err }) => {
 				if (err) {
-					alert(err);
+					alertAll(err);
 				} else {
 					acceptedRoomNames = acceptedRoomNames;
 				}
 			})
 			.catch((err) => {
-				alert(err);
+				alertAll(err);
 			})
 			.finally(() => {
 				loading = false;

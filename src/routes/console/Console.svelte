@@ -3,30 +3,39 @@
 	import { consoleStore } from '$lib/stores';
 	import { clearConsoleMessages } from '$lib/utils';
 	import TrashCan from 'svelte-material-icons/TrashCanOutline.svelte';
-
+	import { onMount } from 'svelte';
+	let elemChat: HTMLElement;
 	export let placeholder: string = 'Enter / Command';
+
+	function scrollChatBottom(behavior?: ScrollBehavior): void {
+		setTimeout(() => {
+			elemChat.scrollTo({ top: elemChat.scrollHeight, behavior });
+		}, 0);
+	}
+
+	onMount(() => {
+		scrollChatBottom('smooth');
+	});
 </script>
 
-<div class="mx-3 my-2">
-	<h3 class="h3 mb-1 small:mb-3">Console</h3>
-	<div class="card variant-ghost-surface">
-		<header class="card-header">
-			<button
-				class="btn btn-sm variant-ghost-primary float-right"
-				on:click={() => clearConsoleMessages()}
-			>
-				<TrashCan />
-			</button>
-		</header>
-		<section class="p-4">
-			{#each $consoleStore.messages as line, idx}
-				<p class={line.type}>{line.message}</p>
-			{/each}
-		</section>
-		<footer class="card-footer">
-			<InputPrompt {placeholder} />
-		</footer>
-	</div>
+<div class="p-4 small:p-2 h-full overflow-y-hidden grid grid-rows-[auto,1fr,auto]">
+	<header class="flex flex-row justify-between px-2">
+		<h6 class="h4">Console</h6>
+		<button
+			class="btn btn-sm variant-ghost-primary float-right"
+			on:click={() => clearConsoleMessages()}
+		>
+			<TrashCan />
+		</button>
+	</header>
+	<section class="p-4 overflow-y-scroll" bind:this={elemChat}>
+		{#each $consoleStore.messages as line, idx}
+			<p class={line.type}>{line.message}</p>
+		{/each}
+	</section>
+	<footer>
+		<InputPrompt {placeholder} />
+	</footer>
 </div>
 
 <style>

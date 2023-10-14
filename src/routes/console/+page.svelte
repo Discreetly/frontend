@@ -2,4 +2,6 @@
 	import Console from './Console.svelte';
 </script>
 
-<Console />
+<div class="mx-2 h-full">
+	<Console />
+</div>

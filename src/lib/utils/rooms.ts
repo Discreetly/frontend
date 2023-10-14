@@ -43,6 +43,11 @@ function updateRoomStore(rooms: RoomI[], serverURL: string = get(selectedServer)
 async function getRoomIdsIfEmpty(server: string, roomIds: string[]): Promise<string[]> {
 	if (roomIds.length < 1) {
 		const idc = getCommitment();
+		if (!idc) {
+			// TODO convert this to alertAll at some point
+			console.error('No identity commitment found');
+			throw new Error('No identity commitment found');
+		}
 		return await getRoomIdsByIdentityCommitment(server, idc);
 	}
 	return roomIds;

@@ -30,3 +30,12 @@ export const clearConsoleMessages = () => {
 		return newState;
 	});
 };
+
+export function isInputFieldFocused() {
+	const activeElement = document.activeElement;
+	return (
+		activeElement &&
+		(activeElement.tagName.toLowerCase() === 'input' ||
+			activeElement.tagName.toLowerCase() === 'textarea')
+	);
+}

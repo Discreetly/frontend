@@ -46,7 +46,6 @@
 	});
 </script>
 
-<Console placeholder="/join invite-code-goes-here" />
 <div>
 	<a href="/settings" class="btn btn-sm variant-ghost-primary">
 		<span>Restore Identity</span>

@@ -36,10 +36,8 @@ export interface JoinResponseI {
 	roomIds: string[];
 }
 
-// Keyed by roomId
-
 export interface SignUpStatusI {
-	inviteAccepted: boolean;
+	completedSignup: boolean;
 	identityBackedUp: boolean;
 	inviteCode?: string;
 }

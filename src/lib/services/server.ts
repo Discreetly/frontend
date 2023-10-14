@@ -23,6 +23,14 @@ export async function getMessages(serverUrl: string, roomId: string) {
 	return get([serverUrl, `api/room/${roomId}/messages`]) as Promise<MessageI[]>;
 }
 
+interface CreateInviteData {
+	numCodes: number;
+	expiresAt?: number;
+	usesLeft?: number;
+	roomIds?: string[];
+	all?: boolean;
+}
+
 export async function createInvite(
 	serverUrl: string,
 	username: string,
@@ -32,7 +40,7 @@ export async function createInvite(
 	expiresAt?: number,
 	usesLeft?: number
 ) {
-	const data = { numCodes, expiresAt, usesLeft };
+	const data: CreateInviteData = { numCodes, expiresAt, usesLeft };
 	if (roomIds.length > 0) {
 		data['roomIds'] = roomIds;
 	} else {

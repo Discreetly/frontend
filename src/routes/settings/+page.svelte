@@ -1,67 +1,49 @@
 <script lang="ts">
-	import JoinMore from './JoinMore.svelte';
-	import { identityStore } from '$lib/stores';
-	import { page } from '$app/stores';
-	import DeleteIdentity from './DeleteIdentity.svelte';
-	import BackupIdentity from './BackupIdentity.svelte';
-	import RestoreIdentity from './RestoreIdentity.svelte';
+	import { identityExists } from '$lib/stores';
+	import DeleteIdentity from './identity/DeleteIdentity.svelte';
+	import BackupIdentity from './identity/BackupIdentity.svelte';
+	import RestoreIdentity from './identity/RestoreIdentity.svelte';
 	import { createIdentity } from '$lib/utils/';
-	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
-	import ActionRepresentation from './ActionRepresentation.svelte';
-	import { onMount } from 'svelte';
-	$: identityExists = !!$identityStore._commitment;
-	let tabSet: number = 0;
-	onMount(() => {
-		if ($page.url.hash) {
-			const hash = $page.url.hash.replace('#', '');
-			if (hash === 'join-more') {
-				tabSet = 1;
-			}
-		}
-	});
+	import ActionRepresentation from './ui/ActionRepresentation.svelte';
+	import IdentityIcon from 'svelte-material-icons/Account.svelte';
+	import Eye from 'svelte-material-icons/Eye.svelte';
 </script>
 
-{#if !identityExists}
-	<div class="mb-8 text-center">
+<h2 class="h2 mb-3 sm:mb-5 text-center">Manage Settings</h2>
+{#if !$identityExists}
+	<div class="mb-3 sm:mb-8 text-center">
 		<span class="text-base italic px-4 py-2 font-mono badge variant-outline-error"
 			>Identity Not Found!</span
 		>
 	</div>
 {/if}
-<div class="grid grid-flow-rows gap-5 my-5 max-w-md mx-auto">
-	{#if !identityExists}
+<div class="flex flex-row flex-wrap gap-5 my-5 mx-auto justify-center">
+	{#if !$identityExists}
 		<button
 			on:click={() => createIdentity()}
 			class="btn variant-ghost-primary font-medium"
 			type="button"
 		>
-			Generate Identity
+			Generate New Identity
 		</button>
 		<RestoreIdentity />
 	{:else}
-		<TabGroup
-			justify="justify-around"
-			active="variant-soft-secondary"
-			flex="flex-1 lg:flex-none"
-			class="w-full"
-		>
-			<Tab bind:group={tabSet} name="id" value={0} class="center">
-				<span>Identity</span>
-			</Tab>
-			<Tab bind:group={tabSet} name="server" value={1}>Server</Tab>
-			<Tab bind:group={tabSet} name="misc" value={2}>Settings</Tab>
-			<!-- Tab Panels --->
-			<svelte:fragment slot="panel">
-				{#if tabSet === 0}
-					<BackupIdentity />
-					<DeleteIdentity />
-					<RestoreIdentity />
-				{:else if tabSet === 1}
-					<JoinMore />
-				{:else if tabSet === 2}
-					<ActionRepresentation />
-				{/if}
-			</svelte:fragment>
-		</TabGroup>
+		<div>
+			<h3 class="h3 flex flex-row gap-2 items-center"><IdentityIcon /> Identity</h3>
+			<div class="flex flex-col gap-3 sm:gap-5 items-stretch">
+				<BackupIdentity />
+				<DeleteIdentity />
+				<RestoreIdentity />
+			</div>
+		</div>
+		<div>
+			<h3 class="h3 flex flex-row gap-2 items-center"><Eye /> UI</h3>
+			<div class="flex flex-col gap-3 sm:gap-5 items-stretch">
+				<ActionRepresentation />
+				<BackupIdentity />
+				<DeleteIdentity />
+				<RestoreIdentity />
+			</div>
+		</div>
 	{/if}
 </div>

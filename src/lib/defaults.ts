@@ -10,8 +10,11 @@ export const defaultServers = {
 
 export const configDefaults: ConfigurationI = {
 	signUpStatus: {
-		inviteAccepted: false,
+		completedSignup: false,
 		identityBackedUp: false
 	},
-	identityStore: IdentityStoreE.NO_IDENTITY
+	identityStore: IdentityStoreE.NO_IDENTITY,
+	numMessagesToSave: 500,
+	hashedPwd: undefined,
+	beta: false
 };

@@ -65,35 +65,35 @@ export function getIdentity(): IdentityStoreI {
 
 export function getCommitment() {
 	const id = get(identityKeyStore) as IdentityStoreI;
-	const id_old = get(identityStore);
+	const id_ = get(identityStore);
 	if (id !== null && id !== undefined) {
 		return id._commitment;
 	}
-	if (id_old !== null && id_old !== undefined) {
+	if (id_ !== null && id_ !== undefined) {
 		console.warn('PLEASE ADD A PASSWORD!');
-		return id_old._commitment;
+		return id_._commitment;
 	}
 }
 
 export function getIdentityBackup() {
 	const id = get(identityKeyStore);
-	const id_old = get(identityStore);
+	const id_ = get(identityStore);
 	if (id !== null && id !== undefined) {
 		return JSON.stringify(id);
 	}
-	if (id_old !== null && id_old !== undefined) {
+	if (id_ !== null && id_ !== undefined) {
 		console.warn('PLEASE ADD A PASSWORD!');
-		return JSON.stringify(id_old);
+		return JSON.stringify(id_);
 	}
 }
 
 export function doesIdentityExist(): 'safe' | 'unsafe' | 'none' {
 	const id = get(identityKeyStore);
-	const id_old = get(identityStore);
+	const id_ = get(identityStore);
 	if (id._commitment !== null && id._commitment !== undefined) {
 		return 'safe';
 	}
-	if (id_old._commitment !== null && id_old._commitment !== undefined) {
+	if (id_._commitment !== null && id_._commitment !== undefined) {
 		console.warn('PLEASE ADD A PASSWORD');
 		return 'unsafe';
 	}

@@ -32,7 +32,7 @@
 	});
 </script>
 
-<div class="card variant-ghost-error mb-5">
+<div class="card variant-ghost-error">
 	<header class="card-header">
 		<h3 class="h4">Delete Your Identity & Reset Application</h3>
 	</header>
@@ -42,7 +42,7 @@
 			>I promise I backed up my identity, or I really want to destroy it forever.</span
 		>
 	</section>
-	<footer class="card-footer text-center mb-2">
+	<footer class="card-footer text-center">
 		{#if !isButtonDisabled}
 			<button
 				id="delete-identity"
