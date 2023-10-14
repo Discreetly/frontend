@@ -6,7 +6,7 @@
   </script>
 
 
-<Step locked={formData.messageLimit <= 0}>
+<Step locked={formData.messageLimit <= 1}>
   <svelte:fragment slot="header">
     <div class="h3 text-center">User Message Limit</div>
   </svelte:fragment>

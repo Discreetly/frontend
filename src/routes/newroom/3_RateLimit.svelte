@@ -6,7 +6,7 @@
 
 </script>
 
-<Step locked={formData.rateLimit <= 0}>
+<Step locked={formData.rateLimit <= 1}>
   <svelte:fragment slot="header">
     <div class="h3 text-center">Rate Limit</div>
   </svelte:fragment>

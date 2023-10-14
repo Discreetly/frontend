@@ -43,7 +43,6 @@
       formData.bandadaAddress,
       formData.bandadaGroupId,
       formData.bandadaApiKey,
-      "DISCORD"
       ).then((res) => {
         console.log(res);
         submitted = true;
