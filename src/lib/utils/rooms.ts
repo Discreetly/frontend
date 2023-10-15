@@ -5,7 +5,8 @@ import {
 	selectedServer,
 	serverStore,
 	messageStore,
-	currentSelectedRoom
+	currentSelectedRoom,
+	alertQueue
 } from '$lib/stores';
 import { get } from 'svelte/store';
 import {
@@ -44,8 +45,7 @@ async function getRoomIdsIfEmpty(server: string, roomIds: string[]): Promise<str
 	if (roomIds.length < 1) {
 		const idc = getCommitment();
 		if (!idc) {
-			// TODO convert this to alertAll at some point
-			console.error('No identity commitment found');
+			alertQueue.enqueue('No identity commitment found');
 			throw new Error('No identity commitment found');
 		}
 		return await getRoomIdsByIdentityCommitment(server, idc);

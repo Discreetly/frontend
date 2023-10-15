@@ -1,6 +1,6 @@
-import { alertAll, getCommitment, updateRooms } from '$lib/utils/';
+import { getCommitment, updateRooms } from '$lib/utils/';
 import { postInviteCode } from '$lib/services/server';
-import { selectedServer, configStore } from '$lib/stores';
+import { selectedServer, configStore, alertQueue } from '$lib/stores';
 import { get } from 'svelte/store';
 import type { JoinResponseI } from '$lib/types';
 
@@ -11,8 +11,7 @@ export async function inviteCode(newCode: string) {
 	try {
 		const idc = getCommitment();
 		if (!idc) {
-			// TODO convert this to alertAll at some point
-			alertAll('No identity commitment found');
+			alertQueue.enqueue('No identity commitment found');
 			throw new Error('No identity commitment found');
 		}
 		const result = (await postInviteCode(server, {

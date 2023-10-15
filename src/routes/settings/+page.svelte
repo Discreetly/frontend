@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { identityExists } from '$lib/stores';
 	import DeleteIdentity from './identity/DeleteIdentity.svelte';
 	import BackupIdentity from './identity/BackupIdentity.svelte';
 	import RestoreIdentity from './identity/RestoreIdentity.svelte';
@@ -8,6 +7,7 @@
 	import IdentityIcon from 'svelte-material-icons/Account.svelte';
 	import Eye from 'svelte-material-icons/Eye.svelte';
 	import Container from '../../lib/components/Container.svelte';
+	import { identityExists } from '$lib/stores';
 </script>
 
 <Container heading="Manage Settings">

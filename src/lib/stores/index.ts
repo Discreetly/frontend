@@ -1,5 +1,5 @@
-import { storable, sessionable, encryptable } from './storeFactory';
-import { derived, writable, type Readable } from 'svelte/store';
+import { storable, sessionable, encryptable, queueable } from './storeFactory';
+import { derived, writable } from 'svelte/store';
 import { configDefaults } from '$lib/defaults';
 import type {
 	ConfigurationI,
@@ -14,7 +14,6 @@ import type {
 	roomKeyStoreI,
 	keyStoreI
 } from '$lib/types';
-import { decrypt } from '$lib/crypto/crypto';
 
 /* ------------------ Server State ------------------*/
 /**
@@ -90,6 +89,8 @@ export const rateLimitStore = storable({} as rateLimitStoreI, 'rateLimit');
  */
 export const keyStore = writable({} as keyStoreI);
 
+export const alertQueue = queueable([] as string[]);
+
 /**
  * @description Configuration store, stores the user's settings
  */
@@ -130,13 +131,50 @@ export const identityStore = storable({} as IdentityStoreI, 'identity');
  */
 export const identityKeyStore = encryptable({} as IdentityStoreI, 'identityencrypted');
 
-export const identityExists = derived(
-	[identityStore, identityKeyStore],
-	([$identityStore, $identityKeyStore]) => {
-		if ($identityStore._commitment || $identityKeyStore._commitment) {
-			return true;
+export const lockStateStore = derived(
+	[keyStore, passwordSet],
+	([$keyStore, $passwordSet]): 'unlocked' | 'locked' | null => {
+		if ($passwordSet) {
+			if ($keyStore instanceof CryptoKey) {
+				return 'unlocked';
+			} else {
+				return 'locked';
+			}
 		} else {
-			return false;
+			return null;
+		}
+	}
+);
+
+export const identityExists = derived(
+	[identityStore, identityKeyStore, lockStateStore],
+	([$identityStore, $identityKeyStore, $lockStateStore]):
+		| 'safe'
+		| 'unsafe'
+		| 'encrypted'
+		| null => {
+		const id = $identityKeyStore;
+		const id_ = $identityStore;
+		if ($lockStateStore == null) {
+			if (id_._commitment?.length > 0) {
+				return 'unsafe';
+			} else {
+				return null;
+			}
+		} else if ($lockStateStore === 'unlocked') {
+			if (id._commitment) {
+				return 'safe';
+			} else {
+				return null;
+			}
+		} else if ($lockStateStore === 'locked') {
+			if (typeof id === 'object') {
+				return 'encrypted';
+			} else {
+				return null;
+			}
+		} else {
+			return null;
 		}
 	}
 );

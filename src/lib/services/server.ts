@@ -15,6 +15,13 @@ export async function getServerData(serverUrl: string): Promise<ServerI> {
 	return get([serverUrl]) as Promise<ServerI>;
 }
 
+export async function getEthAddressRoomNames(
+	server: string,
+	ethAddress: string
+): Promise<string[]> {
+	return get([server, `api/eth/group/${ethAddress}`]) as Promise<string[]>;
+}
+
 export async function postInviteCode(serverUrl: string, data: { code: string; idc: string }) {
 	return post([serverUrl, 'join'], data);
 }

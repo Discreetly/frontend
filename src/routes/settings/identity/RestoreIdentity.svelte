@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { identityKeyStore, keyStore } from '$lib/stores';
-	import { alertAll } from '$lib/utils';
+	import { alertQueue, identityKeyStore, keyStore } from '$lib/stores';
 	import { FileDropzone } from '@skeletonlabs/skeleton';
 	import { poseidon2 } from 'poseidon-lite/poseidon2';
 	import { poseidon1 } from 'poseidon-lite/poseidon1';
@@ -19,37 +18,37 @@
 				id = backup;
 			} catch (e) {
 				console.warn('Could not parse json as object');
-				alertAll('Invalid JSON detected');
+				alertQueue.enqueue('Invalid JSON detected');
 				return;
 			}
 		}
 		if (!id._nullifier) {
-			alertAll("_nullifier doesn't exist in backup");
+			alertQueue.enqueue("_nullifier doesn't exist in backup");
 		}
 		if (!id._trapdoor) {
-			alertAll("_trapdoor doesn't exist in backup");
+			alertQueue.enqueue("_trapdoor doesn't exist in backup");
 		}
 		if (!id._secret) {
-			alertAll("_secret doesn't exist in backup");
+			alertQueue.enqueue("_secret doesn't exist in backup");
 		}
 		const checkSecret = poseidon2([id._nullifier, id._trapdoor]);
 		if (checkSecret != id._secret) {
-			alertAll('Secret does not match secret from backup');
+			alertQueue.enqueue('Secret does not match secret from backup');
 		}
 		if (!id._commitment) {
-			alertAll("_commitment doesn't exist in backup");
+			alertQueue.enqueue("_commitment doesn't exist in backup");
 		}
 		const checkCommitment = poseidon1([id._secret]);
 		if (checkCommitment != id._commitment) {
-			alertAll('Commitment does not match commitment backup');
+			alertQueue.enqueue('Commitment does not match commitment backup');
 		}
 		console.log('Restoring identity from backup file...');
 		if ($keyStore !== undefined || $keyStore !== null) {
 			$identityKeyStore = id;
 		} else {
-			alertAll('Please set a password or unlock before restoring your identity');
+			alertQueue.enqueue('Please set a password or unlock before restoring your identity');
 		}
-		alertAll(
+		alertQueue.enqueue(
 			`Identity restored from backup file with identity commitment:
 			${$identityKeyStore._commitment}`
 		);
@@ -60,7 +59,7 @@
 		console.debug(`Backup/recovery file type detected as ${f?.type}`);
 		let unverifiedBackup: any;
 		if (!f) {
-			alertAll('No file selected');
+			alertQueue.enqueue('No file selected');
 			return;
 		}
 		if (f.type == 'application/json' || f.type == 'text/plain') {
@@ -69,7 +68,7 @@
 				restoreBackup(unverifiedBackup);
 			});
 		} else {
-			alertAll(
+			alertQueue.enqueue(
 				'Invalid file type, must be a JSON object with the _nullifier, _trapdoor, _secret, and _commitment as stringified bigints'
 			);
 			console.warn('Invalid file type');
@@ -80,7 +79,7 @@
 		const textBox = document.getElementById('jsonRecovery') as HTMLInputElement;
 		const json = textBox.value;
 		if (!json || json == '') {
-			alertAll('No JSON detected');
+			alertQueue.enqueue('No JSON detected');
 			return;
 		} else {
 			restoreBackup(json);

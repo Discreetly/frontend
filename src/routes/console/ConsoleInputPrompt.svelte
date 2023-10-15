@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
-	import { configStore, identityKeyStore, keyStore, passwordSet } from '$lib/stores';
 	import {
-		addConsoleMessage,
-		clearConsoleMessages,
-		doesIdentityExist,
-		setPassword
-	} from '$lib/utils/';
-	import { inviteCode } from '$lib/utils/inviteCode';
+		configStore,
+		identityKeyStore,
+		keyStore,
+		passwordSet,
+		identityExists
+	} from '$lib/stores';
+	import { addConsoleMessage, clearConsoleMessages, setPassword, unlockPadlock } from '$lib/utils/';
+	import { inviteCode } from '$lib/gateways/inviteCode';
 	import { createIdentity } from '$lib/utils/';
 
 	export let placeholder: string = 'Enter / Command';
@@ -79,20 +80,7 @@
 				addConsoleMessage('Locked!');
 				break;
 			case '/unlock':
-				const hashedPwd = await hashPassword(args[0]);
-				if (hashedPwd === $configStore.hashedPwd) {
-					if ($keyStore && !(args[1] === 'force')) {
-						addConsoleMessage(
-							'Already Unlocked! use `/unlock PASSWORD force` to override this and derive the key again',
-							'warning'
-						);
-						break;
-					}
-					$keyStore = await deriveKey(args[0]);
-					addConsoleMessage('Unlocked!');
-				} else {
-					addConsoleMessage(`Invalid password!`, 'warning');
-				}
+				unlockPadlock(args[0]);
 				break;
 			case '/export':
 				addConsoleMessage('Exporting Identity');
@@ -117,7 +105,7 @@
 				addConsoleMessage(`Identity: ${$identityKeyStore}`);
 				break;
 			case '/createIdentity':
-				const idStatus = doesIdentityExist();
+				const idStatus = $identityExists;
 				if (idStatus === 'safe') {
 					addConsoleMessage('✅ Identity Exists Already');
 				} else if (idStatus === 'unsafe') {

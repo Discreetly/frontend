@@ -45,5 +45,5 @@
 		</form>
 	</Container>
 {:else}
-	<h2 class="h3">Password Set!</h2>
+	<Container heading="Password set" />
 {/if}

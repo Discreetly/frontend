@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { passwordSet, configStore, keyStore } from '$lib/stores';
+	import { passwordSet, configStore, keyStore, alertQueue } from '$lib/stores';
 	import {
 		getModalStore,
 		TabAnchor,
@@ -23,7 +23,7 @@
 	import LockOpen from 'svelte-material-icons/LockOpenVariant.svelte';
 	import NoPassword from 'svelte-material-icons/LockOff.svelte';
 	import Door from 'svelte-material-icons/Door.svelte';
-	import { alertAll } from '$lib/utils';
+	import { unlockPadlock } from '$lib/utils';
 
 	const modalStore = getModalStore();
 	const drawerStore = getDrawerStore();
@@ -49,13 +49,7 @@
 			valueAttr: { type: 'password', minlength: 4, required: true },
 			response: async (r: string) => {
 				if (r != 'false' && r != '' && r != null && r != undefined) {
-					const hashedPassword = await hashPassword(r);
-					if ($configStore.hashedPwd == hashedPassword) {
-						$keyStore = await deriveKey(r);
-					} else {
-						alertAll('Incorrect Password');
-						$keyStore = null;
-					}
+					unlockPadlock(r);
 				}
 			}
 		};
@@ -65,13 +59,6 @@
 	function lock() {
 		$keyStore = null;
 	}
-	onMount(() => {
-		console.debug(
-			'PadLock:',
-			$passwordSet ? 'password set,' : 'password not set,',
-			$keyStore !== null && $keyStore !== undefined ? 'unlocked' : 'locked'
-		);
-	});
 </script>
 
 <div class="card p-4 w-72 shadow-xl" data-popup="popupMenu">
@@ -79,7 +66,7 @@
 		<!-- (optionally you can provide a label here) -->
 		<ul>
 			<li id="will-close">
-				<a href="/settings">
+				<a href="/about">
 					<Information />
 					<span class="flex-auto">About</span>
 				</a>

@@ -1,4 +1,5 @@
-import { addConsoleMessage } from '$lib/utils';
+import { alertQueue, configStore } from '$lib/stores';
+import { get } from 'svelte/store';
 
 /**
  * Derives an encryption key from a given password using PBKDF2.
@@ -47,14 +48,17 @@ export async function encrypt(plainText: string, key: CryptoKey): Promise<string
 			key,
 			encoder.encode(plainText)
 		);
-		console.log(encryptedContent);
 
 		const encryptedContentArr = new Uint8Array(encryptedContent);
 		const encryptedBytes = [...iv, ...encryptedContentArr];
 
 		return btoa(String.fromCharCode(...encryptedBytes));
+	} else if (get(configStore).hashedPwd) {
+		alertQueue.enqueue('Unlock your identity with /unlock or click on the lock');
+		console.error('Unlock your identity with /unlock or click on the lock');
+		return null;
 	} else {
-		addConsoleMessage('No Password Set, please set a password with /setpassword', 'error');
+		alertQueue.enqueue('No Password Set, please set a password with /setpassword');
 		console.error('No password set, please set a password first');
 		return null;
 	}
@@ -66,7 +70,6 @@ export async function decrypt(cipherText: string, key: CryptoKey): Promise<strin
 	}
 	if (key instanceof CryptoKey) {
 		const decoder = new TextDecoder();
-		console.log(cipherText);
 		const encryptedBytes = Uint8Array.from(atob(cipherText), (c) => c.charCodeAt(0));
 
 		const iv = encryptedBytes.slice(0, 12);
@@ -79,8 +82,12 @@ export async function decrypt(cipherText: string, key: CryptoKey): Promise<strin
 		);
 
 		return decoder.decode(decryptedContent);
+	} else if (get(configStore).hashedPwd) {
+		alertQueue.enqueue('Unlock your identity with /unlock or click on the lock');
+		console.error('Unlock your identity with /unlock or click on the lock');
+		return null;
 	} else {
-		addConsoleMessage('No Password Set, please set a password with /setpassword', 'error');
+		alertQueue.enqueue('No Password Set, please set a password with /setpassword');
 		console.error('No password set, please set a password first');
 		return null;
 	}

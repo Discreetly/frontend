@@ -15,9 +15,9 @@
 	import NoPassword from 'svelte-material-icons/LockOff.svelte';
 	import Plus from 'svelte-material-icons/Plus.svelte';
 	import { hashPassword, deriveKey } from '$lib/crypto/crypto';
-	import { configStore, keyStore, passwordSet } from '$lib/stores';
-	import { alertAll } from '$lib/utils';
+	import { configStore, keyStore, passwordSet, alertQueue } from '$lib/stores';
 	import { onMount } from 'svelte';
+	import { unlockPadlock } from '$lib/utils';
 
 	const modalStore = getModalStore();
 
@@ -30,13 +30,7 @@
 			valueAttr: { type: 'password', minlength: 4, required: true },
 			response: async (r: string) => {
 				if (r != 'false' && r != '' && r != null && r != undefined) {
-					const hashedPassword = await hashPassword(r);
-					if ($configStore.hashedPwd == hashedPassword) {
-						$keyStore = await deriveKey(r);
-					} else {
-						alertAll('Incorrect Password');
-						$keyStore = null;
-					}
+					unlockPadlock(r);
 				}
 			}
 		};
@@ -46,14 +40,6 @@
 	function lock() {
 		$keyStore = null;
 	}
-
-	onMount(() => {
-		console.debug(
-			'PadLock:',
-			$passwordSet ? 'password set,' : 'password not set,',
-			$keyStore !== null && $keyStore !== undefined ? 'unlocked' : 'locked'
-		);
-	});
 </script>
 
 <AppRail height="h-full">

@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { identityStore, configStore, consoleStore } from '$lib/stores';
-	import { createIdentity, doesIdentityExist } from '$lib/utils/';
+	import { configStore, identityExists } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import ArrowRight from 'svelte-material-icons/ArrowRightBold.svelte';
 	import Text from 'svelte-material-icons/TextBox.svelte';
 	import Account from 'svelte-material-icons/AccountHardHat.svelte';
-	import { inviteCode } from '$lib/utils/inviteCode';
+	import { inviteCode } from '$lib/gateways/inviteCode';
 	import { addConsoleMessage } from '$lib/utils/console';
-	import Console from '../console/Console.svelte';
 
 	function checkForIdentity() {
-		const idStatus = doesIdentityExist();
+		const idStatus = $identityExists;
 		if (idStatus === 'safe') {
 			addConsoleMessage('✅ Identity Found');
+		} else if (idStatus === 'encrypted') {
+			addConsoleMessage('⚠️ Identity Found, but it is encrypted');
 		} else if (idStatus === 'unsafe') {
 			addConsoleMessage('⚠️ Identity Found, but it is unsafe');
-		} else if (idStatus === 'none') {
+		} else if (idStatus === null) {
 			addConsoleMessage('❌ No Identity Found');
 		}
 	}

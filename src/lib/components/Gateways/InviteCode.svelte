@@ -1,9 +1,8 @@
 <script lang="ts">
-	import SelectServer from '$lib/components/SelectServer.svelte';
-	import { alertAll } from '$lib/utils';
-	import { inviteCode } from '$lib/utils/inviteCode';
-
+	import { inviteCode } from '$lib/gateways/inviteCode';
+	import { alertQueue } from '$lib/stores';
 	export let code = '';
+
 	let acceptedRoomNames: string[] = [];
 	let loading = false;
 	let err: string | undefined;
@@ -13,13 +12,13 @@
 		inviteCode(code)
 			.then(({ acceptedRoomNames, err }) => {
 				if (err) {
-					alertAll(err);
+					alertQueue.enqueue(err);
 				} else {
 					acceptedRoomNames = acceptedRoomNames;
 				}
 			})
 			.catch((err) => {
-				alertAll(err);
+				alertQueue.enqueue(err);
 			})
 			.finally(() => {
 				loading = false;
@@ -80,52 +79,46 @@
 	}
 </script>
 
-<div class="flex flex-col items-center px-2 mb-2 sm:mb-4">
-	<label class="label w-full" for="selectServer"
-		><span class="h5">Select or Add a Server</span>
-		<SelectServer />
-	</label>
-	<label class="label mt-3" for="inviteCode">
-		<span class="h5">Invite Code</span>
-		<input
-			class="input"
-			type="text"
-			placeholder="Invite Code"
-			id="inviteCode"
-			bind:value={code}
-			on:keydown={(event) => inviteCodeKeyPress(event)}
-		/>
-		{#if !loading}
-			<button
-				class="btn variant-ghost-success"
-				type="button"
-				disabled={!code}
-				on:click={() => addCode(code)}>Submit</button
-			>
-		{:else}
-			<p class="italic">Loading...</p>
-		{/if}
-	</label>
+<label class="label" for="inviteCode">
+	<span class="h5">Enter Invite Code:</span>
+	<input
+		class="input"
+		type="text"
+		placeholder="Invite Code"
+		id="inviteCode"
+		bind:value={code}
+		on:keydown={(event) => inviteCodeKeyPress(event)}
+	/>
+</label>
+{#if !loading}
+	<button
+		class="btn variant-ghost-success mt-3"
+		type="button"
+		disabled={!code}
+		on:click={() => addCode(code)}>Submit</button
+	>
+{:else}
+	<p class="italic">Loading...</p>
+{/if}
 
-	{#if err}
-		<aside class="p">
-			<div>
-				If you are having trouble and would like help, please message us on <a
-					href="https://discord.gg/brJQ36KVxk"
-					class="underline link">Discord</a
-				>
-			</div>
-		</aside>
-	{/if}
-	{#if acceptedRoomNames.length > 0}
-		<p class="text-center mt-2">You've been added to:</p>
-		<div class="my-2">
-			{#each acceptedRoomNames as name}
-				<ins class="ins border-y border-success-800">{name}</ins>
-			{/each}
+{#if err}
+	<aside class="p">
+		<div>
+			If you are having trouble and would like help, please message us on <a
+				href="https://discord.gg/brJQ36KVxk"
+				class="underline link">Discord</a
+			>
 		</div>
-	{/if}
-</div>
+	</aside>
+{/if}
+{#if acceptedRoomNames.length > 0}
+	<p class="text-center mt-2">You've been added to:</p>
+	<div class="my-2">
+		{#each acceptedRoomNames as name}
+			<ins class="ins border-y border-success-800">{name}</ins>
+		{/each}
+	</div>
+{/if}
 
 <style>
 	aside {

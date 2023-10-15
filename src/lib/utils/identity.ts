@@ -1,103 +1,90 @@
 import { get } from 'svelte/store';
-import { configStore, identityKeyStore, identityStore, keyStore } from '../stores';
+import {
+	alertQueue,
+	configStore,
+	identityKeyStore,
+	identityStore,
+	identityExists,
+	keyStore,
+	lockStateStore
+} from '../stores';
 import { Identity } from '@semaphore-protocol/identity';
 import type { IdentityStoreI } from '$lib/types';
-import { addConsoleMessage } from './console';
 
 export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsafe' | 'error' {
-	const old_id = get(identityKeyStore) as unknown as IdentityStoreI;
-	if (!old_id._commitment || regenerate) {
+	const identityStatus = get(identityExists);
+	console.log(identityStatus);
+	if (!get(identityExists) || regenerate) {
 		console.debug('Creating identity');
 		const identity = new Identity() as unknown as IdentityStoreI;
 		const config = get(configStore);
-		const key = get(keyStore);
+		const lockState = get(lockStateStore);
 		if (config.hashedPwd && config.hashedPwd.length > 0) {
-			if (key) {
+			if (lockState === 'unlocked') {
 				try {
 					identityKeyStore.set(identity);
-					if (get(identityKeyStore)._commitment !== null) {
-						console.log('Identity Created! Congrats on your new journey');
+					if (get(identityExists) === 'safe') {
+						alertQueue.enqueue('Identity Created! Congrats on your new journey');
 						return 'created';
 					} else {
-						console.error('Error creating identity');
+						alertQueue.enqueue('Error creating identity');
 						return 'error';
 					}
 				} catch (e) {
-					console.error(`Error creating identity: ${e}`);
+					alertQueue.enqueue(`Error creating identity: ${e}`);
 					return 'error';
 				}
 			} else {
-				addConsoleMessage(
-					'Unlock your identity with /unlock or click on the lock in the corner',
-					'error'
-				);
+				alertQueue.enqueue('Unlock your account by clicking on the lock');
 				return 'error';
 			}
 		} else {
-			addConsoleMessage(
-				'For your security please set a password with /password or click on the lock in the corner',
-				'warning'
+			alertQueue.enqueue(
+				'For your security please set a password with /password or click on the lock in the corner'
 			);
 			identityStore.set(identity);
 			return 'unsafe';
 		}
 	} else {
-		console.warn('Identity already exists');
+		alertQueue.enqueue('Identity already exists');
 		return 'exists';
 	}
 }
 
-export function getIdentity(): IdentityStoreI {
+export function getIdentity(): IdentityStoreI | null {
 	const decryptedIdentity = get(identityKeyStore) as unknown as IdentityStoreI;
-	if (decryptedIdentity !== null) {
+
+	if (decryptedIdentity._commitment) {
+		console.log(decryptedIdentity);
 		return decryptedIdentity;
 	} else {
 		const identity = get(identityStore);
-		if (identity !== null) {
-			console.warn('Identity not encrypted, set a password!');
+		if (identity._commitment?.length > 0) {
+			alertQueue.enqueue('Identity not encrypted, set a password!');
 			return identity;
 		} else {
-			console.warn('Identity not created, create an identity!');
+			alertQueue.enqueue('Identity not created, create an identity!');
 		}
 	}
-	throw new Error('Identity not created');
+	return null;
 }
 
-export function getCommitment() {
-	const id = get(identityKeyStore) as IdentityStoreI;
-	const id_ = get(identityStore);
-	if (id !== null && id !== undefined) {
+export function getCommitment(): string | null {
+	const id = getIdentity();
+	if (id) {
 		return id._commitment;
-	}
-	if (id_ !== null && id_ !== undefined) {
-		console.warn('PLEASE ADD A PASSWORD!');
-		return id_._commitment;
+	} else {
+		return null;
 	}
 }
 
-export function getIdentityBackup() {
-	const id = get(identityKeyStore);
-	const id_ = get(identityStore);
-	if (id !== null && id !== undefined) {
+export function getIdentityBackup(): string | null {
+	const id = getIdentity();
+	if (id) {
 		return JSON.stringify(id);
+	} else {
+		return null;
 	}
-	if (id_ !== null && id_ !== undefined) {
-		console.warn('PLEASE ADD A PASSWORD!');
-		return JSON.stringify(id_);
-	}
-}
-
-export function doesIdentityExist(): 'safe' | 'unsafe' | 'none' {
-	const id = get(identityKeyStore);
-	const id_ = get(identityStore);
-	if (id._commitment !== null && id._commitment !== undefined) {
-		return 'safe';
-	}
-	if (id_._commitment !== null && id_._commitment !== undefined) {
-		console.warn('PLEASE ADD A PASSWORD');
-		return 'unsafe';
-	}
-	return 'none';
 }
 
 export function encryptIdentity(identity: IdentityStoreI) {

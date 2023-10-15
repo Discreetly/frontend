@@ -1,14 +1,22 @@
 import { deriveKey, hashPassword } from '$lib/crypto/crypto';
-import { get, writable } from 'svelte/store';
-import { configStore, identityKeyStore, identityStore, keyStore } from '$lib/stores';
-import { doesIdentityExist, encryptIdentity } from './identity';
+import { get } from 'svelte/store';
+import {
+	configStore,
+	identityKeyStore,
+	identityStore,
+	keyStore,
+	identityExists,
+	alertQueue,
+	roomKeyStore
+} from '$lib/stores';
+import { encryptIdentity } from './identity';
 import type { IdentityStoreI } from '$lib/types';
 
 export async function setPassword(password: string): Promise<'success' | string> {
 	const hashedPassword = await hashPassword(password);
 	let identity: IdentityStoreI | undefined;
 	if (hashedPassword !== null) {
-		const idStatus = doesIdentityExist();
+		const idStatus = get(identityExists);
 		/******************************
 		 * STAGE1: DECRYPT/STORE EVERYTHING INTO MEMORY
 		 ******************************/
@@ -48,4 +56,19 @@ export async function setPassword(password: string): Promise<'success' | string>
 		return 'success';
 	}
 	return 'error';
+}
+
+export async function unlockPadlock(password: string) {
+	const hashedPassword = await hashPassword(password);
+	if (get(configStore).hashedPwd == hashedPassword) {
+		deriveKey(password).then((key) => {
+			keyStore.set(key);
+			// Don't remove these. There is no reactive way to automatically decrypt encrypted stores, so we have to trigger it manually when the keys are derived
+			identityKeyStore.read();
+			roomKeyStore.read();
+		});
+	} else {
+		alertQueue.enqueue('Incorrect Password');
+		keyStore.set(null);
+	}
 }

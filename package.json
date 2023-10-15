@@ -63,10 +63,11 @@
 		"@ethersproject/keccak256": "^5.7.0",
 		"@ethersproject/strings": "^5.7.0",
 		"@floating-ui/dom": "^1.5.3",
-		"@personaelabs/spartan-ecdsa": "^2.3.0",
 		"@rainbow-me/rainbowkit": "^1.1.1",
 		"@semaphore-protocol/group": "^3.10.1",
 		"@semaphore-protocol/identity": "^3.10.1",
+		"@wagmi/core": "^1.4.3",
+		"@web3modal/wagmi": "^3.1.0",
 		"autolinker": "^4.0.0",
 		"date-fns": "^2.30.0",
 		"discreetly-interfaces": "^0.1.39",
@@ -79,6 +80,7 @@
 		"qrcode": "^1.5.3",
 		"socket.io-client": "^4.7.1",
 		"svelte-material-icons": "^3.0.5",
+		"viem": "^1.16.5",
 		"wagmi": "^1.4.3"
 	}
 }

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Modal, initializeStores } from '@skeletonlabs/skeleton';
+	import { Modal, getToastStore, initializeStores } from '@skeletonlabs/skeleton';
 	import { Toast, storePopup } from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import '../app.postcss';
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
 	import Loading from '$lib/components/loading.svelte';
-	import { selectedServer } from '$lib/stores';
+	import { selectedServer, alertQueue } from '$lib/stores';
 	import { getServerList, isInputFieldFocused, setDefaultServers } from '$lib/utils/';
 	import { updateServer } from '$lib/utils/';
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
@@ -14,9 +14,11 @@
 	import SelectRoom from '$lib/components/SelectRoom.svelte';
 	import Console from './console/Console.svelte';
 	import Sidebar from './Sidebar.svelte';
-	import AppFooter from './AppFooter.svelte';
+	import AppFooter from './Footer.svelte';
 
 	initializeStores();
+
+	const toastStore = getToastStore();
 
 	const drawerStore = getDrawerStore();
 	// Hack to get BigInt <-> JSON compatibility
@@ -46,6 +48,12 @@
 				}
 			}
 		});
+		setInterval(() => {
+			const toast = alertQueue.dequeue();
+			if (toast) {
+				toastStore.trigger({ message: toast });
+			}
+		}, 500);
 	});
 </script>
 

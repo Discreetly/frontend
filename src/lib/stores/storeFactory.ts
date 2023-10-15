@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { writable, get } from 'svelte/store';
 import type { Writable } from 'svelte/store';
-import { keyStore } from '.';
+import { keyStore, lockStateStore } from '.';
 import { decrypt, encrypt } from '$lib/crypto/crypto';
+import type { EncryptableT } from '$lib/types';
 
 export function storable<Type>(data: Type, localStorageKey: string): Writable<Type> {
 	const store = writable<Type>(data);
@@ -73,29 +74,31 @@ export function sessionable<Type>(data: Type, sessionStorageKey: string): Writab
 	};
 }
 
-export function encryptable<Type>(data: Type, localStorageKey: string): Writable<Type> {
+export function encryptable<Type>(data: Type, localStorageKey: string): EncryptableT<Type> {
 	const store = writable<Type>(data);
 	const { subscribe, set } = store;
 	const isBrowser = typeof window !== 'undefined';
 
-	if (isBrowser && localStorage.getItem(localStorageKey) !== null) {
-		const storedValue = localStorage.getItem(localStorageKey);
-		if (storedValue) {
-			try {
-				const key = get(keyStore);
-				if (!key) {
-					throw new Error('Key store not initialized, cannot encrypt data');
-				}
-				console.debug('Encryptable State: ', storedValue, key);
-				decrypt(storedValue, key).then((decryptedData) => {
-					if (decryptedData !== null) {
-						set(JSON.parse(decryptedData) as Type);
-					} else {
-						console.error('Error decrypting data');
+	function read() {
+		if (isBrowser && localStorage.getItem(localStorageKey) !== null) {
+			const storedValue = localStorage.getItem(localStorageKey);
+
+			if (storedValue) {
+				try {
+					const key = get(keyStore);
+					if (!(get(lockStateStore) === 'unlocked') || !key) {
+						throw new Error('Key store not initialized, cannot encrypt data');
 					}
-				});
-			} catch (e) {
-				console.warn(`Error reading local storage for key: ${localStorageKey}; ${e}`);
+					decrypt(storedValue, key).then((decryptedData) => {
+						if (decryptedData !== null) {
+							set(JSON.parse(decryptedData)) as Type;
+						} else {
+							console.error('Error decrypting data');
+						}
+					});
+				} catch (e) {
+					console.warn(`Error reading local storage for key: ${localStorageKey}; ${e}`);
+				}
 			}
 		}
 	}
@@ -134,6 +137,43 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Writable
 					console.error('Error encrypting data');
 				}
 			});
+		},
+		read
+	};
+}
+
+export type QueueStore = ReturnType<typeof queueService>;
+declare function queueService(): {
+	set: (value: any[]) => void;
+	subscribe: (run: (value: any[]) => any, invalidate?: any) => () => void;
+	update: (callBack: (value: any[]) => any[]) => void;
+	enqueue: (value: any) => void;
+	dequeue: () => any;
+};
+
+export function queueable<Type>(data: Type[]): ReturnType<typeof queueService> {
+	const store = writable<Type[]>(data);
+	const { subscribe, set } = store;
+
+	return {
+		subscribe,
+		set: (value: Type[]) => {
+			set(value);
+		},
+		update: (callBack: (value: Type[]) => Type[]) => {
+			const updatedStore = callBack(get(store));
+			set(updatedStore);
+		},
+		enqueue: (value: Type) => {
+			const updatedStore = get(store);
+			updatedStore.push(value);
+			set(updatedStore);
+		},
+		dequeue: () => {
+			const updatedStore = get(store);
+			const val = updatedStore.shift();
+			set(updatedStore);
+			return val;
 		}
 	};
 }

@@ -1,8 +1,14 @@
 <script lang="ts">
-	import { currentSelectedRoom, keyStore, rateLimitStore, roomKeyStore } from '$lib/stores';
+	import {
+		currentSelectedRoom,
+		keyStore,
+		rateLimitStore,
+		roomKeyStore,
+		alertQueue
+	} from '$lib/stores';
 	import { genProof } from '$lib/crypto/rlnProver';
 	import type { Socket } from 'socket.io-client';
-	import { getIdentity, alertToast, clearMessageHistory, alertAll } from '$lib/utils';
+	import { getIdentity, clearMessageHistory } from '$lib/utils';
 	import Send from 'svelte-material-icons/Send.svelte';
 	import { decrypt, encrypt } from '$lib/crypto/crypto';
 
@@ -32,23 +38,25 @@
 
 	function checkStatus(): boolean {
 		if (!connected) {
-			alertToast('NOT CONNECTED TO CHAT SERVER');
+			alertQueue.enqueue('NOT CONNECTED TO CHAT SERVER');
 			sendingMessage = false;
 			return false;
 		}
 		if (messageText.length < 1) {
-			alertToast('MESSAGE IS EMPTY');
+			alertQueue.enqueue('MESSAGE IS EMPTY');
 			sendingMessage = false;
 			return false;
 		}
 		if (messageText.length > 2000) {
-			alertToast('MESSAGE IS TOO LONG, SENDING MAY FAIL UNDER NETWORK CONSTRAINED CONDITIONS');
+			alertQueue.enqueue(
+				'MESSAGE IS TOO LONG, SENDING MAY FAIL UNDER NETWORK CONSTRAINED CONDITIONS'
+			);
 			sendingMessage = false;
 			return false;
 		}
 		// This is 100% thanks to Violet for spamming the chat with spaces
 		if (messageText.replaceAll(' ', '') == '') {
-			alertToast('MESSAGE IS EMPTY');
+			alertQueue.enqueue('MESSAGE IS EMPTY');
 			sendingMessage = false;
 			return false;
 		}
@@ -56,7 +64,7 @@
 	}
 
 	function help() {
-		alertToast('Commands: /clear, /help');
+		alertQueue.enqueue('Commands: /clear, /help');
 	}
 
 	function processCommand(value: string) {
@@ -154,11 +162,11 @@
 		} catch (err: any) {
 			console.error('Error sending message: ', err);
 			if (err.message.includes('Merkle Proof')) {
-				alertToast(
+				alertQueue.enqueue(
 					"Couldn't generate Merkle Proof. Maybe you don't belong in the room or don't have an updated member list."
 				);
 			} else {
-				alertToast(err as string);
+				alertQueue.enqueue(err as string);
 			}
 		} finally {
 			sendingMessage = false;
