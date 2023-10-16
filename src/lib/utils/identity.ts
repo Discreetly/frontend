@@ -9,7 +9,7 @@ import {
 	lockStateStore
 } from '../stores';
 import { Identity } from '@semaphore-protocol/identity';
-import type { IdentityStoreI } from '$lib/types';
+import { IdentityStoreE, type IdentityStoreI } from '$lib/types';
 
 export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsafe' | 'error' {
 	const identityStatus = get(identityExists);
@@ -24,6 +24,10 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 				try {
 					identityKeyStore.set(identity);
 					if (get(identityExists) === 'safe') {
+						configStore.update((state) => {
+							state.identityStore = IdentityStoreE.localStorageEncrypted;
+							return state;
+						});
 						alertQueue.enqueue('Identity Created! Congrats on your new journey');
 						return 'created';
 					} else {
@@ -43,6 +47,10 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 				'For your security please set a password with /password or click on the lock in the corner'
 			);
 			identityStore.set(identity);
+			configStore.update((state) => {
+				state.identityStore = IdentityStoreE.localStorage;
+				return state;
+			});
 			return 'unsafe';
 		}
 	} else {

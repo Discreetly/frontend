@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { identityExists } from '$lib/stores';
+	import { configStore, identityExists } from '$lib/stores';
 	import { getIdentityBackup } from '$lib/utils/';
 
 	$: id = getIdentityBackup();
@@ -8,6 +8,7 @@
 	let revealIdentity = false;
 
 	function reveal() {
+		$configStore.signUpStatus.identityBackedUp = true;
 		id = getIdentityBackup();
 		if (id === undefined || id === null) {
 			id = 'No Identity Backup Found';
@@ -27,7 +28,11 @@
 
 <div class="m-2 sm:m-3 flex flex-col gap-4">
 	{#if $identityExists == 'safe' || $identityExists == 'unsafe'}
-		<a class="btn variant-ghost-success" href={encodedIdentity} download="Discreetly_Identity.json"
+		<a
+			class="btn variant-ghost-success"
+			href={encodedIdentity}
+			download="Discreetly_Identity.json"
+			on:click={() => ($configStore.signUpStatus.identityBackedUp = true)}
 			>Download Identity Backup as JSON</a
 		>
 		{#if !revealIdentity}

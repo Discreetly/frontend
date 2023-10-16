@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { alertQueue, identityKeyStore, keyStore } from '$lib/stores';
+	import { alertQueue, identityKeyStore, lockStateStore } from '$lib/stores';
 	import { FileDropzone } from '@skeletonlabs/skeleton';
 	import { poseidon2 } from 'poseidon-lite/poseidon2';
 	import { poseidon1 } from 'poseidon-lite/poseidon1';
@@ -8,7 +8,6 @@
 
 	function restoreBackup(backup: any) {
 		console.debug('Attempting restore of identity from backup file...');
-		console.debug(backup);
 		let id;
 		try {
 			id = JSON.parse(backup);
@@ -43,15 +42,19 @@
 			alertQueue.enqueue('Commitment does not match commitment backup');
 		}
 		console.log('Restoring identity from backup file...');
-		if ($keyStore !== undefined || $keyStore !== null) {
+		if ($lockStateStore == 'unlocked') {
 			$identityKeyStore = id;
-		} else {
-			alertQueue.enqueue('Please set a password or unlock before restoring your identity');
-		}
-		alertQueue.enqueue(
-			`Identity restored from backup file with identity commitment:
+			alertQueue.enqueue(
+				`Identity restored from backup file with identity commitment:
 			${$identityKeyStore._commitment}`
-		);
+			);
+		} else if ($lockStateStore == 'locked') {
+			alertQueue.enqueue('Please 🔑 UNLOCK before restoring your identity');
+		} else {
+			alertQueue.enqueue(
+				'Please set a password using the padlock icon before restoring your identity'
+			);
+		}
 	}
 
 	function onChangeHandler(e: Event): void {
