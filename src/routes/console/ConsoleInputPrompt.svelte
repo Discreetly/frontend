@@ -1,13 +1,20 @@
 <script lang="ts">
-	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
+	import { hashPassword } from '$lib/crypto/crypto';
 	import {
 		configStore,
 		identityKeyStore,
 		keyStore,
 		passwordSet,
-		identityExists
+		identityExists,
+		lockStateStore
 	} from '$lib/stores';
-	import { addConsoleMessage, clearConsoleMessages, setPassword, unlockPadlock } from '$lib/utils/';
+	import {
+		addConsoleMessage,
+		clearConsoleMessages,
+		getIdentityBackup,
+		setPassword,
+		unlockPadlock
+	} from '$lib/utils/';
 	import { inviteCode } from '$lib/gateways/inviteCode';
 	import { createIdentity } from '$lib/utils/';
 
@@ -16,7 +23,7 @@
 	function help() {
 		addConsoleMessage('-----HELP-----');
 		addConsoleMessage('`/clear` Clears the console');
-		addConsoleMessage('`/join invite-code` Joins a room via invite code, Example:');
+		addConsoleMessage('`/join invite-code` Joins a room via invite code');
 		addConsoleMessage('`/password Password`');
 		addConsoleMessage('`/unlock Password`');
 		addConsoleMessage('`/lock`');
@@ -27,9 +34,9 @@
 	async function processCommand(command: string) {
 		const [cmd, ...args] = command.split(' ');
 		if (['/unlock', '/password'].includes(cmd)) {
-			addConsoleMessage(cmd, 'userinput');
+			addConsoleMessage(cmd, 'primary');
 		} else {
-			addConsoleMessage(command, 'userinput');
+			addConsoleMessage(command, 'primary');
 		}
 		switch (cmd) {
 			case '/help':
@@ -82,26 +89,35 @@
 			case '/unlock':
 				unlockPadlock(args[0]);
 				break;
-			case '/export':
+			case '/backup':
 				addConsoleMessage('Exporting Identity');
-				if ($passwordSet) {
-					if ($keyStore) {
-						const identity = $identityKeyStore;
-						if (identity) {
-							addConsoleMessage(JSON.stringify(identity));
-						}
+				if ($identityExists === 'safe') {
+					const identity = getIdentityBackup();
+					if (identity) {
+						addConsoleMessage(identity);
+						addConsoleMessage('Exporting Identity Complete');
 					} else {
-						addConsoleMessage('Please Unlock Keystore!', 'error');
+						addConsoleMessage('Error Exporting Identity, please try ', 'error');
+					}
+				} else if ($identityExists === 'encrypted') {
+					addConsoleMessage('Please Unlock Keystore!', 'error');
+				} else if ($identityExists === 'unsafe') {
+					const identity = getIdentityBackup();
+					if (identity) {
+						addConsoleMessage(identity);
+						addConsoleMessage('Exporting Identity Complete');
+					} else {
+						addConsoleMessage('Error Exporting Identity, please try ', 'error');
 					}
 				} else {
 					addConsoleMessage('Password not set!', 'error');
 				}
-				addConsoleMessage('Exporting Identity Complete');
+
 				break;
 			case '/status':
 				addConsoleMessage('Identity Status');
 				addConsoleMessage(`Password Set: ${$configStore.hashedPwd}`);
-				addConsoleMessage(`Keystore: ${JSON.stringify($keyStore)}`);
+				addConsoleMessage(`Keystore: ${JSON.stringify($lockStateStore)}`);
 				addConsoleMessage(`Identity: ${$identityKeyStore}`);
 				break;
 			case '/createIdentity':

@@ -28,7 +28,7 @@
 			<TrashCan />
 		</button>
 	</header>
-	<section class="p-4 overflow-y-scroll" bind:this={elemChat}>
+	<section class="p-4 overflow-y-scroll overflow-x-hidden" bind:this={elemChat}>
 		{#each $consoleStore.messages as line, idx}
 			<p class={line.type}>{line.message}</p>
 		{/each}
@@ -39,7 +39,7 @@
 </div>
 
 <style>
-	.userinput::before {
+	.primary::before {
 		color: rgb(var(--color-primary-500));
 		content: '>';
 		padding-right: 0.75rem;
@@ -54,7 +54,7 @@
 		content: '#';
 		padding-right: 0.75rem;
 	}
-	.info::before {
+	.success::before {
 		color: rgb(var(--color-success-500));
 		content: '#';
 		padding-right: 0.75rem;

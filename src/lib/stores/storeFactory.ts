@@ -4,6 +4,7 @@ import type { Writable } from 'svelte/store';
 import { keyStore, lockStateStore } from '.';
 import { decrypt, encrypt } from '$lib/crypto/crypto';
 import type { EncryptableT } from '$lib/types';
+import { addConsoleMessage } from '$lib/utils';
 
 export function storable<Type>(data: Type, localStorageKey: string): Writable<Type> {
 	const store = writable<Type>(data);
@@ -143,31 +144,38 @@ export function encryptable<Type>(data: Type, localStorageKey: string): Encrypta
 }
 
 export type QueueStore = ReturnType<typeof queueService>;
+
 declare function queueService(): {
 	set: (value: any[]) => void;
 	subscribe: (run: (value: any[]) => any, invalidate?: any) => () => void;
 	update: (callBack: (value: any[]) => any[]) => void;
-	enqueue: (value: any) => void;
+	enqueue: (
+		value: any,
+		type?: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'error'
+	) => void;
 	dequeue: () => any;
 };
 
-export function queueable<Type>(data: Type[]): ReturnType<typeof queueService> {
-	const store = writable<Type[]>(data);
+export function queueable(data: { data: string; type: string }[]): ReturnType<typeof queueService> {
+	const store = writable<{ data: string; type: string }[]>(data);
 	const { subscribe, set } = store;
 
 	return {
 		subscribe,
-		set: (value: Type[]) => {
+		set: (value: { data: string; type: string }[]) => {
 			set(value);
 		},
-		update: (callBack: (value: Type[]) => Type[]) => {
+		update: (
+			callBack: (value: { data: string; type: string }[]) => { data: string; type: string }[]
+		) => {
 			const updatedStore = callBack(get(store));
 			set(updatedStore);
 		},
-		enqueue: (value: Type) => {
+		enqueue: (value: string, type = 'tertiary') => {
 			const updatedStore = get(store);
-			updatedStore.push(value);
+			updatedStore.push({ data: value, type });
 			set(updatedStore);
+			addConsoleMessage(String(value), type);
 		},
 		dequeue: () => {
 			const updatedStore = get(store);

@@ -51,7 +51,13 @@
 		setInterval(() => {
 			const toast = alertQueue.dequeue();
 			if (toast) {
-				toastStore.trigger({ message: toast });
+				const bg = `variant-filled-${toast.type}`;
+				toastStore.trigger({
+					message: toast.data,
+					background: bg,
+					timeout: 5000,
+					hoverable: true
+				});
 			}
 		}, 500);
 	});

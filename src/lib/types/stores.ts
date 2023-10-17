@@ -44,7 +44,7 @@ export interface rateLimitStoreI {
 
 export interface consoleMessageI {
 	message: string;
-	type: 'userinput' | 'error' | 'warning' | 'info' | 'space';
+	type: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'error';
 	response?: string;
 }
 

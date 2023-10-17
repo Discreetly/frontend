@@ -17,31 +17,30 @@
 				id = backup;
 			} catch (e) {
 				console.warn('Could not parse json as object');
-				alertQueue.enqueue('Invalid JSON detected');
+				alertQueue.enqueue('Invalid JSON detected', 'warning');
 				return;
 			}
 		}
 		if (!id._nullifier) {
-			alertQueue.enqueue("_nullifier doesn't exist in backup");
+			alertQueue.enqueue("_nullifier doesn't exist in backup", 'error');
 		}
 		if (!id._trapdoor) {
-			alertQueue.enqueue("_trapdoor doesn't exist in backup");
+			alertQueue.enqueue("_trapdoor doesn't exist in backup", 'error');
 		}
 		if (!id._secret) {
-			alertQueue.enqueue("_secret doesn't exist in backup");
+			alertQueue.enqueue("_secret doesn't exist in backup", 'error');
 		}
 		const checkSecret = poseidon2([id._nullifier, id._trapdoor]);
 		if (checkSecret != id._secret) {
-			alertQueue.enqueue('Secret does not match secret from backup');
+			alertQueue.enqueue('Secret does not match secret from backup', 'error');
 		}
 		if (!id._commitment) {
-			alertQueue.enqueue("_commitment doesn't exist in backup");
+			alertQueue.enqueue("_commitment doesn't exist in backup", 'error');
 		}
 		const checkCommitment = poseidon1([id._secret]);
 		if (checkCommitment != id._commitment) {
-			alertQueue.enqueue('Commitment does not match commitment backup');
+			alertQueue.enqueue('Commitment does not match commitment backup', 'error');
 		}
-		console.log('Restoring identity from backup file...');
 		if ($lockStateStore == 'unlocked') {
 			$identityKeyStore = id;
 			alertQueue.enqueue(
@@ -49,10 +48,11 @@
 			${$identityKeyStore._commitment}`
 			);
 		} else if ($lockStateStore == 'locked') {
-			alertQueue.enqueue('Please 🔑 UNLOCK before restoring your identity');
+			alertQueue.enqueue('Please 🔑 UNLOCK before restoring your identity', 'warning');
 		} else {
 			alertQueue.enqueue(
-				'Please set a password using the padlock icon before restoring your identity'
+				'Please set a password using the padlock icon before restoring your identity',
+				'warning'
 			);
 		}
 	}

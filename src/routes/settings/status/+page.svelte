@@ -10,13 +10,14 @@
 	} from '$lib/stores';
 	import { IdentityStoreE } from '$lib/types';
 	import { alertQueue } from '$lib/stores';
-
+	let c = ['primary', 'secondary', 'tertiary', 'success', 'warning', 'error'];
+	let t = c[0];
 	function toggleBeta() {
 		$configStore.beta = !$configStore.beta;
 	}
 
 	function triggerAlert() {
-		alertQueue.enqueue('TEST');
+		alertQueue.enqueue('TEST', t as any);
 	}
 </script>
 
@@ -62,6 +63,11 @@
 		</div>
 	</div>
 	<button class="btn variant-outline-primary m-4" on:click={triggerAlert}>Test Alert</button>
+	<select class="select" name="alertType" id="alertType" bind:value={t}>
+		{#each c as choice}
+			<option value={choice}>{choice}</option>
+		{/each}
+	</select>
 </div>
 
 <style>

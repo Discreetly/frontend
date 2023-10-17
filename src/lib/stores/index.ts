@@ -84,12 +84,14 @@ export const rateLimitStore = storable({} as rateLimitStoreI, 'rateLimit');
 /* ------------------ Configuration / Misc Stores ------------------*/
 
 /**
- * @description The user's encryption/decryption key, stored only in memory, if the user refreshes the page, they need to re-enter their password. This is what all other encrypted stores use to encrypt/decrypt their data.
+ * @description The user's encryption/decryption key, stored only in memory,
+ * if the user refreshes the page, they need to re-enter their password.
+ * This is what all other encrypted stores use to encrypt/decrypt their data.
  * !WARN NEVER CHANGE THE STORE TYPE OR YOU RISK EXPOSING THE KEY
  */
 export const keyStore = writable({} as keyStoreI);
 
-export const alertQueue = queueable([] as string[]);
+export const alertQueue = queueable([]);
 
 /**
  * @description Configuration store, stores the user's settings
@@ -113,7 +115,7 @@ export const passwordSet = derived(configStore, ($configStore) => {
  */
 export const consoleStore = storable(
 	{
-		messages: [{ message: 'Welcome User', type: 'info' }],
+		messages: [{ message: 'Welcome User', type: 'tertiary' }],
 		settings: {}
 	} as consoleStoreI,
 	'console'

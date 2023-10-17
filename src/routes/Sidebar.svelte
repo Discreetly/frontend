@@ -14,9 +14,7 @@
 	import LockOpen from 'svelte-material-icons/LockOpenVariant.svelte';
 	import NoPassword from 'svelte-material-icons/LockOff.svelte';
 	import Plus from 'svelte-material-icons/Plus.svelte';
-	import { hashPassword, deriveKey } from '$lib/crypto/crypto';
-	import { configStore, keyStore, passwordSet, alertQueue } from '$lib/stores';
-	import { onMount } from 'svelte';
+	import { keyStore, passwordSet } from '$lib/stores';
 	import { unlockPadlock } from '$lib/utils';
 
 	const modalStore = getModalStore();
@@ -43,14 +41,14 @@
 </script>
 
 <AppRail height="h-full">
-	<AppRailAnchor href="/chat" selected={$page.url.pathname === '/chat'} title="Chat">
-		<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
-		<span>Chat</span>
-	</AppRailAnchor>
-
 	<AppRailAnchor href="/about" selected={$page.url.pathname === '/about'} title="About">
 		<svelte:fragment slot="lead"><Information class="rail-icon" /></svelte:fragment>
 		<span>About</span>
+	</AppRailAnchor>
+
+	<AppRailAnchor href="/chat" selected={$page.url.pathname === '/chat'} title="Chat">
+		<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
+		<span>Chat</span>
 	</AppRailAnchor>
 
 	<AppRailAnchor href="/gateways" selected={$page.url.pathname === '/gateways'} title="About">

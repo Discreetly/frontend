@@ -88,7 +88,7 @@ async function genProof(
 	const roomId = typeof room.roomId === 'bigint' ? room.roomId.toString() : String(room.roomId);
 	await updateRooms(get(selectedServer), [roomId]);
 	room = get(roomsStore)[roomId];
-	const RLN_IDENIFIER = BigInt(roomId);
+	const RLN_IDENTIFIER = BigInt(roomId);
 	const userMessageLimit = BigInt(messageLimit);
 	const identitySecret = BigInt(identity._secret);
 	const identityCommitment = BigInt(identity._commitment);
@@ -99,7 +99,7 @@ async function genProof(
 	let merkleProof: MerkleProof;
 	switch (room.membershipType) {
 		case 'IDENTITY_LIST':
-			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENIFIER, commitment);
+			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENTIFIER, commitment);
 			break;
 		case 'BANDADA_GROUP':
 			// TODO! CHECK IF ADMIN, if so use MerkleProofFromRoom
@@ -118,7 +118,7 @@ async function genProof(
 	}
 
 	const proofInputs: proofInputsI = {
-		rlnIdentifier: RLN_IDENIFIER,
+		rlnIdentifier: RLN_IDENTIFIER,
 		identitySecret: identitySecret,
 		userMessageLimit: userMessageLimit,
 		messageId: BigInt(messageId),
@@ -135,7 +135,7 @@ async function genProof(
 		const msg: MessageI = {
 			messageId: proof.snarkProof.publicSignals.nullifier.toString(),
 			message: message,
-			roomId: RLN_IDENIFIER,
+			roomId: RLN_IDENTIFIER,
 			proof,
 			epoch
 		};

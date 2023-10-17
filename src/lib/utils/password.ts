@@ -50,7 +50,7 @@ export async function setPassword(password: string): Promise<'success' | string>
 			return config;
 		});
 		/******************************
-		 * STAGE4: Derive Key
+		 * STAGE4: Derive and set new Key
 		 * ******************************/
 		keyStore.set(await deriveKey(password));
 		return 'success';
@@ -63,7 +63,9 @@ export async function unlockPadlock(password: string) {
 	if (get(configStore).hashedPwd == hashedPassword) {
 		deriveKey(password).then((key) => {
 			keyStore.set(key);
-			// Don't remove these. There is no reactive way to automatically decrypt encrypted stores, so we have to trigger it manually when the keys are derived
+			// There is no reactive way to automatically decrypt
+			// encrypted stores, so we have to trigger it manually
+			// when the keys are derived
 			identityKeyStore.read();
 			roomKeyStore.read();
 		});

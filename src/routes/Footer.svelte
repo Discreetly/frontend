@@ -71,18 +71,21 @@
 					<span class="flex-auto">About</span>
 				</a>
 			</li>
+
 			<li id="will-close">
 				<a href="/gateways"
 					><Plus />
 					<span class="flex-auto">Join More</span>
 				</a>
 			</li>
+
 			<li id="will-close">
 				<a href="/console">
 					<Console />
 					<span class="flex-auto">Console</span>
 				</a>
 			</li>
+
 			<li id="will-close">
 				<a href="/settings">
 					<Settings />
