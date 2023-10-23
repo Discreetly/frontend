@@ -1,9 +1,11 @@
 import { join } from 'path';
 import type { Config } from 'tailwindcss';
-import { discreetlyTheme } from './theme';
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
 import { skeleton } from '@skeletonlabs/tw-plugin';
+import { discreetlyTheme } from './theme';
 
-const config = {
+export default {
 	darkMode: 'class',
 	content: [
 		'./src/**/*.{html,js,svelte,ts}',
@@ -13,10 +15,11 @@ const config = {
 		extend: {}
 	},
 	plugins: [
+		forms,
+		typography,
 		skeleton({
 			themes: { custom: [discreetlyTheme] }
-		})
+		}),
+		forms
 	]
 } satisfies Config;
-
-export default config;

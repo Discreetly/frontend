@@ -1,16 +1,14 @@
 <script lang="ts">
 	import ChatRoomHeader from './ChatRoomHeader.svelte';
-	import Loading from '$lib/components/loading.svelte';
 	import {
 		currentSelectedRoom,
-		messageStore,
 		rateLimitStore,
 		selectedServer,
 		configStore,
 		currentRoomsStore
 	} from '$lib/stores';
 	import { Experiences } from '$lib/types';
-	import { getEpochFromTimestamp, getTimestampFromEpoch, updateMessages } from '$lib/utils';
+	import { addMessageToRoom, getTimestampFromEpoch, updateMessages } from '$lib/utils';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { MessageI } from 'discreetly-interfaces';
 	import type { Socket } from 'socket.io-client';
@@ -18,7 +16,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Conversation from './Conversation.svelte';
 	import Draw from './Draw.svelte';
-	import InputPrompt from './InputPrompt.svelte';
+	import InputPrompt from './ChatInputPrompt.svelte';
 
 	const toastStore = getToastStore();
 
@@ -27,11 +25,12 @@
 	let connected: boolean = false;
 	let lastRoom = '';
 	let onlineMembers = '?';
+	let epochUpdater: NodeJS.Timeout;
 	$: currentEpoch = 0;
 	$: timeLeftInEpoch = '0';
-	$: roomId = $currentSelectedRoom.roomId!.toString();
-	$: userMessageLimit = $currentSelectedRoom.userMessageLimit ?? 1;
-	$: roomRateLimit = $currentSelectedRoom.rateLimit ?? 0;
+	$: roomId = $currentSelectedRoom?.roomId!.toString();
+	$: userMessageLimit = $currentSelectedRoom?.userMessageLimit ?? 1;
+	$: roomRateLimit = $currentSelectedRoom?.rateLimit ?? 0;
 	$: if (!$rateLimitStore[roomId]) {
 		console.debug('Resetting rate limit store for room', roomId);
 		$rateLimitStore[roomId] = {
@@ -71,6 +70,11 @@
 
 	function updateEpoch() {
 		if ($currentSelectedRoom === undefined) {
+			if ($currentRoomsStore[0] === undefined) {
+				console.warn('No rooms available');
+				clearInterval(epochUpdater);
+				return;
+			}
 			$currentSelectedRoom = $currentRoomsStore[0];
 		}
 		currentEpoch = Math.floor(Date.now() / $currentSelectedRoom.rateLimit!);
@@ -126,23 +130,7 @@
 			console.debug('Received Message: ', data);
 			const roomId = data.roomId?.toString();
 			if (roomId) {
-				if (!$messageStore[roomId]) {
-					console.debug('Creating room in message store', roomId);
-					$messageStore[roomId] = [] as MessageI[];
-				}
-				if (typeof data.proof === 'string') {
-					data.proof = JSON.parse(data.proof as string);
-				}
-				if (!data.epoch) {
-					data.epoch = getEpochFromTimestamp(
-						$currentSelectedRoom.rateLimit!,
-						+data.timeStamp!
-					).epoch;
-				}
-				$messageStore[roomId] = [...$messageStore[roomId], data];
-				if ($messageStore[roomId].length > 500) {
-					$messageStore[roomId] = $messageStore[roomId].slice(-500); // Keep only the latest 500 messages
-				}
+				addMessageToRoom(roomId, data);
 				scrollChatToBottom();
 			}
 			socket.on('Members', (data: string) => {
@@ -158,7 +146,7 @@
 			scrollChatToBottom();
 		});
 
-		setInterval(() => {
+		epochUpdater = setInterval(() => {
 			updateEpoch();
 		}, 100);
 	});
@@ -212,7 +200,12 @@
 		<!-- Prompt -->
 	</div>
 {:else}
-	<Loading />
+	<div class="grid place-content-center">
+		<h6 class="h2 text-center mb-10">You aren't in any rooms...yet</h6>
+		<a href="https://discord.gg/brJQ36KVxk" class="h2 btn btn-sm variant-ringed-secondary"
+			>Join our Discord for help</a
+		>
+	</div>
 {/if}
 
 <style>

@@ -15,6 +15,13 @@ export async function getServerData(serverUrl: string): Promise<ServerI> {
 	return get([serverUrl]) as Promise<ServerI>;
 }
 
+export async function getEthAddressRoomNames(
+	server: string,
+	ethAddress: string
+): Promise<string[]> {
+	return get([server, `api/eth/group/${ethAddress}`]) as Promise<string[]>;
+}
+
 export async function postInviteCode(serverUrl: string, data: { code: string; idc: string }) {
 	return post([serverUrl, 'join'], data);
 }
@@ -57,6 +64,14 @@ export async function createRoom(
 	return postAuth([serverUrl, `api/room/add`], data, username, password) as Promise<RoomI>;
 }
 
+interface CreateInviteData {
+	numCodes: number;
+	expiresAt?: number;
+	usesLeft?: number;
+	roomIds?: string[];
+	all?: boolean;
+}
+
 export async function createInvite(
 	serverUrl: string,
 	username: string,
@@ -66,7 +81,7 @@ export async function createInvite(
 	expiresAt?: number,
 	usesLeft?: number
 ) {
-	const data = { numCodes, expiresAt, usesLeft };
+	const data: CreateInviteData = { numCodes, expiresAt, usesLeft };
 	if (roomIds.length > 0) {
 		data['roomIds'] = roomIds;
 	} else {

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import AP from '$lib/components/AP.svelte';
-	import Clock from '$lib/components/Clock.svelte';
+	import AP from '$lib/components/ActionPoints/AP.svelte';
+	import Clock from '$lib/components/Utils/Clock.svelte';
 	import { currentSelectedRoom, configStore } from '$lib/stores';
 	import { ProgressBar } from '@skeletonlabs/skeleton';
 	import FullCircle from 'svelte-material-icons/Circle.svelte';

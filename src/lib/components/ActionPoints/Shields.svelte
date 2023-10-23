@@ -2,7 +2,6 @@
 	import FullShield from 'svelte-material-icons/Shield.svelte';
 	import ShieldHalfFullHalfEmpty from 'svelte-material-icons/ShieldHalfFull.svelte';
 	import ShieldEmpty from 'svelte-material-icons/ShieldOutline.svelte';
-	import ShieldHalfFull from 'svelte-material-icons/ShieldHalf.svelte';
 
 	export let health: number;
 	export let maxHealth: number;

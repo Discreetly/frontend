@@ -9,6 +9,8 @@ export interface ConfigurationI {
 	actionRepresentation?: ActionRepresentationE;
 	experience?: Experiences;
 	beta?: boolean;
+	numMessagesToSave: number;
+	hashedPwd: string | null | undefined;
 }
 
 export interface RoomI extends RI {
@@ -34,10 +36,8 @@ export interface JoinResponseI {
 	roomIds: string[];
 }
 
-// Keyed by roomId
-
 export interface SignUpStatusI {
-	inviteAccepted: boolean;
+	completedSignup: boolean;
 	identityBackedUp: boolean;
 	inviteCode?: string;
 }
