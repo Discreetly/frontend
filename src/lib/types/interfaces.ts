@@ -41,3 +41,15 @@ export interface SignUpStatusI {
 	identityBackedUp: boolean;
 	inviteCode?: string;
 }
+
+export interface RoomFormData {
+	roomName: string;
+	membershipType: string;
+	rateLimit: number;
+	messageLimit: number;
+	claimCodes: number;
+	roomType: string;
+	bandadaAddress: string | undefined;
+	bandadaGroupId: string | undefined;
+	bandadaApiKey: string | undefined;
+}

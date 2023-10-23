@@ -30,6 +30,40 @@ export async function getMessages(serverUrl: string, roomId: string) {
 	return get([serverUrl, `api/room/${roomId}/messages`]) as Promise<MessageI[]>;
 }
 
+export async function createRoom(
+	serverUrl: string,
+	roomName: string,
+	username: string,
+	password: string,
+	rateLimit: number,
+	userMessageLimit: number,
+	numClaimCodes: number,
+	adminIdentities: string[],
+	membershipType: string,
+	type: string,
+	contractAddress?: string,
+	bandadaAddress?: string,
+	bandadaGroupId?: string,
+	bandadaApiKey?: string,
+	roomId?: string
+) {
+	const data = {
+		roomName,
+		rateLimit,
+		userMessageLimit,
+		numClaimCodes,
+		adminIdentities,
+		membershipType,
+		type,
+		contractAddress,
+		bandadaAddress,
+		bandadaGroupId,
+		bandadaApiKey,
+		roomId
+	};
+	return postAuth([serverUrl, `api/room/add`], data, username, password) as Promise<RoomI>;
+}
+
 interface CreateInviteData {
 	numCodes: number;
 	expiresAt?: number;
