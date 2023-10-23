@@ -16,6 +16,7 @@
 				if (err) {
 					alertQueue.enqueue(err, 'error');
 				} else {
+					alertQueue.enqueue(`Accepted into ${acceptedRoomNames}`, 'success');
 					acceptedRoomNames = acceptedRoomNames;
 				}
 			})

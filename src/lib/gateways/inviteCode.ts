@@ -19,7 +19,7 @@ export async function inviteCode(newCode: string) {
 			idc
 		})) as JoinResponseI;
 		console.debug('INVITE CODE RESPONSE: ', result);
-		if (result.status == 'valid' || result.status == 'already-added') {
+		if (result.status == 'valid') {
 			console.debug('Updating new rooms');
 			acceptedRoomNames = await updateRooms(server, result.roomIds);
 			console.log(`Added to rooms: ${acceptedRoomNames}`);
@@ -29,6 +29,8 @@ export async function inviteCode(newCode: string) {
 				return store;
 			});
 			return { acceptedRoomNames, undefined };
+		} else if (result.status == 'already-added') {
+			return { acceptedRoomNames, err: 'You are already a member of this room.' };
 		} else {
 			err = 'Invalid invite code.';
 		}
