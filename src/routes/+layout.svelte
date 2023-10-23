@@ -5,13 +5,13 @@
 	import '../app.postcss';
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
-	import Loading from '$lib/components/loading.svelte';
+	import Loading from '$lib/components/Utils/Loading.svelte';
 	import { selectedServer, alertQueue } from '$lib/stores';
 	import { getServerList, isInputFieldFocused, setDefaultServers } from '$lib/utils/';
 	import { updateServer } from '$lib/utils/';
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
-	import SelectServer from '$lib/components/SelectServer.svelte';
-	import SelectRoom from '$lib/components/SelectRoom.svelte';
+	import SelectServer from '$lib/components/Server/SelectServer.svelte';
+	import SelectRoom from '$lib/components/Server/SelectRoom.svelte';
 	import Console from './console/Console.svelte';
 	import Sidebar from './Sidebar.svelte';
 	import AppFooter from './Footer.svelte';

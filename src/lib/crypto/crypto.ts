@@ -1,5 +1,37 @@
-import { alertQueue, configStore } from '$lib/stores';
+import { alertQueue, configStore, saltStore } from '$lib/stores';
 import { get } from 'svelte/store';
+
+/**
+ * Retrieves a salt value. If a salt is not present in the store,
+ * it generates a new 16-byte salt using the window.crypto API,
+ * converts it to a hexadecimal string, and stores it. If a salt
+ * is present in the store, it converts the stored hexadecimal
+ * string back to a Uint8Array.
+ *
+ * @returns {Uint8Array} A 16-byte salt value.
+ */
+function getSalt(): Uint8Array {
+	const salt: Uint8Array = new Uint8Array(16);
+
+	const saltFromStore = get(saltStore);
+
+	// Generate new salt if salt is not set
+	if (saltFromStore === '') {
+		window.crypto.getRandomValues(salt);
+
+		// Convert to hexadecimal string
+		const saltString = Array.from(salt)
+			.map((b) => b.toString(16).padStart(2, '0'))
+			.join('');
+
+		saltStore.set(saltString);
+	} else {
+		for (let i = 0; i < salt.length; i++) {
+			salt[i] = parseInt(saltFromStore.substring(i * 2, i * 2 + 2), 16);
+		}
+	}
+	return salt;
+}
 
 /**
  * Derives an encryption key from a given password using PBKDF2.
@@ -11,8 +43,8 @@ export async function deriveKey(password: string): Promise<CryptoKey> {
 	// TextEncoder will be used for converting strings to byte arrays
 	const textEncoder = new TextEncoder();
 
-	// Salt for PBKDF2. 420+69+a bunch of randomness from my laptop
-	const salt = textEncoder.encode('42069210482402528527906392650230853');
+	// Salt for PBKDF2 stored in local storage
+	const salt = getSalt();
 
 	// Importing the password as a cryptographic key
 	const passwordKey = await window.crypto.subtle.importKey(

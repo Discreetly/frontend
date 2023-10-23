@@ -1,9 +1,8 @@
 <script lang="ts">
-	import Container from '$lib/components/Container.svelte';
 	import EthereumGroupGateway from '$lib/components/Gateways/EthereumGroup.svelte';
 	import InviteCodeGateway from '$lib/components/Gateways/InviteCode.svelte';
-	import SelectServer from '$lib/components/SelectServer.svelte';
-	import Card from '$lib/components/card.svelte';
+	import SelectServer from '$lib/components/Server/SelectServer.svelte';
+	import Card from '$lib/components/Utils/Card.svelte';
 	import { configStore, serverStore } from '$lib/stores';
 </script>
 
@@ -20,6 +19,14 @@
 		<InviteCodeGateway code={$configStore.signUpStatus.inviteCode} />
 	</Card>
 	<Card>
+		<svelte:fragment slot="header">Join the alpha testing room:</svelte:fragment>
+		<InviteCodeGateway
+			code={'layer-spot-gravity-fossil'}
+			hideInput={true}
+			buttonText="Join Alpha Testers"
+		/>
+	</Card>
+	<Card>
 		<svelte:fragment slot="header">Discord Bot</svelte:fragment>
 		<svelte:fragment slot="description">Add the discord bot to your server Today!</svelte:fragment>
 		<a
@@ -34,8 +41,7 @@
 	<Card>
 		<svelte:fragment slot="header">Join via Ethereum Address:</svelte:fragment>
 		<svelte:fragment slot="description"
-			>Are you a genesis validator, daohack survivor, nouns holder? You can join using your Ethereum
-			address.
+			>Are you a genesis validator? You can join using your Ethereum address.
 		</svelte:fragment>
 		<EthereumGroupGateway />
 	</Card>

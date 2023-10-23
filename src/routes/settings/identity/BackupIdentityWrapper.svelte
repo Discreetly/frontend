@@ -1,5 +1,5 @@
 <script>
-	import BackupIdentity from '$lib/components/BackupIdentity.svelte';
+	import BackupIdentity from '$lib/components/Identity/BackupIdentity.svelte';
 </script>
 
 <div class="card variant-ghost-secondary">

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from '$lib/components/button.svelte';
+	import Button from '$lib/components/Utils/Button.svelte';
 	import { identityExists } from '$lib/stores';
 </script>
 

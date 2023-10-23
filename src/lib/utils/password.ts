@@ -31,8 +31,14 @@ export async function setPassword(password: string): Promise<'success' | string>
 			console.error(`Error decrypting: ${e}`);
 			return 'Error decrypting data while setting new password';
 		}
+
 		/******************************
-		 * STAGE2: ENCRYPT EVERYTHING
+		 * STAGE2: Derive and set new Key
+		 * ******************************/
+		keyStore.set(await deriveKey(password));
+
+		/******************************
+		 * STAGE3: ENCRYPT EVERYTHING
 		 ******************************/
 		try {
 			if (identity) {
@@ -43,16 +49,13 @@ export async function setPassword(password: string): Promise<'success' | string>
 			return 'Error encrypting data while setting new password';
 		}
 		/******************************
-		 * STAGE3: SET PASSWORD HASH
+		 * STAGE4: SET PASSWORD HASH
 		 ******************************/
 		configStore.update((config) => {
 			config.hashedPwd = hashedPassword;
 			return config;
 		});
-		/******************************
-		 * STAGE4: Derive and set new Key
-		 * ******************************/
-		keyStore.set(await deriveKey(password));
+
 		return 'success';
 	}
 	return 'error';

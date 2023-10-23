@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Welcome from '$lib/components/Welcome.svelte';
+	import Welcome from '$lib/components/Onboarding/Welcome.svelte';
 
 	console.info(
 		'I see you are checking out the logs, let us know what you think on our discord: https://discord.gg/brJQ36KVxk'

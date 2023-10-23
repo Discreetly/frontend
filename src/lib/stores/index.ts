@@ -81,6 +81,11 @@ export const currentRoomMessages = derived(
  */
 export const rateLimitStore = storable({} as rateLimitStoreI, 'rateLimit');
 
+/**
+ * @description This stores the salt used to derive the encryption key from the user's password
+ */
+export const saltStore = storable('', 'salt');
+
 /* ------------------ Configuration / Misc Stores ------------------*/
 
 /**

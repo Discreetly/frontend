@@ -1,6 +1,6 @@
 <script>
-	import Demo from '$lib/components/Demo.svelte';
-	import Introduction from '$lib/components/Introduction.svelte';
+	import Demo from '$lib/components/Onboarding/Demo.svelte';
+	import Introduction from '$lib/components/Onboarding/Introduction.svelte';
 </script>
 
 <div class="mx-auto mt-10 max-w-[80ch]">

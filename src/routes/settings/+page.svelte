@@ -1,12 +1,12 @@
 <script lang="ts">
-	import DeleteIdentity from './identity/DeleteIdentity.svelte';
-	import BackupIdentity from './identity/BackupIdentity.svelte';
-	import RestoreIdentity from './identity/RestoreIdentity.svelte';
+	import DeleteIdentity from '$lib/components/Identity/DeleteIdentity.svelte';
+	import BackupIdentity from './identity/BackupIdentityWrapper.svelte';
+	import RestoreIdentity from '$lib/components/Identity/RestoreIdentity.svelte';
 	import { createIdentity } from '$lib/utils/';
 	import ActionRepresentation from './ui/ActionRepresentation.svelte';
 	import IdentityIcon from 'svelte-material-icons/Account.svelte';
 	import Eye from 'svelte-material-icons/Eye.svelte';
-	import Container from '../../lib/components/Container.svelte';
+	import Container from '$lib/components/Utils/Container.svelte';
 	import { identityExists } from '$lib/stores';
 </script>
 

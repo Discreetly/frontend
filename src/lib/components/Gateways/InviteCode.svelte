@@ -2,6 +2,8 @@
 	import { inviteCode } from '$lib/gateways/inviteCode';
 	import { alertQueue } from '$lib/stores';
 	export let code = '';
+	export let buttonText = 'Submit';
+	export let hideInput = false;
 
 	let acceptedRoomNames: string[] = [];
 	let loading = false;
@@ -79,23 +81,25 @@
 	}
 </script>
 
-<label class="label" for="inviteCode">
-	<span class="h5">Enter Invite Code:</span>
-	<input
-		class="input"
-		type="text"
-		placeholder="Invite Code"
-		id="inviteCode"
-		bind:value={code}
-		on:keydown={(event) => inviteCodeKeyPress(event)}
-	/>
-</label>
+{#if !hideInput}
+	<label class="label" for="inviteCode">
+		<span class="h5">Enter Invite Code:</span>
+		<input
+			class="input"
+			type="text"
+			placeholder="Invite Code"
+			id="inviteCode"
+			bind:value={code}
+			on:keydown={(event) => inviteCodeKeyPress(event)}
+		/>
+	</label>
+{/if}
 {#if !loading}
 	<button
 		class="btn variant-ghost-success mt-3"
 		type="button"
 		disabled={!code}
-		on:click={() => addCode(code)}>Submit</button
+		on:click={() => addCode(code)}>{buttonText}</button
 	>
 {:else}
 	<p class="italic">Loading...</p>

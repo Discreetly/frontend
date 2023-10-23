@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AP from '$lib/components/AP.svelte';
+	import AP from '$lib/components/ActionPoints/AP.svelte';
 	import { configStore } from '$lib/stores';
 	import { ActionRepresentationE } from '$lib/types';
 	import { RangeSlider } from '@skeletonlabs/skeleton';

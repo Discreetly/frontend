@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RestoreIdentity from '../RestoreIdentity.svelte';
+	import RestoreIdentity from '$lib/components/Identity/RestoreIdentity.svelte';
 </script>
 
 <RestoreIdentity />

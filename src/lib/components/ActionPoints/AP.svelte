@@ -4,7 +4,7 @@
 	import { ActionRepresentationE } from '$lib/types';
 	import Shields from '$lib/components/ActionPoints/Shields.svelte';
 	import { configStore } from '$lib/stores';
-	import Battery from './ActionPoints/Battery.svelte';
+	import Battery from './Battery.svelte';
 	export let health: number;
 	export let maxHealth: number;
 </script>

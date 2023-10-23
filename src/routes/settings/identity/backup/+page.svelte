@@ -1,5 +1,5 @@
 <script lang="ts">
-	import BackupIdentity from '../BackupIdentity.svelte';
+	import BackupIdentity from '../BackupIdentityWrapper.svelte';
 </script>
 
 <BackupIdentity />

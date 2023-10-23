@@ -96,6 +96,7 @@
 	<header class="card-header">
 		<h3 class="h4">Restore Your Identity</h3>
 	</header>
+
 	<section class="px-4 pt-4">
 		<label class="label w-full pb-1">
 			<span class="h5"> Recover From File:</span>
@@ -113,7 +114,7 @@
 			<textarea
 				name="textarea"
 				id="jsonRecovery"
-				class="mb-2 p-2 rounded-token"
+				class="mb-2 p-2 rounded-token max-h-24"
 				cols="30"
 				rows="10"
 				placeholder="Paste your Identity Here"
