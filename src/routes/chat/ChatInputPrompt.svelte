@@ -38,25 +38,26 @@
 
 	function checkStatus(): boolean {
 		if (!connected) {
-			alertQueue.enqueue('NOT CONNECTED TO CHAT SERVER');
+			alertQueue.enqueue('NOT CONNECTED TO CHAT SERVER', 'error');
 			sendingMessage = false;
 			return false;
 		}
 		if (messageText.length < 1) {
-			alertQueue.enqueue('MESSAGE IS EMPTY');
+			alertQueue.enqueue('MESSAGE IS EMPTY', 'warning');
 			sendingMessage = false;
 			return false;
 		}
 		if (messageText.length > 2000) {
 			alertQueue.enqueue(
-				'MESSAGE IS TOO LONG, SENDING MAY FAIL UNDER NETWORK CONSTRAINED CONDITIONS'
+				'MESSAGE IS TOO LONG, SENDING MAY FAIL UNDER NETWORK CONSTRAINED CONDITIONS',
+				'warning'
 			);
 			sendingMessage = false;
 			return false;
 		}
 		// This is 100% thanks to Violet for spamming the chat with spaces
 		if (messageText.replaceAll(' ', '') == '') {
-			alertQueue.enqueue('MESSAGE IS EMPTY');
+			alertQueue.enqueue('MESSAGE IS EMPTY', 'warning');
 			sendingMessage = false;
 			return false;
 		}
@@ -64,7 +65,7 @@
 	}
 
 	function help() {
-		alertQueue.enqueue('Commands: /clear, /help');
+		alertQueue.enqueue('Commands: /clear, /help', 'tertiary');
 	}
 
 	function processCommand(value: string) {
@@ -163,10 +164,11 @@
 			console.error('Error sending message: ', err);
 			if (err.message.includes('Merkle Proof')) {
 				alertQueue.enqueue(
-					"Couldn't generate Merkle Proof. Maybe you don't belong in the room or don't have an updated member list."
+					"Couldn't generate Merkle Proof. Maybe you don't belong in the room or don't have an updated member list.",
+					'warning'
 				);
 			} else {
-				alertQueue.enqueue(err as string);
+				alertQueue.enqueue(err as string, 'error');
 			}
 		} finally {
 			sendingMessage = false;

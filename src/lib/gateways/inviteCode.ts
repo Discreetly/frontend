@@ -11,7 +11,7 @@ export async function inviteCode(newCode: string) {
 	try {
 		const idc = getCommitment();
 		if (!idc) {
-			alertQueue.enqueue('No identity commitment found');
+			alertQueue.enqueue('No identity commitment found', 'warning');
 			throw new Error('No identity commitment found');
 		}
 		const result = (await postInviteCode(server, {

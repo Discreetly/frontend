@@ -33,7 +33,7 @@
 				message: commitment
 			});
 		} else {
-			alertQueue.enqueue('Error getting Identity');
+			alertQueue.enqueue('Error getting Identity', "error");
 		}
 	}
 

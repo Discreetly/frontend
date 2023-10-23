@@ -17,6 +17,7 @@ function getSalt(): Uint8Array {
 
 	// Generate new salt if salt is not set
 	if (saltFromStore === '') {
+		console.debug('Making new salt');
 		window.crypto.getRandomValues(salt);
 
 		// Convert to hexadecimal string
@@ -26,6 +27,7 @@ function getSalt(): Uint8Array {
 
 		saltStore.set(saltString);
 	} else {
+		console.debug(`Restoring Salt: ${saltFromStore}`);
 		for (let i = 0; i < salt.length; i++) {
 			salt[i] = parseInt(saltFromStore.substring(i * 2, i * 2 + 2), 16);
 		}
@@ -86,11 +88,11 @@ export async function encrypt(plainText: string, key: CryptoKey): Promise<string
 
 		return btoa(String.fromCharCode(...encryptedBytes));
 	} else if (get(configStore).hashedPwd) {
-		alertQueue.enqueue('Unlock your identity with /unlock or click on the lock');
+		alertQueue.enqueue('Unlock your identity with /unlock or click on the lock', 'warning');
 		console.error('Unlock your identity with /unlock or click on the lock');
 		return null;
 	} else {
-		alertQueue.enqueue('No Password Set, please set a password with /setpassword');
+		alertQueue.enqueue('No Password Set, please set a password with /setpassword', 'warning');
 		console.error('No password set, please set a password first');
 		return null;
 	}
@@ -115,11 +117,11 @@ export async function decrypt(cipherText: string, key: CryptoKey): Promise<strin
 
 		return decoder.decode(decryptedContent);
 	} else if (get(configStore).hashedPwd) {
-		alertQueue.enqueue('Unlock your identity with /unlock or click on the lock');
+		alertQueue.enqueue('Unlock your identity with /unlock or click on the lock', 'warning');
 		console.error('Unlock your identity with /unlock or click on the lock');
 		return null;
 	} else {
-		alertQueue.enqueue('No Password Set, please set a password with /setpassword');
+		alertQueue.enqueue('No Password Set, please set a password with /setpassword', 'warning');
 		console.error('No password set, please set a password first');
 		return null;
 	}

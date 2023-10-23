@@ -14,13 +14,14 @@
 		inviteCode(code)
 			.then(({ acceptedRoomNames, err }) => {
 				if (err) {
-					alertQueue.enqueue(err);
+					alertQueue.enqueue(err, 'error');
 				} else {
 					acceptedRoomNames = acceptedRoomNames;
 				}
 			})
 			.catch((err) => {
-				alertQueue.enqueue(err);
+				console.log(err);
+				alertQueue.enqueue(err, 'error');
 			})
 			.finally(() => {
 				loading = false;

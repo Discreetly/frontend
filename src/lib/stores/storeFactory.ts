@@ -151,7 +151,7 @@ declare function queueService(): {
 	update: (callBack: (value: any[]) => any[]) => void;
 	enqueue: (
 		value: any,
-		type?: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'error'
+		type: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'error'
 	) => void;
 	dequeue: () => any;
 };

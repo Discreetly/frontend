@@ -73,7 +73,7 @@ export async function unlockPadlock(password: string) {
 			roomKeyStore.read();
 		});
 	} else {
-		alertQueue.enqueue('Incorrect Password');
+		alertQueue.enqueue('Incorrect Password', 'warning');
 		keyStore.set(null);
 	}
 }

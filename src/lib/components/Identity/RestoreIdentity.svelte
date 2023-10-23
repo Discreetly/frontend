@@ -45,7 +45,8 @@
 			$identityKeyStore = id;
 			alertQueue.enqueue(
 				`Identity restored from backup file with identity commitment:
-			${$identityKeyStore._commitment}`
+			${$identityKeyStore._commitment}`,
+				'success'
 			);
 		} else if ($lockStateStore == 'locked') {
 			alertQueue.enqueue('Please 🔑 UNLOCK before restoring your identity', 'warning');
@@ -62,7 +63,7 @@
 		console.debug(`Backup/recovery file type detected as ${f?.type}`);
 		let unverifiedBackup: any;
 		if (!f) {
-			alertQueue.enqueue('No file selected');
+			alertQueue.enqueue('No file selected', 'warning');
 			return;
 		}
 		if (f.type == 'application/json' || f.type == 'text/plain') {
@@ -72,7 +73,8 @@
 			});
 		} else {
 			alertQueue.enqueue(
-				'Invalid file type, must be a JSON object with the _nullifier, _trapdoor, _secret, and _commitment as stringified bigints'
+				'Invalid file type, must be a JSON object with the _nullifier, _trapdoor, _secret, and _commitment as stringified bigints',
+				'warning'
 			);
 			console.warn('Invalid file type');
 		}
@@ -82,7 +84,7 @@
 		const textBox = document.getElementById('jsonRecovery') as HTMLInputElement;
 		const json = textBox.value;
 		if (!json || json == '') {
-			alertQueue.enqueue('No JSON detected');
+			alertQueue.enqueue('No JSON detected', 'warning');
 			return;
 		} else {
 			restoreBackup(json);

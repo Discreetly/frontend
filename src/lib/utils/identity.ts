@@ -6,20 +6,18 @@ import {
 	identityStore,
 	identityExists,
 	keyStore,
-	lockStateStore
+	lockStateStore,
+	passwordSet
 } from '../stores';
 import { Identity } from '@semaphore-protocol/identity';
 import { IdentityStoreE, type IdentityStoreI } from '$lib/types';
 
 export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsafe' | 'error' {
-	const identityStatus = get(identityExists);
-	console.log(identityStatus);
 	if (!get(identityExists) || regenerate) {
 		console.debug('Creating identity');
 		const identity = new Identity() as unknown as IdentityStoreI;
-		const config = get(configStore);
 		const lockState = get(lockStateStore);
-		if (config.hashedPwd && config.hashedPwd.length > 0) {
+		if (get(passwordSet)) {
 			if (lockState === 'unlocked') {
 				try {
 					identityKeyStore.set(identity);
@@ -28,23 +26,24 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 							state.identityStore = IdentityStoreE.localStorageEncrypted;
 							return state;
 						});
-						alertQueue.enqueue('Identity Created! Congrats on your new journey');
+						alertQueue.enqueue('Identity Created! Congrats on your new journey', 'success');
 						return 'created';
 					} else {
-						alertQueue.enqueue('Error creating identity');
+						alertQueue.enqueue('Error creating identity', 'error');
 						return 'error';
 					}
 				} catch (e) {
-					alertQueue.enqueue(`Error creating identity: ${e}`);
+					alertQueue.enqueue(`Error creating identity: ${e}`, 'error');
 					return 'error';
 				}
 			} else {
-				alertQueue.enqueue('Unlock your account by clicking on the lock');
+				alertQueue.enqueue('Unlock your account by clicking on the lock', 'warning');
 				return 'error';
 			}
 		} else {
 			alertQueue.enqueue(
-				'For your security please set a password with /password or click on the lock in the corner'
+				'For your security please set a password with /password or click on the lock in the corner',
+				'warning'
 			);
 			identityStore.set(identity);
 			configStore.update((state) => {
@@ -54,7 +53,7 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 			return 'unsafe';
 		}
 	} else {
-		alertQueue.enqueue('Identity already exists');
+		alertQueue.enqueue('Identity already exists', 'warning');
 		return 'exists';
 	}
 }
@@ -63,15 +62,14 @@ export function getIdentity(): IdentityStoreI | null {
 	const decryptedIdentity = get(identityKeyStore) as unknown as IdentityStoreI;
 
 	if (decryptedIdentity._commitment) {
-		console.log(decryptedIdentity);
 		return decryptedIdentity;
 	} else {
 		const identity = get(identityStore);
 		if (identity._commitment?.length > 0) {
-			alertQueue.enqueue('Identity not encrypted, set a password!');
+			alertQueue.enqueue('Identity not encrypted, set a password!', 'warning');
 			return identity;
 		} else {
-			alertQueue.enqueue('Identity not created, create an identity!');
+			alertQueue.enqueue('Identity not created, create an identity!', 'warning');
 		}
 	}
 	return null;
