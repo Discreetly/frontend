@@ -1,10 +1,25 @@
 import type { MessageI, ServerI } from 'discreetly-interfaces';
 import type { Invites, RoomI } from '$lib/types';
-
-import { get, post, postAuth } from './api';
+import { Prover } from 'idc-nullifier';
+import type { Identity } from '@semaphore-protocol/identity';
+import { get, getWithData, post, postAuth } from './api';
+import { getIdentity } from '$lib/utils';
+import { alertQueue } from '$lib/stores';
 
 export async function getIdentityRoomIds(server: string, idCommitment: string): Promise<string[]> {
-	return get([server, `api/rooms/${idCommitment}`]) as Promise<string[]>;
+	const prover = new Prover();
+	const id = getIdentity() as unknown as Identity;
+	if (id) {
+		// Proves you know the identity secret with a timestamp so this proof can't be replayed
+		const proof = prover.generateProof({
+			identity: id,
+			externalNullifier: BigInt(Date.now())
+		});
+		return getWithData([server, `api/rooms/${idCommitment}`], proof) as Promise<string[]>;
+	} else {
+		alertQueue.enqueue('No identity found when fetching rooms', 'error');
+		return [];
+	}
 }
 
 export async function getRoomById(server: string, roomId: string): Promise<RoomI> {
@@ -24,6 +39,10 @@ export async function getEthAddressRoomNames(
 
 export async function postInviteCode(serverUrl: string, data: { code: string; idc: string }) {
 	return post([serverUrl, 'join'], data);
+}
+
+export async function postTheWord(serverUrl: string, data: { proof: object; idc: string }) {
+	return post([serverUrl, 'theword'], data);
 }
 
 export async function getMessages(serverUrl: string, roomId: string) {

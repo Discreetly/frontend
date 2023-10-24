@@ -11,8 +11,9 @@ import type {
 	roomStoreI,
 	selectedRoomStoreI,
 	serverStoreI,
-	roomKeyStoreI,
-	keyStoreI
+	keyStoreI,
+	roomPassStoreI,
+	roomKeyStoreI
 } from '$lib/types';
 
 /* ------------------ Server State ------------------*/
@@ -64,7 +65,7 @@ export const pixelStore = sessionable({} as pixelStoreI, 'pixelmaps');
 /**
  * @description Stores the encrypted key for each room keyed by the roomId
  */
-export const roomKeyStore = encryptable({} as roomKeyStoreI, 'roomKey');
+export const roomPassStore = encryptable({} as roomPassStoreI, 'roomKey');
 
 /**
  * @description Derived Store: The messages of the currently selected room
@@ -95,6 +96,7 @@ export const saltStore = storable('', 'salt');
  * !WARN NEVER CHANGE THE STORE TYPE OR YOU RISK EXPOSING THE KEY
  */
 export const keyStore = writable({} as keyStoreI);
+export const roomKeyStore = writable({} as roomKeyStoreI);
 
 export const alertQueue = queueable([]);
 

@@ -7,7 +7,7 @@ import {
 	keyStore,
 	identityExists,
 	alertQueue,
-	roomKeyStore
+	roomPassStore
 } from '$lib/stores';
 import { encryptIdentity } from './identity';
 import type { IdentityStoreI } from '$lib/types';
@@ -70,7 +70,7 @@ export async function unlockPadlock(password: string) {
 			// encrypted stores, so we have to trigger it manually
 			// when the keys are derived
 			identityKeyStore.read();
-			roomKeyStore.read();
+			roomPassStore.read();
 		});
 	} else {
 		alertQueue.enqueue('Incorrect Password', 'warning');

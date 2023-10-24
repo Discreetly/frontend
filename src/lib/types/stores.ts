@@ -55,8 +55,12 @@ export interface consoleStoreI {
 	};
 }
 
-export interface roomKeyStoreI {
+export interface roomPassStoreI {
 	[key: string]: string;
+}
+
+export interface roomKeyStoreI {
+	[key: string]: CryptoKey;
 }
 
 export type keyStoreI = CryptoKey | undefined | null;

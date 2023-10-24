@@ -167,6 +167,7 @@
 			{messageId}
 			{messagesLeft}
 			{roomRateLimit}
+			{onlineMembers}
 		/>
 		{#if $configStore.experience == Experiences.Chat}
 			{#key $currentSelectedRoom.roomId}

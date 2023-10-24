@@ -53,3 +53,8 @@ export interface RoomFormData {
 	bandadaGroupId: string | undefined;
 	bandadaApiKey: string | undefined;
 }
+
+export interface SNARKProof {
+	proof: object;
+	publicSignals: string[];
+}

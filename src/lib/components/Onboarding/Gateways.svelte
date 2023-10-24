@@ -1,6 +1,7 @@
 <script lang="ts">
 	import EthereumGroupGateway from '$lib/components/Gateways/EthereumGroup.svelte';
 	import InviteCodeGateway from '$lib/components/Gateways/InviteCode.svelte';
+	import TheWord from '$lib/components/Gateways/TheWord.svelte';
 	import SelectServer from '$lib/components/Server/SelectServer.svelte';
 	import Card from '$lib/components/Utils/Card.svelte';
 	import { configStore, serverStore } from '$lib/stores';
@@ -44,5 +45,13 @@
 			>Are you a genesis validator? You can join using your Ethereum address.
 		</svelte:fragment>
 		<EthereumGroupGateway />
+	</Card>
+	<Card>
+		<svelte:fragment slot="header">The Word</svelte:fragment>
+		<svelte:fragment slot="description"
+			>Do you know <a class="link" href="https://github.com/Mach-34/the-word/">the word</a>? Prove
+			it.
+		</svelte:fragment>
+		<TheWord />
 	</Card>
 </div>
