@@ -15,7 +15,7 @@ export async function getIdentityRoomIds(server: string, idCommitment: string): 
 			identity: id,
 			externalNullifier: BigInt(Date.now())
 		});
-		return getWithData([server, `rooms/${idCommitment}`], proof) as Promise<string[]>;
+		return getWithData([server, `identity/${idCommitment}`], proof) as Promise<string[]>;
 	} else {
 		alertQueue.enqueue('No identity found when fetching rooms', 'error');
 		return [];
@@ -34,14 +34,14 @@ export async function getEthAddressRoomNames(
 	server: string,
 	ethAddress: string
 ): Promise<string[]> {
-	return get([server, `eth/group/${ethAddress}`]) as Promise<string[]>;
+	return get([server, `gateway/eth/group/${ethAddress}`]) as Promise<string[]>;
 }
 
 export async function postInviteCode(
 	serverUrl: string,
 	data: { code: string; idc: string }
 ): Promise<JoinResponseI> {
-	const response = (await post([serverUrl, 'join'], data)) as unknown as JoinResponseI;
+	const response = (await post([serverUrl, 'gateway/code/join'], data)) as unknown as JoinResponseI;
 	if (!response.status || !response.roomIds) {
 		throw new Error('Response does not match JoinResponseI interface');
 	}
@@ -52,7 +52,7 @@ export async function postEthereumSignature(
 	serverUrl: string,
 	data: { message: string; signature: string }
 ): Promise<JoinResponseI> {
-	const response = post([serverUrl, 'eth/message/sign'], data) as unknown as JoinResponseI;
+	const response = post([serverUrl, 'gateway/eth/join'], data) as unknown as JoinResponseI;
 	if (!response.status || !response.roomIds) {
 		throw new Error('Response does not match JoinResponseI interface');
 	}
@@ -63,7 +63,7 @@ export async function postTheWord(
 	serverUrl: string,
 	data: { proof: object; idc: string }
 ): Promise<JoinResponseI> {
-	const response = post([serverUrl, 'theword'], data) as unknown as JoinResponseI;
+	const response = post([serverUrl, 'gateway/theword/join'], data) as unknown as JoinResponseI;
 	if (!response.status || !response.roomIds) {
 		throw new Error('Response does not match JoinResponseI interface');
 	}
@@ -131,5 +131,5 @@ export async function createInvite(
 	} else {
 		data['all'] = true;
 	}
-	return postAuth([serverUrl, `addcode`], data, username, password) as Promise<Invites>;
+	return postAuth([serverUrl, `admin/addcode`], data, username, password) as Promise<Invites>;
 }
