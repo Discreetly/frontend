@@ -1,41 +1,7 @@
-import { getCommitment, updateRooms } from '$lib/utils/';
 import { postTheWord } from '$lib/services/server';
-import { selectedServer, configStore, alertQueue } from '$lib/stores';
-import { get } from 'svelte/store';
-import type { JoinResponseI, SNARKProof } from '$lib/types';
+import type { GatewayResultI, SNARKProof } from '$lib/types';
+import { handleGatewayRequest } from './gatewayProcessor';
 
-export async function theWordRequest(proof: SNARKProof) {
-	let acceptedRoomNames: string[] = [];
-	let err: string | undefined;
-	const server = get(selectedServer);
-	try {
-		const idc = getCommitment();
-		if (!idc) {
-			alertQueue.enqueue('No identity commitment found', 'warning');
-			throw new Error('No identity commitment found');
-		}
-		const result = (await postTheWord(server, {
-			proof,
-			idc
-		})) as JoinResponseI;
-		console.debug('INVITE CODE RESPONSE: ', result);
-		if (result.status == 'valid') {
-			console.debug('Updating new rooms');
-			acceptedRoomNames = await updateRooms(server, result.roomIds);
-			console.log(`Added to rooms: ${acceptedRoomNames}`);
-			configStore.update((store) => {
-				store['signUpStatus']['completedSignup'] = true;
-				store['signUpStatus']['inviteCode'] = '';
-				return store;
-			});
-			return { acceptedRoomNames, undefined };
-		} else if (result.status == 'already-added') {
-			return { acceptedRoomNames, err: 'You are already a member of this room.' };
-		} else {
-			err = 'Invalid invite code.';
-		}
-	} catch (e) {
-		err = String((e as Error).message);
-	}
-	return { acceptedRoomNames, err };
+export async function theWordRequest(proof: SNARKProof): Promise<GatewayResultI> {
+	return await handleGatewayRequest({ proof }, postTheWord);
 }

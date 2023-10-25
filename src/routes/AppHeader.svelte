@@ -62,6 +62,6 @@
 		>
 	{/if}
 	<svelte:fragment slot="trail">
-		<div class="hidden sm:inline text-primary-500">Alpha Version!</div>
+		<div class="hidden sm:inline text-primary-500">Alpha V2!</div>
 	</svelte:fragment>
 </AppBar>

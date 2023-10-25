@@ -1,5 +1,5 @@
 import type { MessageI, ServerI } from 'discreetly-interfaces';
-import type { Invites, RoomI } from '$lib/types';
+import type { Invites, JoinResponseI, RoomI } from '$lib/types';
 import { Prover } from 'idc-nullifier';
 import type { Identity } from '@semaphore-protocol/identity';
 import { get, getWithData, post, postAuth } from './api';
@@ -7,7 +7,7 @@ import { getIdentity } from '$lib/utils';
 import { alertQueue } from '$lib/stores';
 
 export async function getIdentityRoomIds(server: string, idCommitment: string): Promise<string[]> {
-	const prover = new Prover();
+	const prover = new Prover('idcNullifier/circuit.wasm', 'idcNullifier/circuit.zkey');
 	const id = getIdentity() as unknown as Identity;
 	if (id) {
 		// Proves you know the identity secret with a timestamp so this proof can't be replayed
@@ -15,7 +15,7 @@ export async function getIdentityRoomIds(server: string, idCommitment: string): 
 			identity: id,
 			externalNullifier: BigInt(Date.now())
 		});
-		return getWithData([server, `api/rooms/${idCommitment}`], proof) as Promise<string[]>;
+		return getWithData([server, `rooms/${idCommitment}`], proof) as Promise<string[]>;
 	} else {
 		alertQueue.enqueue('No identity found when fetching rooms', 'error');
 		return [];
@@ -23,7 +23,7 @@ export async function getIdentityRoomIds(server: string, idCommitment: string): 
 }
 
 export async function getRoomById(server: string, roomId: string): Promise<RoomI> {
-	return get([server, `api/room/${roomId}`]) as Promise<RoomI>;
+	return get([server, `room/${roomId}`]) as Promise<RoomI>;
 }
 
 export async function getServerData(serverUrl: string): Promise<ServerI> {
@@ -34,19 +34,44 @@ export async function getEthAddressRoomNames(
 	server: string,
 	ethAddress: string
 ): Promise<string[]> {
-	return get([server, `api/eth/group/${ethAddress}`]) as Promise<string[]>;
+	return get([server, `eth/group/${ethAddress}`]) as Promise<string[]>;
 }
 
-export async function postInviteCode(serverUrl: string, data: { code: string; idc: string }) {
-	return post([serverUrl, 'join'], data);
+export async function postInviteCode(
+	serverUrl: string,
+	data: { code: string; idc: string }
+): Promise<JoinResponseI> {
+	const response = (await post([serverUrl, 'join'], data)) as unknown as JoinResponseI;
+	if (!response.status || !response.roomIds) {
+		throw new Error('Response does not match JoinResponseI interface');
+	}
+	return response;
 }
 
-export async function postTheWord(serverUrl: string, data: { proof: object; idc: string }) {
-	return post([serverUrl, 'theword'], data);
+export async function postEthereumSignature(
+	serverUrl: string,
+	data: { message: string; signature: string }
+): Promise<JoinResponseI> {
+	const response = post([serverUrl, 'eth/message/sign'], data) as unknown as JoinResponseI;
+	if (!response.status || !response.roomIds) {
+		throw new Error('Response does not match JoinResponseI interface');
+	}
+	return response;
+}
+
+export async function postTheWord(
+	serverUrl: string,
+	data: { proof: object; idc: string }
+): Promise<JoinResponseI> {
+	const response = post([serverUrl, 'theword'], data) as unknown as JoinResponseI;
+	if (!response.status || !response.roomIds) {
+		throw new Error('Response does not match JoinResponseI interface');
+	}
+	return response;
 }
 
 export async function getMessages(serverUrl: string, roomId: string) {
-	return get([serverUrl, `api/room/${roomId}/messages`]) as Promise<MessageI[]>;
+	return get([serverUrl, `room/${roomId}/messages`]) as Promise<MessageI[]>;
 }
 
 export async function createRoom(
@@ -80,7 +105,7 @@ export async function createRoom(
 		bandadaApiKey,
 		roomId
 	};
-	return postAuth([serverUrl, `api/room/add`], data, username, password) as Promise<RoomI>;
+	return postAuth([serverUrl, `room/add`], data, username, password) as Promise<RoomI>;
 }
 
 interface CreateInviteData {
@@ -106,5 +131,5 @@ export async function createInvite(
 	} else {
 		data['all'] = true;
 	}
-	return postAuth([serverUrl, `api/addcode`], data, username, password) as Promise<Invites>;
+	return postAuth([serverUrl, `addcode`], data, username, password) as Promise<Invites>;
 }

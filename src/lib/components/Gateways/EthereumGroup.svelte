@@ -7,6 +7,7 @@
 	import type { Web3Modal } from '@web3modal/wagmi/dist/types/src/client';
 	import { alertQueue, configStore, selectedServer } from '$lib/stores';
 	import { getEthAddressRoomNames } from '$lib/services/server';
+	import { ethereumGroupRequest } from '$lib/gateways/ethereumGroup';
 
 	const projectId = 'fcc228af1d77425f1482f07a961fb32d';
 	let modal: Web3Modal;
@@ -32,8 +33,11 @@
 			const signature = await signMessage({
 				message: commitment
 			});
+			if (signature) {
+				const result = ethereumGroupRequest(commitment, signature);
+			}
 		} else {
-			alertQueue.enqueue('Error getting Identity', "error");
+			alertQueue.enqueue('Error getting Identity', 'error');
 		}
 	}
 

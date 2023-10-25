@@ -52,8 +52,11 @@
 						if (err) {
 							addConsoleMessage(err, 'error');
 							console.log(err.toString());
-						} else {
+						} else if (acceptedRoomNames) {
 							addConsoleMessage(`Added to: ${acceptedRoomNames.join(', ')}`);
+						} else {
+							console.error(acceptedRoomNames, err);
+							addConsoleMessage('Unknown Error', 'error');
 						}
 					})
 					.catch((err) => {

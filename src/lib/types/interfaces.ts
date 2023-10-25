@@ -36,6 +36,11 @@ export interface JoinResponseI {
 	roomIds: string[];
 }
 
+export interface GatewayResultI {
+	acceptedRoomNames: string[] | undefined;
+	err: string | undefined;
+}
+
 export interface SignUpStatusI {
 	completedSignup: boolean;
 	identityBackedUp: boolean;

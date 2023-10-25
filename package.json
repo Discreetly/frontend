@@ -72,7 +72,7 @@
 		"date-fns": "^2.30.0",
 		"discreetly-interfaces": "^0.1.39",
 		"dompurify": "^3.0.5",
-		"idc-nullifier": "^0.0.4",
+		"idc-nullifier": "^0.0.6",
 		"libsodium-wrappers": "^0.7.11",
 		"marked": "^7.0.5",
 		"node-emoji": "^2.1.0",
