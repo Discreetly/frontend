@@ -20,9 +20,11 @@ export function getEpochFromTimestamp(
 	let relative = '';
 	try {
 		relative = formatRelative(new Date(timestamp), new Date());
-	} catch (err) {
+	} catch (err: unknown) {
+		let message = 'Unknown Error';
+		if (err instanceof Error) message = err.message;
 		relative = 'Unknown';
-		console.debug(`${err.message}: ${epoch} * ${ratelimit} = ${timestamp}`);
+		console.debug(`${message}: ${epoch} * ${ratelimit} = ${timestamp}`);
 	}
 	return { epoch, relative, timestamp };
 }

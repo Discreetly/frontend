@@ -9,6 +9,8 @@ export interface ConfigurationI {
 	actionRepresentation?: ActionRepresentationE;
 	experience?: Experiences;
 	beta?: boolean;
+	numMessagesToSave: number;
+	hashedPwd: string | null | undefined;
 }
 
 export interface RoomI extends RI {
@@ -34,10 +36,30 @@ export interface JoinResponseI {
 	roomIds: string[];
 }
 
-// Keyed by roomId
+export interface GatewayResultI {
+	acceptedRoomNames: string[] | undefined;
+	err: string | undefined;
+}
 
 export interface SignUpStatusI {
-	inviteAccepted: boolean;
+	completedSignup: boolean;
 	identityBackedUp: boolean;
 	inviteCode?: string;
+}
+
+export interface RoomFormData {
+	roomName: string;
+	membershipType: string;
+	rateLimit: number;
+	messageLimit: number;
+	claimCodes: number;
+	roomType: string;
+	bandadaAddress: string | undefined;
+	bandadaGroupId: string | undefined;
+	bandadaApiKey: string | undefined;
+}
+
+export interface SNARKProof {
+	proof: object;
+	publicSignals: string[];
 }

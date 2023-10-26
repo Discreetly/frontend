@@ -1,9 +1,10 @@
 <script lang="ts">
-	import AP from '$lib/components/AP.svelte';
-	import Clock from '$lib/components/Clock.svelte';
+	import AP from '$lib/components/ActionPoints/AP.svelte';
+	import Clock from '$lib/components/Utils/Clock.svelte';
 	import { currentSelectedRoom, configStore } from '$lib/stores';
 	import { ProgressBar } from '@skeletonlabs/skeleton';
 	import FullCircle from 'svelte-material-icons/Circle.svelte';
+	import Person from 'svelte-material-icons/Account.svelte';
 	import ExperienceMenu from './ExperienceMenu.svelte';
 	export let connected: boolean;
 	export let currentEpoch: number;
@@ -12,7 +13,10 @@
 	export let roomRateLimit: number;
 	export let messagesLeft: () => number;
 	export let messageId: number;
+	export let onlineMembers: string;
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
+	$: encrypted = $currentSelectedRoom?.encrypted ?? false;
+	$: ephemeral = $currentSelectedRoom?.ephemeral ?? false;
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 	$: epochLengthSeconds = roomRateLimit / 1000;
 	$: timeToNextEpoch = epochLengthSeconds - +timeLeftInEpoch;
@@ -31,11 +35,29 @@
 				{/if}
 			</span>
 			<h2 class="h5 text-secondary-800-100-token" title={roomId}>
+				{#if encrypted}
+					🔒
+				{/if}
+				{#if ephemeral}
+					⏳
+				{/if}
 				{roomName}
 			</h2>
 			<div class="hidden sm:block ms-2 text-xs font-mono self-center">
 				[{timeToNextEpoch.toFixed(1)}/{epochLengthSeconds}s]
 			</div>
+		</div>
+		<div class="flex flex-row">
+			{#if !connected}
+				<span
+					class:connected
+					class="flex flex-row align-middle text-sm font-mono text-secondary-300-600-token"
+					title="Online Users"
+				>
+					<Person />
+					{onlineMembers}
+				</span>
+			{/if}
 		</div>
 		<div
 			class="flex flex-row place-content-center"

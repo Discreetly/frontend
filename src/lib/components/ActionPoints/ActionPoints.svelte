@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Ratings } from '@skeletonlabs/skeleton';
 	import FullCircle from 'svelte-material-icons/Circle.svelte';
 	import CircleEmpty from 'svelte-material-icons/CircleOutline.svelte';
 
@@ -9,11 +10,11 @@
 	$: emptycircles = maxHealth - health;
 </script>
 
-<div class="flex flex-row ms-2 place-items-center">
-	{#each { length: fullcircles } as _, i}
-		<FullCircle class="w-4 h-4 text-green-500" />
-	{/each}
-	{#each { length: emptycircles } as _, i}
+<Ratings value={health} max={maxHealth} spacing="space-x-0">
+	<svelte:fragment slot="empty">
 		<CircleEmpty class="w-4 h-4 text-surface-600-300-token" />
-	{/each}
-</div>
+	</svelte:fragment>
+	<svelte:fragment slot="full">
+		<FullCircle class="w-4 h-4 text-green-500" />
+	</svelte:fragment>
+</Ratings>

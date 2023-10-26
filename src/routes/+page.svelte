@@ -1,26 +1,13 @@
 <script lang="ts">
-	import Button from '$lib/components/button.svelte';
-	import { identityStore } from '$lib/stores';
-	$: identityExists = !!$identityStore._commitment;
+	import Welcome from '$lib/components/Onboarding/Welcome.svelte';
+
+	console.info(
+		'I see you are checking out the logs, let us know what you think on our discord: https://discord.gg/brJQ36KVxk'
+	);
 </script>
 
 <div class="mx-5 lg:mx-auto mt-10 max-w-[80ch]">
 	<h2 class="h2 mb-5">Welcome to Discreetly!</h2>
-	{#if !identityExists}
-		<p class="card py-2 px-4 md:px-5 mb-3">
-			If you have an <code class="code">invite code</code> head over to the <Button
-				link="/signup"
-				cls="variant-ghost-primary btn-sm m-2 sm:m-3">Sign Up</Button
-			>
-		</p>
-		<p class="card py-2 px-4 md:px-5">
-			Or if you want to request an invite code, join our <Button
-				link="https://discord.gg/brJQ36KVxk"
-				cls="variant-ghost-tertiary btn-sm m-2 sm:m-3">Discord</Button
-			>
-		</p>
-	{:else}
-		<Button link="/chat" cls="variant-ghost-success">Go Chat</Button>
-	{/if}
+	<Welcome />
 	<slot />
 </div>

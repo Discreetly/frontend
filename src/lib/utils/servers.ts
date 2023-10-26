@@ -1,5 +1,5 @@
 import { get, type Writable } from 'svelte/store';
-import type { serverStoreI } from '../stores';
+import type { serverStoreI } from '../types/stores';
 import { serverStore, roomsStore, selectedServer } from '../stores';
 import { getServerData } from '$lib/services/server';
 import type { RoomI } from '$lib/types';
@@ -19,7 +19,7 @@ export function getServerRooms(url: string, store: Writable<serverStoreI> = serv
 	if (!roomIds) {
 		roomIds = [];
 	}
-	return roomIds.map((roomId) => {
+	return roomIds.map((roomId: string) => {
 		return get(roomsStore)[roomId];
 	}) as RoomI[];
 }

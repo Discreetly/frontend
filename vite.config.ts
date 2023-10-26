@@ -1,17 +1,10 @@
+import { purgeCss } from 'vite-plugin-tailwind-purgecss';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
-import sizes from 'rollup-plugin-sizes';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-	plugins: [sveltekit()],
-	build: {
-		minify: 'terser',
-		cssMinify: 'lightningcss',
-		rollupOptions: {
-			plugins: [sizes()],
-			output: {
-				compact: true
-			}
-		}
+	plugins: [sveltekit(), purgeCss()],
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}']
 	}
 });

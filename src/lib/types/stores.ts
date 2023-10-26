@@ -1,5 +1,7 @@
 import type { ServerI, MessageI, HexColor } from 'discreetly-interfaces';
 import type { RoomI } from './interfaces';
+import type { Identity } from '@semaphore-protocol/identity';
+import type { Writable } from 'svelte/store';
 
 // Keyed by server URL
 export interface serverStoreI {
@@ -38,4 +40,31 @@ export interface rateLimitStoreI {
 		lastEpoch: number;
 		messagesSent: number;
 	};
+}
+
+export interface consoleMessageI {
+	message: string;
+	type: 'primary' | 'secondary' | 'tertiary' | 'success' | 'warning' | 'error';
+	response?: string;
+}
+
+export interface consoleStoreI {
+	messages: consoleMessageI[];
+	settings: {
+		[key: string]: boolean;
+	};
+}
+
+export interface roomPassStoreI {
+	[key: string]: string;
+}
+
+export interface roomKeyStoreI {
+	[key: string]: CryptoKey;
+}
+
+export type keyStoreI = CryptoKey | undefined | null;
+
+export interface EncryptableT<Type> extends Writable<Type> {
+	read: () => void;
 }

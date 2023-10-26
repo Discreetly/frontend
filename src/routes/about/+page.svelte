@@ -1,11 +1,13 @@
 <script>
-	import Button from '$lib/components/button.svelte';
-	import Demo from '$lib/components/Demo.svelte';
+	import Demo from '$lib/components/Onboarding/Demo.svelte';
+	import Introduction from '$lib/components/Onboarding/Introduction.svelte';
 </script>
 
 <div class="mx-auto mt-10 max-w-[80ch]">
 	<img src="/logo-text.png" alt="discreetly" class="max-h-20 mb-5" />
 	<h5 class="italic mb-4 mt-1">A new take on group chats.</h5>
+
+	<Introduction />
 	<p class="text-justify my-3">
 		This feels like a mostly familiar chat application, except there aren't user names. Under the
 		hood, there is no "login", the server doesn't know who you are, you are anonymous. You're
@@ -38,7 +40,13 @@
 			>RLN</a
 		>.
 	</p>
-	<a href="https://discord.gg/brJQ36KVxk" class="btn variant-ghost-secondary">Join our Discord</a>
+	<div class="flex gap-3 justify-between my-6">
+		<a href="https://discord.gg/brJQ36KVxk" class="btn variant-ghost-secondary">Join our Discord</a>
+		<a
+			href="https://discord.com/api/oauth2/authorize?client_id=1142162852132700200&permissions=2147483648&scope=bot"
+			class="btn variant-ghost-primary">Add our Discord Bot to Your Server Today!</a
+		>
+	</div>
 	<div>
 		<Demo />
 	</div>
