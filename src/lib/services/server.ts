@@ -33,8 +33,8 @@ export async function getServerData(serverUrl: string): Promise<ServerI> {
 export async function getEthAddressRoomNames(
 	server: string,
 	ethAddress: string
-): Promise<string[]> {
-	return get([server, `gateway/eth/group/${ethAddress}`]) as Promise<string[]>;
+): Promise<{ name: string }[]> {
+	return get([server, `gateway/eth/group/${ethAddress}`]) as Promise<{ name: string }[]>;
 }
 
 export async function postInviteCode(

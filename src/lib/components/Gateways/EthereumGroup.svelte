@@ -15,7 +15,7 @@
 	let btnEl: HTMLElement;
 	let address: string = '';
 	let loadingRooms: boolean = false;
-	let groups: string[] = [];
+	let groups: { name: string }[] = [];
 	let isConnected = false;
 	const chains = [mainnet, arbitrum, optimism, base, polygon];
 	const metadata = {
@@ -37,7 +37,7 @@
 				const result = ethereumGroupRequest(commitment, signature);
 			}
 		} else {
-			alertQueue.enqueue('Error getting Identity', 'error');
+			alertQueue.enqueue("Unable to sign Identity Commitment, can't access identity", 'warning');
 		}
 	}
 
@@ -59,6 +59,7 @@
 				loadingRooms = true;
 				getEthAddressRoomNames($selectedServer, address)
 					.then((groupNames) => {
+						console.log(groupNames);
 						loadingRooms = false;
 						groups = groupNames;
 					})
@@ -76,7 +77,7 @@
 
 <div class="flex flex-col gap-3 justify-between">
 	<div>
-		<h3 class="h4 mb-2">Step 1: Connect your wallet</h3>
+		<h3 class="h4 mb-2"><span class="text-success-500">Step 1:</span> Connect your wallet</h3>
 		<button bind:this={btnEl} class="btn variant-outline-tertiary">Connect</button>
 	</div>
 	{#if isConnected}
@@ -87,12 +88,13 @@
 			<p>You are eligible for the following Ethereum Groups:</p>
 			<ul>
 				{#each groups as group}
-					<li>{group}</li>
+					<ins class="ins border-y border-success-800">{group.name}</ins>
 				{/each}
 			</ul>
 			<div>
-				<h3 class="h4 mb-2">
-					Step 2: Sign your Identity Commitment to prove ownership of this address
+				<h3 class="h4 my-2">
+					<span class="text-success-500">Step 2:</span> Sign your Identity Commitment to prove ownership
+					of this address
 				</h3>
 				<button on:click={proveOwnership} id="btn" class="btn variant-outline-success">Sign</button>
 			</div>

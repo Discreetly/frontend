@@ -59,20 +59,28 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 }
 
 export function getIdentity(): IdentityStoreI | null {
-	const decryptedIdentity = get(identityKeyStore) as unknown as IdentityStoreI;
-
-	if (decryptedIdentity._commitment) {
-		return decryptedIdentity;
-	} else {
+	const idExists = get(identityExists);
+	if (idExists === 'safe') {
+		return get(identityKeyStore) as unknown as IdentityStoreI;
+	} else if (idExists === 'unsafe') {
 		const identity = get(identityStore);
 		if (identity._commitment?.length > 0) {
 			alertQueue.enqueue('Identity not encrypted, set a password!', 'warning');
 			return identity;
 		} else {
-			alertQueue.enqueue('Identity not created, create an identity!', 'warning');
+			alertQueue.enqueue(
+				'Problem retrieving identity, please unlock and restore your identity',
+				'warning'
+			);
+			return null;
 		}
+	} else if (idExists === 'encrypted') {
+		alertQueue.enqueue('Unlock Identity!', 'error');
+		return null;
+	} else {
+		alertQueue.enqueue('Identity not created, create an identity!', 'warning');
+		return null;
 	}
-	return null;
 }
 
 export function getCommitment(): string | null {
