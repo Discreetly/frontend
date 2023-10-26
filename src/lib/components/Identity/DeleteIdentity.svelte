@@ -1,6 +1,14 @@
 <script lang="ts">
 	import { configDefaults } from '$lib/defaults';
-	import { configStore, identityStore, messageStore, roomsStore, selectedRoom } from '$lib/stores';
+	import {
+		configStore,
+		identityStore,
+		identityKeyStore,
+		messageStore,
+		roomsStore,
+		selectedRoom,
+		saltStore
+	} from '$lib/stores';
 	import type { IdentityStoreI } from '$lib/types';
 	import { onMount } from 'svelte';
 
@@ -10,6 +18,8 @@
 	function deleteIdentity() {
 		console.warn('DELETING IDENTITY');
 		$identityStore = {} as IdentityStoreI;
+		$identityKeyStore = {} as IdentityStoreI;
+		$saltStore = '';
 		$configStore = configDefaults;
 		$roomsStore = {};
 		$selectedRoom = {};
