@@ -38,7 +38,7 @@ export interface JoinResponseI {
 
 export interface GatewayResultI {
 	acceptedRoomNames: string[] | undefined;
-	err: string | undefined;
+	err: { status: string; message?: string } | undefined;
 }
 
 export interface SignUpStatusI {

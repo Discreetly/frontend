@@ -1,4 +1,4 @@
-import { alertQueue, configStore, selectedServer } from '$lib/stores';
+import { alertQueue, configStore, selectedServer, identityExists } from '$lib/stores';
 import type { JoinResponseI, GatewayResultI } from '$lib/types';
 import { getCommitment, updateRooms } from '$lib/utils';
 import { get } from 'svelte/store';
@@ -8,10 +8,21 @@ export async function handleGatewayRequest<T>(
 	apiFunction: (server: string, data: T & { idc: string }) => Promise<JoinResponseI>
 ): Promise<GatewayResultI> {
 	const server = get(selectedServer);
+	const idcExists = get(identityExists);
+
+	if (idcExists === 'encrypted') {
+		return {
+			acceptedRoomNames: undefined,
+			err: { status: 'unlock', message: 'Please unlock your identity' }
+		};
+	}
+
 	const idc = getCommitment();
 	if (!idc) {
-		alertQueue.enqueue('No identity commitment found', 'warning');
-		throw new Error('No identity commitment found');
+		return {
+			acceptedRoomNames: undefined,
+			err: { status: 'no-idc', message: 'No identity commitment found' }
+		};
 	}
 
 	try {
@@ -19,11 +30,10 @@ export async function handleGatewayRequest<T>(
 		console.debug('GATEWAY RESPONSE: ', result);
 
 		let acceptedRoomNames: string[] = [];
-		let err: string | undefined;
+		let err: GatewayResultI['err'] = undefined;
 
 		switch (result.status) {
 			case 'valid':
-				console.debug('Updating new rooms');
 				acceptedRoomNames = await updateRooms(server, result.roomIds);
 				configStore.update((store) => {
 					store['signUpStatus']['completedSignup'] = true;
@@ -31,16 +41,19 @@ export async function handleGatewayRequest<T>(
 				});
 				break;
 			case 'already-added':
-				err = 'You are already a member of this room.';
+				err = { status: 'already-added', message: 'You are already a member of this room.' };
 				break;
 			default:
-				err = 'Invalid gateway input.';
+				err = { status: 'err', message: 'Invalid gateway input.' };
 				break;
 		}
 
 		return { acceptedRoomNames, err };
 	} catch (e) {
 		alertQueue.enqueue(`Error joining room: ${e}`, 'error');
-		return { acceptedRoomNames: undefined, err: String((e as Error).message) };
+		return {
+			acceptedRoomNames: undefined,
+			err: { status: 'err', message: String((e as Error).message) }
+		};
 	}
 }

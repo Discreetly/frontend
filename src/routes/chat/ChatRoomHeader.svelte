@@ -63,7 +63,7 @@
 			class="flex flex-row place-content-center"
 			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds`}
 		>
-			{#if $configStore.beta}<ExperienceMenu />{/if}
+			{#if $configStore.beta === true}<ExperienceMenu />{/if}
 			<AP health={messagesLeft()} maxHealth={userMessageLimit} />
 			<div class="block sm:hidden">
 				<Clock time={timeToNextEpoch} maxTime={epochLengthSeconds} />

@@ -13,8 +13,12 @@
 		loading = true;
 		inviteCode(code)
 			.then(({ acceptedRoomNames, err }) => {
-				if (err) {
-					alertQueue.enqueue(err, 'error');
+				if (err && err.status === 'already-added') {
+					alertQueue.enqueue('Already added to room', 'error');
+				} else if (err && err.status === 'unlock') {
+					alertQueue.enqueue(`Please Unlock your identity`, 'error');
+				} else if (err && err.status === 'no-idc') {
+					alertQueue.enqueue(`Please Create an Identity`, 'error');
 				} else {
 					alertQueue.enqueue(`Accepted into ${acceptedRoomNames}`, 'success');
 					acceptedRoomNames = acceptedRoomNames;
@@ -22,7 +26,7 @@
 			})
 			.catch((err) => {
 				console.log(err);
-				alertQueue.enqueue(err, 'error');
+				alertQueue.enqueue(`Unexpected error: ${err.message}`, 'error');
 			})
 			.finally(() => {
 				loading = false;
