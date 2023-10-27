@@ -51,8 +51,25 @@
 		});
 		setInterval(() => {
 			const toast = alertQueue.dequeue();
+			let bg = '';
 			if (toast) {
-				const bg = `variant-filled-${toast.type}`;
+				switch (toast.type) {
+					case 'error':
+						bg = 'variant-filled-error';
+						break;
+					case 'warning':
+						bg = 'variant-filled-warning';
+						break;
+					case 'success':
+						bg = 'variant-filled-success';
+						break;
+					case 'info':
+						bg = 'variant-filled-info';
+						break;
+					default:
+						bg = 'variant-filled-primary';
+						break;
+				}
 				toastStore.trigger({
 					message: toast.data,
 					background: bg,
