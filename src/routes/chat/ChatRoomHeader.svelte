@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<div class="flex flex-row">
-			{#if !connected}
+			{#if connected}
 				<span
 					class:connected
 					class="flex flex-row align-middle text-sm font-mono text-secondary-300-600-token"
