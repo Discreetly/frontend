@@ -42,13 +42,9 @@ function updateRoomStore(rooms: RoomI[], serverURL: string = get(selectedServer)
 }
 
 async function getRoomIdsIfEmpty(server: string, roomIds: string[]): Promise<string[]> {
-	if (roomIds.length < 1) {
-		const idc = getCommitment();
-		if (!idc) {
-			alertQueue.enqueue('No identity commitment found', 'warning');
-			throw new Error('No identity commitment found');
-		}
-		return await getRoomIdsByIdentityCommitment(server, idc);
+	const idc = getCommitment();
+	if (roomIds.length < 1 && idc) {
+		return await getRoomIdsByIdentityCommitment(server);
 	}
 	return roomIds;
 }
@@ -70,18 +66,25 @@ export async function updateRooms(
 	server: string = get(selectedServer),
 	roomIds: string[] = []
 ): Promise<string[]> {
+	console.debug('Updating Rooms');
 	roomIds = await getRoomIdsIfEmpty(server, roomIds);
-	const rooms = await fetchRoomsByIds(server, roomIds);
-	const acceptedRoomNames = extractRoomNames(rooms);
+	console.log(roomIds);
+	if (roomIds.length > 0) {
+		const rooms = await fetchRoomsByIds(server, roomIds);
+		const acceptedRoomNames = extractRoomNames(rooms);
 
-	updateRoomStore(rooms, server);
-	if (get(selectedRoom)[server] === undefined) {
-		selectedRoom.update((store) => {
-			store[server] = roomIds[0];
-			return store;
-		});
+		updateRoomStore(rooms, server);
+		if (get(selectedRoom)[server] === undefined) {
+			selectedRoom.update((store) => {
+				store[server] = roomIds[0];
+				return store;
+			});
+		}
+		return acceptedRoomNames;
+	} else {
+		alertQueue.enqueue('No rooms found', 'warning');
+		return [];
 	}
-	return acceptedRoomNames;
 }
 
 export function updateMessages(server: string, roomId: string) {

@@ -48,15 +48,9 @@
 			case '/join':
 				addConsoleMessage(`Attempting to join via invite code ${args[0]}`, 'warning');
 				inviteCode(args[0])
-					.then(({ acceptedRoomNames, err }) => {
-						if (err) {
-							addConsoleMessage(err, 'error');
-							console.log(err.toString());
-						} else if (acceptedRoomNames) {
+					.then((acceptedRoomNames) => {
+						if (acceptedRoomNames) {
 							addConsoleMessage(`Added to: ${acceptedRoomNames.join(', ')}`);
-						} else {
-							console.error(acceptedRoomNames, err);
-							addConsoleMessage('Unknown Error', 'error');
 						}
 					})
 					.catch((err) => {

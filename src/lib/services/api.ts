@@ -50,27 +50,6 @@ export async function get(urlParts: string[] | string): Promise<object> {
 /**
  * @description - makes a get request to the api
  * @param {string[] | string} urlParts - the url parts to be joined to form the url
- * @returns {object} - the response from the api
- * @throws {Error} - if the request fails
- */
-export async function getWithData(urlParts: string[] | string, data: object): Promise<object> {
-	const url = cleanURL(urlParts);
-	const res = await fetch(url, {
-		method: 'GET',
-		headers: {
-			'Access-Control-Allow-Origin': '*'
-		},
-		body: JSON.stringify(data)
-	});
-	if (res.ok) {
-		return res.json();
-	}
-	throw new Error(`Failed to fetch ${url}`);
-}
-
-/**
- * @description - makes a get request to the api
- * @param {string[] | string} urlParts - the url parts to be joined to form the url
  * @param {object} data - the data to be sent to the api
  * @returns {object} - the response from the api
  * @throws {Error} - if the request fails

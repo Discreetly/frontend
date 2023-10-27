@@ -58,28 +58,37 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 	}
 }
 
+/**
+ * Retrieves the identity based on its state.
+ *
+ * @returns {IdentityStoreI | null} - Returns the identity if exists, otherwise returns null.
+ */
 export function getIdentity(): IdentityStoreI | null {
 	const idExists = get(identityExists);
-	if (idExists === 'safe') {
-		return get(identityKeyStore) as unknown as IdentityStoreI;
-	} else if (idExists === 'unsafe') {
-		const identity = get(identityStore);
-		if (identity._commitment?.length > 0) {
-			alertQueue.enqueue('Identity not encrypted, set a password!', 'warning');
-			return identity;
-		} else {
-			alertQueue.enqueue(
-				'Problem retrieving identity, please unlock and restore your identity',
-				'warning'
-			);
+	let identity;
+	switch (idExists) {
+		case 'safe':
+			return get(identityKeyStore) as unknown as IdentityStoreI;
+
+		case 'unsafe':
+			identity = get(identityStore);
+			if (identity._commitment?.length > 0) {
+				alertQueue.enqueue('Identity not encrypted, set a password!', 'warning');
+				return identity;
+			} else {
+				alertQueue.enqueue(
+					'Problem retrieving identity, please unlock and restore your identity',
+					'warning'
+				);
+				return null;
+			}
+
+		case 'encrypted':
+			alertQueue.enqueue('Unlock Identity!', 'error');
 			return null;
-		}
-	} else if (idExists === 'encrypted') {
-		alertQueue.enqueue('Unlock Identity!', 'error');
-		return null;
-	} else {
-		alertQueue.enqueue('Identity not created, create an identity!', 'warning');
-		return null;
+
+		default:
+			return null;
 	}
 }
 

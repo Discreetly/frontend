@@ -19,6 +19,7 @@
 	initializeStores();
 
 	const toastStore = getToastStore();
+	let loaded = false;
 
 	const drawerStore = getDrawerStore();
 	// Hack to get BigInt <-> JSON compatibility
@@ -61,6 +62,10 @@
 			}
 		}, 500);
 	});
+
+	onMount(() => {
+		loaded = true;
+	});
 </script>
 
 <Modal />
@@ -82,9 +87,9 @@
 		</slot>
 	</main>
 	<div id="footer">
-		<AppFooter />
+		<AppFooter {loaded} />
 	</div>
-	<div id="sidebar" class="hidden lg:block"><Sidebar /></div>
+	<div id="sidebar" class="hidden lg:block"><Sidebar {loaded} /></div>
 </div>
 
 <style>

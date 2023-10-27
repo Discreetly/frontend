@@ -14,11 +14,9 @@
 	{#if !$identityExists}
 		<div class="mb-3 sm:mb-8 text-center">
 			<span class="text-base italic px-4 py-2 font-mono badge variant-outline-error"
-				>Identity Not Found!</span
-			>
+				>Identity Not Found!
+			</span>
 		</div>
-	{/if}
-	{#if !$identityExists}
 		<button
 			on:click={() => createIdentity()}
 			class="btn variant-ghost-primary font-medium"

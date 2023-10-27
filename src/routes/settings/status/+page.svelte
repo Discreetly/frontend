@@ -19,6 +19,16 @@
 	function triggerAlert() {
 		alertQueue.enqueue('TEST', t as any);
 	}
+
+	$: identityStoreEntries = Object.entries($identityStore).map(([key, value]) => ({
+		key,
+		value: JSON.stringify(value)
+	}));
+
+	$: identityKeyStoreEntries = Object.entries($identityKeyStore).map(([key, value]) => ({
+		key,
+		value: JSON.stringify(value)
+	}));
 </script>
 
 <div class="p-4">
@@ -34,11 +44,12 @@
 		<div>
 			<h2 class="h3">Identity Data</h2>
 			{#if $identityExists == 'safe' || $identityExists == 'unsafe'}
-				{#each Object.keys($identityStore) as key}
-					<div>Unprotected {key}: {JSON.stringify($identityStore[key])}</div>
+				{#each identityStoreEntries as { key, value }}
+					<div>Unprotected {key}: {value}</div>
 				{/each}
-				{#each Object.keys($identityKeyStore) as key}
-					<div>Protected {key}: {JSON.stringify($identityKeyStore[key])}</div>
+
+				{#each identityKeyStoreEntries as { key, value }}
+					<div>Protected {key}: {value}</div>
 				{/each}
 			{:else if $identityExists == 'encrypted'}
 				<div>Identity Exists but is encrypted</div>

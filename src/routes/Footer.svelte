@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { passwordSet, configStore, keyStore, alertQueue } from '$lib/stores';
+	import { passwordSet, keyStore } from '$lib/stores';
 	import {
 		getModalStore,
 		TabAnchor,
@@ -10,8 +10,6 @@
 		type ModalSettings,
 		getDrawerStore
 	} from '@skeletonlabs/skeleton';
-	import { deriveKey, hashPassword } from '$lib/crypto/crypto';
-	import { onMount } from 'svelte';
 
 	import Chat from 'svelte-material-icons/Chat.svelte';
 	import Settings from 'svelte-material-icons/TuneVariant.svelte';
@@ -25,9 +23,10 @@
 	import Door from 'svelte-material-icons/Door.svelte';
 	import { unlockPadlock } from '$lib/utils';
 
+	export let loaded: boolean;
+
 	const modalStore = getModalStore();
 	const drawerStore = getDrawerStore();
-
 	// Open the drawer:
 	function drawerOpen(): void {
 		drawerStore.open({ id: 'roomselect' });
@@ -113,30 +112,31 @@
 			<span>Select Room</span>
 		</TabAnchor>
 	{/if}
-
-	{#if $passwordSet}
-		{#if $keyStore instanceof CryptoKey}
-			<TabAnchor on:click={lock} title="Unlocked, click to lock">
-				<svelte:fragment slot="lead">
-					<LockOpen class="rail-icon text-warning-300-600-token" />
-				</svelte:fragment>
-				<span>Lock</span>
-			</TabAnchor>
+	{#if loaded}
+		{#if $passwordSet}
+			{#if $keyStore instanceof CryptoKey}
+				<TabAnchor on:click={lock} title="Unlocked, click to lock">
+					<svelte:fragment slot="lead">
+						<LockOpen class="rail-icon text-warning-300-600-token" />
+					</svelte:fragment>
+					<span>Lock</span>
+				</TabAnchor>
+			{:else}
+				<TabAnchor on:click={unlock} title="Locked">
+					<svelte:fragment slot="lead">
+						<Lock class="rail-icon text-success-500" />
+					</svelte:fragment>
+					<span>Unlock</span>
+				</TabAnchor>
+			{/if}
 		{:else}
-			<TabAnchor on:click={unlock} title="Locked">
+			<TabAnchor href="/settings/security" title="Password not set">
 				<svelte:fragment slot="lead">
-					<Lock class="rail-icon text-success-500" />
+					<NoPassword class="rail-icon text-error-500" />
 				</svelte:fragment>
-				<span>Unlock</span>
+				<span>Secure</span>
 			</TabAnchor>
 		{/if}
-	{:else}
-		<TabAnchor href="/settings/security" title="Password not set">
-			<svelte:fragment slot="lead">
-				<NoPassword class="rail-icon text-error-500" />
-			</svelte:fragment>
-			<span>Secure</span>
-		</TabAnchor>
 	{/if}
 	<a
 		class="tab-anchor text-center cursor-pointer transition-colors duration-100 flex-1 lg:flex-none px-4 py-2 rounded-tl-container-token rounded-tr-container-token hover:variant-soft-primary"

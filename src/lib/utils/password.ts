@@ -11,6 +11,7 @@ import {
 } from '$lib/stores';
 import { encryptIdentity } from './identity';
 import type { IdentityStoreI } from '$lib/types';
+import { updateRooms } from '.';
 
 export async function setPassword(password: string): Promise<'success' | string> {
 	const hashedPassword = await hashPassword(password);
@@ -71,6 +72,7 @@ export async function unlockPadlock(password: string) {
 			// when the keys are derived
 			identityKeyStore.read();
 			roomPassStore.read();
+			updateRooms();
 		});
 	} else {
 		alertQueue.enqueue('Incorrect Password', 'warning');

@@ -34,15 +34,8 @@
 				message: commitment
 			});
 			if (signature) {
-				ethereumGroupRequest(commitment, signature).then(({ acceptedRoomNames, err }) => {
-					if (err && err.status === 'already-added') {
-						alertQueue.enqueue('Already added to room', 'error');
-					} else if (err && err.status === 'unlock') {
-						alertQueue.enqueue(`Please Unlock your identity`, 'error');
-					} else if (err && err.status === 'no-idc') {
-						alertQueue.enqueue(`Please Create an Identity`, 'error');
-					} else {
-						alertQueue.enqueue(`Accepted into ${acceptedRoomNames}`, 'success');
+				ethereumGroupRequest(commitment, signature).then((acceptedRoomNames) => {
+					if (acceptedRoomNames) {
 						acceptedRoomNames = acceptedRoomNames;
 					}
 				});

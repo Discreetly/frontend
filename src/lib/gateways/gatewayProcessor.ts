@@ -1,5 +1,5 @@
 import { alertQueue, configStore, selectedServer, identityExists } from '$lib/stores';
-import type { JoinResponseI, GatewayResultI } from '$lib/types';
+import type { GatewayResultI, JoinResponseI } from '$lib/types';
 import { getCommitment, updateRooms } from '$lib/utils';
 import { get } from 'svelte/store';
 
@@ -11,26 +11,21 @@ export async function handleGatewayRequest<T>(
 	const idcExists = get(identityExists);
 
 	if (idcExists === 'encrypted') {
-		return {
-			acceptedRoomNames: undefined,
-			err: { status: 'unlock', message: 'Please unlock your identity' }
-		};
+		alertQueue.enqueue(`Please Unlock your identity`, 'error');
+		return null;
 	}
 
 	const idc = getCommitment();
 	if (!idc) {
-		return {
-			acceptedRoomNames: undefined,
-			err: { status: 'no-idc', message: 'No identity commitment found' }
-		};
+		alertQueue.enqueue(`Please Create an Identity`, 'error');
+		return null;
 	}
 
 	try {
 		const result = (await apiFunction(server, { ...data, idc })) as JoinResponseI;
 		console.debug('GATEWAY RESPONSE: ', result);
 
-		let acceptedRoomNames: string[] = [];
-		let err: GatewayResultI['err'] = undefined;
+		let acceptedRoomNames: string[];
 
 		switch (result.status) {
 			case 'valid':
@@ -39,21 +34,17 @@ export async function handleGatewayRequest<T>(
 					store['signUpStatus']['completedSignup'] = true;
 					return store;
 				});
-				break;
+				alertQueue.enqueue(`Accepted into ${acceptedRoomNames}`, 'success');
+				return acceptedRoomNames;
 			case 'already-added':
-				err = { status: 'already-added', message: 'You are already a member of this room.' };
+				alertQueue.enqueue('Already added to room', 'error');
 				break;
 			default:
-				err = { status: 'err', message: 'Invalid gateway input.' };
 				break;
 		}
-
-		return { acceptedRoomNames, err };
+		return null;
 	} catch (e) {
 		alertQueue.enqueue(`Error joining room: ${e}`, 'error');
-		return {
-			acceptedRoomNames: undefined,
-			err: { status: 'err', message: String((e as Error).message) }
-		};
+		return null;
 	}
 }

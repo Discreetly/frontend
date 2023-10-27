@@ -1,25 +1,42 @@
 import type { MessageI, ServerI } from 'discreetly-interfaces';
-import type { Invites, JoinResponseI, RoomI } from '$lib/types';
+import type { IdentityStoreI, Invites, JoinResponseI, RoomI } from '$lib/types';
 import { Prover } from 'idc-nullifier';
 import type { Identity } from '@semaphore-protocol/identity';
-import { get, getWithData, post, postAuth } from './api';
+import { get, post, postAuth } from './api';
 import { getIdentity } from '$lib/utils';
 import { alertQueue } from '$lib/stores';
 
-export async function getIdentityRoomIds(server: string, idCommitment: string): Promise<string[]> {
-	const prover = new Prover('idcNullifier/circuit.wasm', 'idcNullifier/circuit.zkey');
-	const id = getIdentity() as unknown as Identity;
+interface IdentityData extends IdentityStoreI {
+	trapdoor: string;
+	nullifier: string;
+	secret: string;
+	commitment: string;
+}
+
+export async function getIdentityRoomIds(server: string): Promise<string[]> {
+	const prover = new Prover('idcNullifier/circuit.wasm', 'idcNullifier/final.zkey');
+	const id = getIdentity() as IdentityData;
 	if (id) {
+		const timestamp = BigInt(Date.now());
+		id.trapdoor = id._trapdoor;
+		id.nullifier = id._nullifier;
+		id.secret = id._secret;
+		id.commitment = id._commitment;
+
 		// Proves you know the identity secret with a timestamp so this proof can't be replayed
-		const proof = prover.generateProof({
-			identity: id,
-			externalNullifier: BigInt(Date.now())
-		});
-		return getWithData([server, `identity/${idCommitment}`], proof) as Promise<string[]>;
+		prover
+			.generateProof({
+				identity: id as unknown as Identity,
+				externalNullifier: timestamp
+			})
+			.then((proof) => {
+				return post([server, `identity/${id._commitment}`], proof) as Promise<string[]>;
+			});
 	} else {
 		alertQueue.enqueue('No identity found when fetching rooms', 'error');
 		return [];
 	}
+	return [];
 }
 
 export async function getRoomById(server: string, roomId: string): Promise<RoomI> {
