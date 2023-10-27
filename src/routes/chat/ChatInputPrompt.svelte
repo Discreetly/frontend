@@ -172,6 +172,7 @@
 			}
 		} finally {
 			sendingMessage = false;
+			document.getElementById('prompt')?.focus();
 		}
 	}
 
