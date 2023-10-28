@@ -82,7 +82,6 @@ export async function updateRooms(
 		}
 		return acceptedRoomNames;
 	} else {
-		alertQueue.enqueue('No rooms found', 'warning');
 		return [];
 	}
 }

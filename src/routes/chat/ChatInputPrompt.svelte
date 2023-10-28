@@ -81,6 +81,7 @@
 				help();
 				break;
 		}
+		messageText = '';
 	}
 
 	// Helper function to handle encrypted room messages

@@ -5,7 +5,7 @@
 		</header>
 	{/if}
 	{#if $$slots.description}
-		<aside class="p italic px-4 pt-3"><slot name="description" /></aside>
+		<aside class="p italic px-4"><slot name="description" /></aside>
 	{/if}
 	<section class="p-4"><slot /></section>
 	{#if $$slots.footer}

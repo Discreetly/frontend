@@ -22,6 +22,7 @@
 	import NoPassword from 'svelte-material-icons/LockOff.svelte';
 	import Door from 'svelte-material-icons/Door.svelte';
 	import { unlockPadlock } from '$lib/utils';
+	import { onMount } from 'svelte';
 
 	export let loaded: boolean;
 
@@ -58,6 +59,10 @@
 	function lock() {
 		$keyStore = null;
 	}
+
+	onMount(() => {
+		drawerStore.close();
+	});
 </script>
 
 <div class="card p-4 w-72 shadow-xl" data-popup="popupMenu">

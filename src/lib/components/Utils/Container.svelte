@@ -7,7 +7,7 @@
 		<h2 class="h2 my-2 md:my-3 text-center">{heading}</h2>
 	{/if}
 	<slot name="header" />
-	<div class="flex flex-col gap-2 md:gap-5 max-w-5xl w-full mx-auto pb-3">
+	<div class="flex flex-col gap-2 md:gap-5 w-full mx-auto px-2 md:px-10 pb-3">
 		<slot />
 	</div>
 </div>

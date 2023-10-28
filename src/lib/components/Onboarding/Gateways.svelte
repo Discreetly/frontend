@@ -8,19 +8,22 @@
 </script>
 
 {#if Object.keys($serverStore).length > 1}
-	<div class="variant-ghost-success p-4 rounded-token">
+	<div class="variant-ghost-success p-4 rounded-token w-lg self-center">
 		<h3 class="h4">Select Server, or add a new Server:</h3>
 		<SelectServer />
 	</div>
 {/if}
-<div class="mx-auto grid grid-cols-2 gap-4">
+<div id="gateway-cards" class="grid">
 	<Card>
 		<svelte:fragment slot="header">Join via invite code:</svelte:fragment>
 		<svelte:fragment slot="description">If you were given an invite code, you can</svelte:fragment>
 		<InviteCodeGateway code={$configStore.signUpStatus.inviteCode} />
 	</Card>
 	<Card>
-		<svelte:fragment slot="header">Join the alpha testing room:</svelte:fragment>
+		<svelte:fragment slot="header">Join Alpha Testers:</svelte:fragment>
+		<svelte:fragment slot="description"
+			>Test things out, let us know if you have any issues</svelte:fragment
+		>
 		<InviteCodeGateway
 			code={'layer-spot-gravity-fossil'}
 			hideInput={true}
@@ -40,9 +43,9 @@
 		<svelte:fragment slot="description">Coming Soon!</svelte:fragment>
 	</Card>
 	<Card>
-		<svelte:fragment slot="header">Join via Ethereum Address:</svelte:fragment>
+		<svelte:fragment slot="header">Join via Ethereum:</svelte:fragment>
 		<svelte:fragment slot="description"
-			>Are you a genesis validator? You can join using your Ethereum address.
+			>Are you a genesis staker? Stateful works funder? Join the conversation!
 		</svelte:fragment>
 		<EthereumGroupGateway />
 	</Card>
@@ -55,3 +58,20 @@
 		<TheWord />
 	</Card>
 </div>
+
+<style global>
+	#gateway-cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+		grid-auto-rows: auto auto auto;
+		container-type: inline-size;
+		gap: 0.1rem;
+	}
+
+	:global(.card) {
+		display: grid;
+		margin: 0.5rem;
+		grid-row: span 3;
+		grid-template-rows: subgrid;
+	}
+</style>

@@ -66,6 +66,9 @@
 					case 'info':
 						bg = 'variant-filled-info';
 						break;
+					case 'tertiary':
+						bg = 'variant-filled-tertiary';
+						break;
 					default:
 						bg = 'variant-filled-primary';
 						break;
