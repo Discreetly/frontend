@@ -1,29 +1,53 @@
-<div id="info">
+<script lang="ts">
+	import Card from '$lib/components/Utils/Card.svelte';
+	import Button from '$lib/components/Utils/Button.svelte';
+	import { identityExists } from '$lib/stores';
+</script>
+
+<Card>
+	<svelte:fragment slot="header">Discreetly is an anonymous chat app</svelte:fragment>
 	<p>
-		<b class="text-primary-500">Discreetly</b> is an <b>anonymous</b> chat app
-	</p>
-	<p>Yes, you are <i>actually</i> anonymous, don't abuse it</p>
-	<p>
-		But you can still get <b class="text-primary-500">banned</b> if you
-		<b class="text-primary-500">spam</b>, or if you get
-		<b class="text-primary-500">voted out</b>
-		<small class="text-surface-400 italic">coming soon™</small>.
-	</p>
-	<p>
-		There is
-		<b class="text-primary-500">no unban</b>
+		<b>True Anonymity</b> <span role="img" aria-label="Shield">🛡️</span> Chat without revealing your
+		identity, thanks to
+		<a class="link" href="semaphore.pse.dev">Semaphore</a>.
 	</p>
 	<p>
-		<b>Backup your identity</b>, there is
-		<i class="text-primary-500">no account recovery</i>
+		<b>Zero-Knowledge Spam Prevention</b> <span role="img" aria-label="Detective">🕵️</span> Powered
+		by
+		<a class="link" href="https://rate-limiting-nullifier.github.io/rln-docs/"
+			>Rate Limiting Nullifier</a
+		>, an anti-spam technology that ensures everyone can participate fairly.
 	</p>
-</div>
+	<p>
+		<b>Own Your Identity</b> <span role="img" aria-label="Lock">🔐</span> Be in full control of your
+		anonymity. Remember to
+		<i class="text-primary-500">backup your credentials</i>—once lost, they're irretrievable.
+	</p>
+	<p>
+		<b>Community-Powered Governance</b> <span role="img" aria-label="Ballot box">🗳️</span> While you're
+		anonymous, irresponsible behavior like spamming won't go unnoticed. The community can vote to take
+		action.
+	</p>
+	<svelte:fragment slot="footer">
+		{#if !$identityExists}
+			<Button link="/signup" cls="variant-ghost-primary btn-sm m-2 sm:m-3">Sign Up</Button>
+			<Button link="https://discord.gg/brJQ36KVxk" cls="variant-ghost-tertiary btn-sm m-2 sm:m-3"
+				>Join Our Discord</Button
+			>
+		{:else}
+			It looks like you are already signed up!
+			<Button link="/chat" cls="variant-ghost-success">Go Chat</Button>
+		{/if}
+	</svelte:fragment>
+</Card>
 
 <style>
 	p {
-		margin: 0.5rem 0;
+		margin: 1.125rem 0;
 	}
 	p::before {
-		content: '* ';
+		content: '⊙';
+		margin-right: 0.55rem;
+		color: rgb(var(--color-primary-500));
 	}
 </style>
