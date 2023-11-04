@@ -6,6 +6,7 @@
 		identityStore,
 		lockStateStore,
 		passwordSet,
+		roomsStore,
 		serverStore
 	} from '$lib/stores';
 	import { IdentityStoreE } from '$lib/types';
@@ -32,6 +33,16 @@
 	$: identityKeyStoreEntries = Object.entries($identityKeyStore).map(([key, value]) => ({
 		key,
 		value: JSON.stringify(value)
+	}));
+
+	$: roomStoreEntries = Object.entries($roomsStore).map(([key, value]) => ({
+		name: $roomsStore[key].name,
+		id: $roomsStore[key].roomId,
+		encrypted: $roomsStore[key].encrypted,
+		ephemeral: $roomsStore[key].ephemeral,
+		rateLimit: $roomsStore[key].rateLimit,
+		userMessageLimit: $roomsStore[key].userMessageLimit,
+		membershipType: $roomsStore[key].membershipType
 	}));
 </script>
 
@@ -77,13 +88,28 @@
 			<div>Password Set: {$passwordSet}</div>
 			<div>Lock State: {$lockStateStore}</div>
 		</div>
+		<div>
+			<h2 class="h3">Rooms</h2>
+			{#each roomStoreEntries as { name, id, encrypted, ephemeral, rateLimit, userMessageLimit, membershipType }}
+				<h4 class="ms-2 h4">{name}</h4>
+				<div class="ms-4">id: {id}</div>
+				<div class="ms-4">encrypted: {encrypted}</div>
+				<div class="ms-4">ephemeral: {ephemeral}</div>
+				<div class="ms-4">rateLimit: {rateLimit}</div>
+				<div class="ms-4">userMessageLimit: {userMessageLimit}</div>
+				<div class="ms-4">membershipType: {membershipType}</div>
+			{/each}
+		</div>
 	</div>
-	<button class="btn variant-outline-primary m-4" on:click={triggerAlert}>Test Alert</button>
-	<select class="select" name="alertType" id="alertType" bind:value={t}>
-		{#each c as choice}
-			<option value={choice}>{choice}</option>
-		{/each}
-	</select>
+
+	<div class="border-t py-2 my-5">
+		<button class="btn variant-outline-primary m-4" on:click={triggerAlert}>Test Alert</button>
+		<select class="select" name="alertType" id="alertType" bind:value={t}>
+			{#each c as choice}
+				<option value={choice}>{choice}</option>
+			{/each}
+		</select>
+	</div>
 </div>
 
 <style>

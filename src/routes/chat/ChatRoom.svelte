@@ -32,7 +32,6 @@
 	$: userMessageLimit = $currentSelectedRoom?.userMessageLimit ?? 1;
 	$: roomRateLimit = $currentSelectedRoom?.rateLimit ?? 0;
 	$: if (!$rateLimitStore[roomId]) {
-		console.debug('Resetting rate limit store for room', roomId);
 		$rateLimitStore[roomId] = {
 			lastEpoch: currentEpoch,
 			messagesSent: 0
@@ -48,7 +47,6 @@
 			socket.emit('leavingRoom', lastRoom);
 		}
 		socket.emit('joiningRoom', $currentSelectedRoom?.roomId.toString());
-		console.debug('Joining room', $currentSelectedRoom?.roomId.toString());
 	} catch {
 	} finally {
 	}
@@ -85,11 +83,11 @@
 			}
 
 			engine.once('upgrade', () => {
-				console.debug('Upgraded connection to', engine.transport.name);
+				console.debug('Connected to the server over', engine.transport.name);
 			});
 
 			engine.on('close', (reason) => {
-				console.debug('socket-io-transport-closed', reason);
+				console.debug('socket-io-transport-closed:', reason);
 			});
 
 			socket.emit('joiningRoom', $currentSelectedRoom?.roomId.toString());

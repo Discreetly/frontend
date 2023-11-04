@@ -66,7 +66,6 @@ export async function updateRooms(
 	server: string = get(selectedServer),
 	roomIds: string[] = []
 ): Promise<string[]> {
-	console.debug(`Updating Rooms ${roomIds} on ${server}`);
 	roomIds = await getRoomIdsIfEmpty(server, roomIds);
 	if (roomIds.length > 0) {
 		const rooms = await fetchRoomsByIds(server, roomIds);

@@ -24,7 +24,6 @@
 	let sendingMessage: boolean = false;
 	$: messagesLeft = () => {
 		if ($rateLimitStore[roomId].lastEpoch !== currentEpoch) {
-			console.log('Reseting rate limit store for room', roomId);
 			$rateLimitStore[roomId] = {
 				lastEpoch: currentEpoch,
 				messagesSent: 0
