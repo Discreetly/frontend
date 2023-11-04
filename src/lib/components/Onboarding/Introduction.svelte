@@ -1,11 +1,14 @@
 <script lang="ts">
 	import Card from '$lib/components/Utils/Card.svelte';
-	import Button from '$lib/components/Utils/Button.svelte';
-	import { identityExists } from '$lib/stores';
+	import { configStore } from '$lib/stores';
 </script>
 
 <Card>
 	<svelte:fragment slot="header">Discreetly is an anonymous chat app</svelte:fragment>
+	{#if $configStore.beta}
+		<i>Dance like no one is watching, and encrypt like everyone is.</i>
+	{/if}
+
 	<p>
 		<b>True Anonymity</b> <span role="img" aria-label="Shield">🛡️</span> Chat without revealing your
 		identity, thanks to
@@ -24,21 +27,9 @@
 		<i class="text-primary-500">backup your credentials</i>—once lost, they're irretrievable.
 	</p>
 	<p>
-		<b>Community-Powered Governance</b> <span role="img" aria-label="Ballot box">🗳️</span> While you're
-		anonymous, irresponsible behavior like spamming won't go unnoticed. The community can vote to take
-		action.
+		<b>Gated Communities</b> <span role="img" aria-label="Lock">🔏</span> Most communities can only be
+		joined once, use it wisely.
 	</p>
-	<svelte:fragment slot="footer">
-		{#if !$identityExists}
-			<Button link="/signup" cls="variant-ghost-primary btn-sm m-2 sm:m-3">Sign Up</Button>
-			<Button link="https://discord.gg/brJQ36KVxk" cls="variant-ghost-tertiary btn-sm m-2 sm:m-3"
-				>Join Our Discord</Button
-			>
-		{:else}
-			It looks like you are already signed up!
-			<Button link="/chat" cls="variant-ghost-success">Go Chat</Button>
-		{/if}
-	</svelte:fragment>
 </Card>
 
 <style>

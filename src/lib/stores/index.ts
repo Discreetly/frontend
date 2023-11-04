@@ -15,6 +15,7 @@ import type {
 	roomPassStoreI,
 	roomKeyStoreI
 } from '$lib/types';
+import { getIdentity } from '$lib/utils';
 
 /* ------------------ Server State ------------------*/
 /**
@@ -177,7 +178,9 @@ export const identityExists = derived(
 				return null;
 			}
 		} else if ($lockStateStore === 'locked') {
-			if (typeof id === 'object') {
+			const encryptedId = window.localStorage.getItem('identityencrypted');
+			const encryptedIdExists = encryptedId !== null && encryptedId.length > 0;
+			if (typeof id === 'object' && encryptedIdExists) {
 				return 'encrypted';
 			} else {
 				return null;

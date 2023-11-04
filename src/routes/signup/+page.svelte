@@ -11,8 +11,12 @@
 	import RestoreIdentity from '$lib/components/Identity/RestoreIdentity.svelte';
 	import Backup from '$lib/components/Identity/BackupIdentity.svelte';
 	import Gateways from '$lib/components/Onboarding/Gateways.svelte';
+	import Mask from 'svelte-material-icons/GuyFawkesMask.svelte';
+	import Magic from 'svelte-material-icons/MagicStaff.svelte';
+	import BackupRestore from 'svelte-material-icons/BackupRestore.svelte';
 
 	const modalStore = getModalStore();
+	let restoreIdentity = false;
 
 	function unlock() {
 		const modal: ModalSettings = {
@@ -50,12 +54,12 @@
 </script>
 
 <Stepper
-	class="max-w-sm sm:max-w-md md:max-w-3xl mx-auto mt-16"
+	class="px-3 sm:max-w-md md:max-w-3xl mx-auto mt-16"
 	on:complete={() => {
 		goto('/chat');
 	}}
 	buttonCompleteLabel="Lets Go Chat Anon"
-	buttonNext="variant-filled-surface-50-900-token"
+	buttonNext="variant-filled-success"
 	buttonComplete="variant-filled-success"
 >
 	<Step class="px-10">
@@ -69,7 +73,7 @@
 			{#if !$passwordSet}
 				<h2 class="h2 text-center">Set Unlock Code</h2>
 			{:else}
-				<h2 class="h2 text-center">Unlock Code has been set ✅</h2>
+				<h2 class="h2 text-center">Unlock Code has been set ✅ Press Next to Continue</h2>
 			{/if}
 		</svelte:fragment>
 		{#if !$passwordSet}
@@ -89,10 +93,28 @@
 			{/if}
 		</svelte:fragment>
 		{#if $identityExists == null}
-			<button on:click={() => createIdentity()} class="btn variant-ghost-success" type="button">
-				Generate Identity
-			</button>
-			<RestoreIdentity />
+			<div class="flex flex-col gap-3">
+				<button
+					on:click={() => createIdentity()}
+					class="btn btn-lg variant-ghost-success"
+					type="button"
+				>
+					<span><Mask /></span>
+					<span>Generate New Identity</span>
+					<span><Magic /></span>
+				</button>
+				<button
+					on:click={() => (restoreIdentity = !restoreIdentity)}
+					class="btn variant-ghost-primary"
+					type="button"
+				>
+					<span><BackupRestore /></span>
+					<span>Restore Identity</span>
+				</button>
+			</div>
+			{#if restoreIdentity == true}
+				<RestoreIdentity />
+			{/if}
 		{:else if $identityExists == 'encrypted'}
 			<div on:click={unlock}>
 				<p class="h4 text-center">Please unlock your wallet</p>

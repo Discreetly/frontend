@@ -34,6 +34,7 @@
 		<svelte:fragment slot="header">Discord Bot</svelte:fragment>
 		<svelte:fragment slot="description">Add the discord bot to your server Today!</svelte:fragment>
 		<a
+			target="_blank"
 			href="https://discord.com/api/oauth2/authorize?client_id=1142162852132700200&permissions=2147483648&scope=bot"
 			class="btn variant-ghost-primary">Invite Discord Bot!</a
 		>
@@ -52,8 +53,9 @@
 	<Card>
 		<svelte:fragment slot="header">The Word</svelte:fragment>
 		<svelte:fragment slot="description"
-			>Do you know <a class="link" href="https://github.com/Mach-34/the-word/">the word</a>? Prove
-			it.
+			>Do you know <a class="link" target="_blank" href="https://github.com/Mach-34/the-word/"
+				>the word</a
+			>? Prove it.
 		</svelte:fragment>
 		<TheWord />
 	</Card>

@@ -8,6 +8,7 @@
 	import Eye from 'svelte-material-icons/Eye.svelte';
 	import Container from '$lib/components/Utils/Container.svelte';
 	import { identityExists } from '$lib/stores';
+	import AnxietyBar from './ui/AnxietyBar.svelte';
 </script>
 
 <Container heading="Manage Settings">
@@ -28,7 +29,7 @@
 	{:else}
 		<Container>
 			<svelte:fragment slot="header">
-				<h3 class="h3 flex flex-row gap-2 items-center"><IdentityIcon /> Identity</h3>
+				<h3 class="h3 flex flex-row gap-2 items-center mb-3"><IdentityIcon /> Identity</h3>
 			</svelte:fragment>
 			<BackupIdentity />
 			<DeleteIdentity />
@@ -36,9 +37,10 @@
 		</Container>
 		<Container>
 			<svelte:fragment slot="header">
-				<h3 class="h3 flex flex-row gap-2 items-center"><Eye /> UI</h3></svelte:fragment
+				<h3 class="h3 flex flex-row gap-2 items-center mb-3"><Eye /> UI</h3></svelte:fragment
 			>
 			<ActionRepresentation />
+			<AnxietyBar />
 		</Container>
 	{/if}
 </Container>

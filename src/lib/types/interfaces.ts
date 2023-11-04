@@ -11,6 +11,7 @@ export interface ConfigurationI {
 	beta?: boolean;
 	numMessagesToSave: number;
 	hashedPwd: string | null | undefined;
+	anxietyBar: boolean;
 }
 
 export interface RoomI extends RI {

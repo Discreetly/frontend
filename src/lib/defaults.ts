@@ -3,10 +3,11 @@ import { IdentityStoreE } from './types';
 import { dev } from '$app/environment';
 
 let defaultServers: serverStoreI;
-let beta = false;
+const devServers = false;
+const beta = false;
+const anxietyBar = false;
 
-if (dev) {
-	beta = true;
+if (dev && devServers) {
 	defaultServers = {
 		'https://server.discreetly.chat/': {
 			name: 'Discreetly Server',
@@ -34,7 +35,8 @@ const configDefaults: ConfigurationI = {
 	identityStore: IdentityStoreE.NO_IDENTITY,
 	numMessagesToSave: 500,
 	hashedPwd: undefined,
-	beta: beta
+	beta: beta,
+	anxietyBar: anxietyBar
 };
 
 export { defaultServers, configDefaults };

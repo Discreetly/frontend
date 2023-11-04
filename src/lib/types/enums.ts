@@ -6,9 +6,7 @@ export enum Experiences {
 export enum IdentityStoreE {
 	'NO_IDENTITY',
 	'localStorage',
-	'localStorageEncrypted',
-	'cryptKeeper',
-	'PCDPass'
+	'localStorageEncrypted'
 }
 
 export enum ActionRepresentationE {

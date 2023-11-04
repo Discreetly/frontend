@@ -48,7 +48,7 @@
 			</div>
 		</div>
 		<div class="flex flex-row">
-			{#if connected}
+			{#if connected && onlineMembers !== '?'}
 				<span
 					class:connected
 					class="flex flex-row align-middle text-sm font-mono text-secondary-300-600-token"
@@ -65,14 +65,14 @@
 		>
 			{#if $configStore.beta === true}<ExperienceMenu />{/if}
 			<AP health={messagesLeft()} maxHealth={userMessageLimit} />
-			<div class="block sm:hidden">
+			{#if $configStore.anxietyBar === false}
 				<Clock time={timeToNextEpoch} maxTime={epochLengthSeconds} />
-			</div>
+			{/if}
 		</div>
 	</div>
-	<div class="hidden sm:block">
+	{#if $configStore.anxietyBar === true}
 		<ProgressBar value={timeToNextEpoch} max={epochLengthSeconds} />
-	</div>
+	{/if}
 </header>
 
 <style>

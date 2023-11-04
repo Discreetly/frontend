@@ -2,7 +2,7 @@ import type { MessageI, ServerI } from 'discreetly-interfaces';
 import type { IdentityStoreI, Invites, JoinResponseI, RoomI } from '$lib/types';
 import { Prover } from 'idc-nullifier';
 import type { Identity } from '@semaphore-protocol/identity';
-import { get, post, postAuth } from './api';
+import { get, getAuth, post, postAuth } from './api';
 import { getIdentity } from '$lib/utils';
 import { alertQueue } from '$lib/stores';
 
@@ -149,4 +149,8 @@ export async function createInvite(
 		data['all'] = true;
 	}
 	return postAuth([serverUrl, `admin/addcode`], data, username, password) as Promise<Invites>;
+}
+
+export async function getAllRooms(serverUrl: string, username: string, password: string) {
+	return getAuth([serverUrl, `admin/rooms`], username, password) as Promise<RoomI[]>;
 }

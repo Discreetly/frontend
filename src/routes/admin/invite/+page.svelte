@@ -155,12 +155,4 @@
 </div>
 
 <style>
-	#qr > div > canvas {
-		margin: 0 auto;
-		height: 250px;
-		width: 250px;
-	}
-	#qr > div > p {
-		text-align: center;
-	}
 </style>

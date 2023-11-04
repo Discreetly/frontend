@@ -2,7 +2,7 @@
 	export let heading = '';
 </script>
 
-<div class="px-2 sm:px-3 my-3 md:my-5 overflow-scroll h-100">
+<div class="px-2 sm:px-3 my-2 md:my-3 overflow-scroll h-100">
 	{#if heading.length > 0}
 		<h2 class="h2 my-2 md:my-3 text-center">{heading}</h2>
 	{/if}

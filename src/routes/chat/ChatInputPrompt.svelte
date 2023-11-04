@@ -4,7 +4,8 @@
 		keyStore,
 		rateLimitStore,
 		roomKeyStore,
-		alertQueue
+		alertQueue,
+		identityExists
 	} from '$lib/stores';
 	import { genProof } from '$lib/crypto/rlnProver';
 	import type { Socket } from 'socket.io-client';
@@ -32,9 +33,12 @@
 		if (sendingMessage) {
 			return 'Sending...';
 		}
+		if ($identityExists == 'encrypted') {
+			return 'Please unlock your identity to send a message';
+		}
 		return 'Write a message...';
 	};
-	$: canSendMessage = connected && !sendingMessage;
+	$: canSendMessage = connected && !sendingMessage && $identityExists == 'safe';
 
 	function checkStatus(): boolean {
 		if (!connected) {

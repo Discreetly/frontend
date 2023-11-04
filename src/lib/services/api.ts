@@ -72,7 +72,7 @@ export async function post(urlParts: string[] | string, data: object): Promise<o
 }
 
 /**
- * @description - makes a get request to the api
+ * @description - makes a post request to the api with admin credentials
  * @param {string[] | string} urlParts - the url parts to be joined to form the url
  * @param {object} data - the data to be sent to the api
  * @returns {object} - the response from the api
@@ -93,6 +93,34 @@ export async function postAuth(
 			Authorization: 'Basic ' + btoa(username + ':' + password)
 		},
 		body: JSON.stringify(data)
+	});
+	if (res.ok) {
+		return res.json();
+	} else {
+		throw new Error(`Failed to post to ${url}`);
+	}
+}
+
+/**
+ * @description - makes a get request to the api with admin credentials
+ * @param {string[] | string} urlParts - the url parts to be joined to form the url
+ * @param {object} data - the data to be sent to the api
+ * @returns {object} - the response from the api
+ * @throws {Error} - if the request fails
+ */
+export async function getAuth(
+	urlParts: string[] | string,
+	username: string,
+	password: string
+): Promise<object> {
+	const url = cleanURL(urlParts);
+	const res = await fetch(url, {
+		method: 'GET',
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Content-Type': 'application/json',
+			Authorization: 'Basic ' + btoa(username + ':' + password)
+		}
 	});
 	if (res.ok) {
 		return res.json();

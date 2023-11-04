@@ -14,7 +14,8 @@
 	import LockOpen from 'svelte-material-icons/LockOpenVariant.svelte';
 	import NoPassword from 'svelte-material-icons/LockOff.svelte';
 	import Plus from 'svelte-material-icons/Plus.svelte';
-	import { keyStore, passwordSet } from '$lib/stores';
+	import Mask from 'svelte-material-icons/GuyFawkesMask.svelte';
+	import { configStore, identityExists, keyStore, passwordSet } from '$lib/stores';
 	import { unlockPadlock } from '$lib/utils';
 
 	export let loaded: boolean;
@@ -47,23 +48,33 @@
 		<span>About</span>
 	</AppRailAnchor>
 
-	<AppRailAnchor href="/chat" selected={$page.url.pathname === '/chat'} title="Chat">
-		<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
-		<span>Chat</span>
-	</AppRailAnchor>
+	{#if $identityExists}
+		<AppRailAnchor href="/chat" selected={$page.url.pathname === '/chat'} title="Chat">
+			<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
+			<span>Chat</span>
+		</AppRailAnchor>
 
-	<AppRailAnchor href="/gateways" selected={$page.url.pathname === '/gateways'} title="About">
-		<svelte:fragment slot="lead"><Plus class="rail-icon" /></svelte:fragment>
-		<span>Join More</span>
-	</AppRailAnchor>
+		<AppRailAnchor href="/gateways" selected={$page.url.pathname === '/gateways'} title="About">
+			<svelte:fragment slot="lead"><Plus class="rail-icon" /></svelte:fragment>
+			<span>Join More</span>
+		</AppRailAnchor>
 
-	<AppRailAnchor href="/console" selected={$page.url.pathname === '/console'} title="About">
-		<svelte:fragment slot="lead"><Console class="rail-icon" /></svelte:fragment>
-		<span>Console</span>
-	</AppRailAnchor>
+		{#if $configStore.beta}
+			<AppRailAnchor href="/console" selected={$page.url.pathname === '/console'} title="About">
+				<svelte:fragment slot="lead"><Console class="rail-icon" /></svelte:fragment>
+				<span>Console</span>
+			</AppRailAnchor>
+		{/if}
+	{:else}
+		<AppRailAnchor href="/signup" selected={$page.url.pathname === '/signup'} title="Sign Up">
+			<svelte:fragment slot="lead"><Mask class="rail-icon" /></svelte:fragment>
+			<span>Sign Up</span>
+		</AppRailAnchor>
+	{/if}
 
 	<svelte:fragment slot="trail">
 		{#if loaded}
+			<!---PadLock-->
 			{#if $passwordSet}
 				{#if $keyStore instanceof CryptoKey}
 					<AppRailAnchor on:click={lock} title="Unlocked, click to lock">
@@ -80,18 +91,18 @@
 						<span>Unlock</span>
 					</AppRailAnchor>
 				{/if}
-			{:else}
-				<AppRailAnchor href="/settings/security" title="Password not set">
-					<svelte:fragment slot="lead">
-						<NoPassword class="rail-icon text-error-500" />
-					</svelte:fragment>
-					<span>Secure</span>
+
+				<!---Settings-->
+
+				<AppRailAnchor
+					href="/settings"
+					selected={$page.url.pathname === '/settings'}
+					title="Settings"
+				>
+					<svelte:fragment slot="lead"><Settings class="rail-icon" /></svelte:fragment>
+					<span>Settings</span>
 				</AppRailAnchor>
 			{/if}
 		{/if}
-		<AppRailAnchor href="/settings" selected={$page.url.pathname === '/settings'} title="Settings">
-			<svelte:fragment slot="lead"><Settings class="rail-icon" /></svelte:fragment>
-			<span>Settings</span>
-		</AppRailAnchor>
 	</svelte:fragment>
 </AppRail>
