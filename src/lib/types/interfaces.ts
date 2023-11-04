@@ -34,7 +34,8 @@ export interface ButtonI {
 
 export interface JoinResponseI {
 	status: string;
-	roomIds: string[];
+	roomIds?: string[];
+	message?: string;
 }
 
 export type GatewayResultI = string[] | null;
