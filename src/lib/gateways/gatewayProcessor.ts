@@ -40,6 +40,7 @@ export async function handleGatewayRequest<T>(
 				alertQueue.enqueue('Already added to room', 'error');
 				break;
 			default:
+				alertQueue.enqueue(result.message, 'error');
 				break;
 		}
 		return null;

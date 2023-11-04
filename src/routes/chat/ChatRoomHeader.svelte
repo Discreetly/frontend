@@ -43,9 +43,11 @@
 				{/if}
 				{roomName}
 			</h2>
-			<div class="hidden sm:block ms-2 text-xs font-mono self-center">
-				[{timeToNextEpoch.toFixed(1)}/{epochLengthSeconds}s]
-			</div>
+			{#if $configStore.beta}
+				<div class="hidden sm:block ms-2 text-xs font-mono self-center">
+					[{timeToNextEpoch.toFixed(0)}/{epochLengthSeconds}s]
+				</div>
+			{/if}
 		</div>
 		<div class="flex flex-row">
 			{#if connected && onlineMembers !== '?'}
@@ -61,7 +63,9 @@
 		</div>
 		<div
 			class="flex flex-row place-content-center"
-			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds`}
+			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds. [${timeToNextEpoch.toFixed(
+				0
+			)}/${epochLengthSeconds}s]`}
 		>
 			{#if $configStore.beta === true}<ExperienceMenu />{/if}
 			<AP health={userMessageLimit - $messagesSent} maxHealth={userMessageLimit} />

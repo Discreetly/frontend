@@ -43,7 +43,7 @@
 			<div>Identity Backedup: {JSON.stringify($configStore.signUpStatus.identityBackedUp)}</div>
 			<div>IdentityStore Type: {IdentityStoreE[$configStore.identityStore]}</div>
 			<div on:click={toggleBeta}>Beta: {JSON.stringify($configStore.beta)}</div>
-			<div on:click={toggleAnxiety}>Beta: {JSON.stringify($configStore.anxietyBar)}</div>
+			<div on:click={toggleAnxiety}>AnxietyBar: {JSON.stringify($configStore.anxietyBar)}</div>
 			<div>Hashed Password: {JSON.stringify($configStore.hashedPwd)}</div>
 		</div>
 		<div>

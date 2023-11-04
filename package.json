@@ -70,7 +70,7 @@
 		"@web3modal/wagmi": "^3.1.0",
 		"autolinker": "^4.0.0",
 		"date-fns": "^2.30.0",
-		"discreetly-interfaces": "^0.1.39",
+		"discreetly-interfaces": "^0.1.40",
 		"dompurify": "^3.0.5",
 		"idc-nullifier": "^0.0.6",
 		"libsodium-wrappers": "^0.7.11",
