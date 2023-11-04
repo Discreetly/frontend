@@ -12,16 +12,28 @@
 	import { getIdentity, clearMessageHistory } from '$lib/utils';
 	import Send from 'svelte-material-icons/Send.svelte';
 	import { decrypt, encrypt } from '$lib/crypto/crypto';
+	import { onMount } from 'svelte';
 
 	export let socket: Socket;
 	export let connected: boolean;
 	export let currentEpoch: number;
 	export let userMessageLimit: number;
-	export let messageId: number;
-	export let messagesLeft: () => number;
+	export let roomId: string;
 
 	let messageText = '';
 	let sendingMessage: boolean = false;
+	$: messagesLeft = () => {
+		if ($rateLimitStore[roomId].lastEpoch !== currentEpoch) {
+			console.log('Reseting rate limit store for room', roomId);
+			$rateLimitStore[roomId] = {
+				lastEpoch: currentEpoch,
+				messagesSent: 0
+			};
+			return userMessageLimit;
+		} else {
+			return userMessageLimit - $rateLimitStore[roomId].messagesSent;
+		}
+	};
 
 	$: placeholderText = () => {
 		if (!connected) {
@@ -43,6 +55,11 @@
 	function checkStatus(): boolean {
 		if (!connected) {
 			alertQueue.enqueue('NOT CONNECTED TO CHAT SERVER', 'error');
+			sendingMessage = false;
+			return false;
+		}
+		if (currentEpoch === 0) {
+			alertQueue.enqueue('Epoch is 0', 'error');
 			sendingMessage = false;
 			return false;
 		}
@@ -115,15 +132,14 @@
 	}
 
 	// Helper function to handle rate limiting
-	function handleRateLimiting(currentEpoch: number, roomId: string, rateLimitStore: any) {
-		const rateInfo = rateLimitStore[roomId];
-		if (rateInfo.lastEpoch === currentEpoch) {
-			rateInfo.messagesSent++;
+	function handleRateLimiting(currentEpoch: number, roomId: string) {
+		if ($rateLimitStore[roomId].lastEpoch === currentEpoch) {
+			$rateLimitStore[roomId].messagesSent++;
 		} else {
-			rateInfo.lastEpoch = currentEpoch;
-			rateInfo.messagesSent = 1;
+			$rateLimitStore[roomId].lastEpoch = currentEpoch;
+			$rateLimitStore[roomId].messagesSent = 1;
 		}
-		console.debug(rateInfo.messagesSent, 'messages sent this epoch');
+		console.debug($rateLimitStore[roomId].messagesSent, 'messages sent this epoch');
 	}
 
 	async function sendMessage() {
@@ -156,11 +172,11 @@
 				messageToSend,
 				identity,
 				currentEpoch,
-				messageId,
+				messagesLeft() - 1,
 				userMessageLimit
 			);
 
-			handleRateLimiting(currentEpoch, room.roomId!.toString(), $rateLimitStore);
+			handleRateLimiting(currentEpoch, room.roomId!.toString());
 
 			socket.emit('validateMessage', msg);
 			console.debug('Sending message: ', msg);
@@ -218,6 +234,7 @@
 			on:click={sendMessage}
 		>
 			<Send />
+			{messagesLeft()}
 		</button>
 	</div>
 </section>

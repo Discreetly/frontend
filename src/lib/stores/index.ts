@@ -15,7 +15,6 @@ import type {
 	roomPassStoreI,
 	roomKeyStoreI
 } from '$lib/types';
-import { getIdentity } from '$lib/utils';
 
 /* ------------------ Server State ------------------*/
 /**
@@ -187,6 +186,21 @@ export const identityExists = derived(
 			}
 		} else {
 			return null;
+		}
+	}
+);
+
+export const numberServers = derived(serverStore, ($serverStore) => {
+	return Object.keys($serverStore).length;
+});
+
+export const messagesSent = derived(
+	[currentSelectedRoom, rateLimitStore],
+	([$currentSelectedRoom, $rateLimitStore]) => {
+		if ($currentSelectedRoom.roomId.toString() in $rateLimitStore) {
+			return $rateLimitStore[$currentSelectedRoom.roomId.toString()].messagesSent;
+		} else {
+			return 0;
 		}
 	}
 );

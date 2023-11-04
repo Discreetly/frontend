@@ -5,8 +5,6 @@
 	import { onMount } from 'svelte';
 
 	onMount(() => {
-		console.log('onMount');
-		console.log($identityExists);
 		if (!$identityExists) {
 			goto('/signup');
 		}

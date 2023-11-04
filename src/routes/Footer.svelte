@@ -19,7 +19,6 @@
 	import Information from 'svelte-material-icons/Information.svelte';
 	import Lock from 'svelte-material-icons/Lock.svelte';
 	import LockOpen from 'svelte-material-icons/LockOpenVariant.svelte';
-	import NoPassword from 'svelte-material-icons/LockOff.svelte';
 	import Door from 'svelte-material-icons/Door.svelte';
 
 	import Mask from 'svelte-material-icons/GuyFawkesMask.svelte';
@@ -66,7 +65,6 @@
 		setTimeout(() => {
 			drawerStore.close();
 		}, 10);
-		console.log($identityExists);
 	});
 </script>
 

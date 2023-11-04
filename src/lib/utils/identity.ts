@@ -12,7 +12,9 @@ import {
 import { Identity } from '@semaphore-protocol/identity';
 import { IdentityStoreE, type IdentityStoreI } from '$lib/types';
 
-export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsafe' | 'error' {
+export function createIdentity(
+	regenerate = false
+): 'created' | 'exists' | 'unsafe' | 'error' | 'pending' {
 	if (!get(identityExists) || regenerate) {
 		console.debug('Creating identity');
 		const identity = new Identity() as unknown as IdentityStoreI;
@@ -21,17 +23,20 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 			if (lockState === 'unlocked') {
 				try {
 					identityKeyStore.set(identity);
-					if (get(identityExists) === 'safe') {
-						configStore.update((state) => {
-							state.identityStore = IdentityStoreE.localStorageEncrypted;
-							return state;
-						});
-						alertQueue.enqueue('Identity Created! Congrats on your new journey', 'success');
-						return 'created';
-					} else {
-						alertQueue.enqueue('Error creating identity', 'error');
-						return 'error';
-					}
+					setTimeout(() => {
+						if (get(identityExists) === 'safe') {
+							configStore.update((state) => {
+								state.identityStore = IdentityStoreE.localStorageEncrypted;
+								return state;
+							});
+							alertQueue.enqueue('Identity Created! Congrats on your new journey', 'success');
+							return 'created';
+						} else {
+							console.log(get(identityExists));
+							alertQueue.enqueue('Error creating identity!!!', 'error');
+							return 'error';
+						}
+					}, 50);
 				} catch (e) {
 					alertQueue.enqueue(`Error creating identity: ${e}`, 'error');
 					return 'error';
@@ -56,6 +61,7 @@ export function createIdentity(regenerate = false): 'created' | 'exists' | 'unsa
 		alertQueue.enqueue('Identity already exists', 'warning');
 		return 'exists';
 	}
+	return 'pending';
 }
 
 /**

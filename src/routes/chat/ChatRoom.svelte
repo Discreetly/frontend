@@ -8,7 +8,7 @@
 		currentRoomsStore
 	} from '$lib/stores';
 	import { Experiences } from '$lib/types';
-	import { addMessageToRoom, getTimestampFromEpoch, updateMessages } from '$lib/utils';
+	import { addMessageToRoom, getTimestampFromEpoch, updateMessages, updateRooms } from '$lib/utils';
 	import { getToastStore } from '@skeletonlabs/skeleton';
 	import type { MessageI } from 'discreetly-interfaces';
 	import type { Socket } from 'socket.io-client';
@@ -26,7 +26,7 @@
 	let lastRoom = '';
 	let onlineMembers = '?';
 	let epochUpdater: NodeJS.Timeout;
-	$: currentEpoch = 0;
+	let currentEpoch = 0;
 	$: timeLeftInEpoch = '0';
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
 	$: userMessageLimit = $currentSelectedRoom?.userMessageLimit ?? 1;
@@ -43,21 +43,6 @@
 		updateMessages($selectedServer, roomId);
 	});
 
-	$: messagesLeft = () => {
-		if (currentEpoch > 0) {
-			if ($rateLimitStore[roomId].lastEpoch !== currentEpoch) {
-				$rateLimitStore[roomId] = {
-					lastEpoch: currentEpoch,
-					messagesSent: 0
-				};
-				return userMessageLimit;
-			} else {
-				return userMessageLimit - $rateLimitStore[roomId].messagesSent;
-			}
-		}
-		return 0;
-	};
-	$: messageId = userMessageLimit - messagesLeft();
 	$: try {
 		if (lastRoom) {
 			socket.emit('leavingRoom', lastRoom);
@@ -67,6 +52,8 @@
 	} catch {
 	} finally {
 	}
+
+	$: updateRooms($selectedServer, [roomId]);
 
 	function updateEpoch() {
 		if ($currentSelectedRoom === undefined) {
@@ -87,7 +74,6 @@
 	}
 
 	onMount(() => {
-		console.log('MESSAGES LEFT: ' + messagesLeft());
 		socket = io($selectedServer);
 		socket.on('connect', () => {
 			connected = true;
@@ -164,8 +150,6 @@
 			{currentEpoch}
 			{timeLeftInEpoch}
 			{userMessageLimit}
-			{messageId}
-			{messagesLeft}
 			{roomRateLimit}
 			{onlineMembers}
 		/>
@@ -173,28 +157,14 @@
 			{#key $currentSelectedRoom.roomId}
 				<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
 			{/key}
-			<InputPrompt
-				{socket}
-				{connected}
-				{currentEpoch}
-				{userMessageLimit}
-				{messageId}
-				{messagesLeft}
-			/>
+			<InputPrompt {socket} {connected} {currentEpoch} {userMessageLimit} {roomId} />
 		{:else if $configStore.experience == Experiences.Draw}
 			<Draw />
 		{:else}
 			{#key $currentSelectedRoom.roomId}
 				<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
 			{/key}
-			<InputPrompt
-				{socket}
-				{connected}
-				{currentEpoch}
-				{userMessageLimit}
-				{messageId}
-				{messagesLeft}
-			/>
+			<InputPrompt {socket} {connected} {currentEpoch} {userMessageLimit} {roomId} />
 		{/if}
 		<!-- Conversation -->
 

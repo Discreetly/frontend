@@ -12,9 +12,9 @@
 	import Console from 'svelte-material-icons/Console.svelte';
 	import Lock from 'svelte-material-icons/Lock.svelte';
 	import LockOpen from 'svelte-material-icons/LockOpenVariant.svelte';
-	import NoPassword from 'svelte-material-icons/LockOff.svelte';
 	import Plus from 'svelte-material-icons/Plus.svelte';
 	import Mask from 'svelte-material-icons/GuyFawkesMask.svelte';
+	import ShieldCrown from 'svelte-material-icons/ShieldCrown.svelte';
 	import { configStore, identityExists, keyStore, passwordSet } from '$lib/stores';
 	import { unlockPadlock } from '$lib/utils';
 
@@ -63,6 +63,12 @@
 			<AppRailAnchor href="/console" selected={$page.url.pathname === '/console'} title="About">
 				<svelte:fragment slot="lead"><Console class="rail-icon" /></svelte:fragment>
 				<span>Console</span>
+			</AppRailAnchor>
+		{/if}
+		{#if $configStore.apiUsername && $configStore.apiPassword}
+			<AppRailAnchor href="/admin" selected={$page.url.pathname === '/admin'} title="About">
+				<svelte:fragment slot="lead"><ShieldCrown class="rail-icon" /></svelte:fragment>
+				<span>Admin</span>
 			</AppRailAnchor>
 		{/if}
 	{:else}

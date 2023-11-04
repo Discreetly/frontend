@@ -1,13 +1,16 @@
 <script lang="ts">
 	import SelectRoom from '$lib/components/Server/SelectRoom.svelte';
 	import SelectServer from '$lib/components/Server/SelectServer.svelte';
+	import { numberServers } from '$lib/stores';
 </script>
 
 <div id="sidebar" class="hidden sm:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 	<!-- Header -->
-	<header class="border-b border-surface-500/30 p-1">
-		<SelectServer />
-	</header>
+	{#if $numberServers > 1}
+		<header class="border-b border-surface-500/30 p-1">
+			<SelectServer />
+		</header>
+	{/if}
 	<!-- List -->
 	<div class="p-1 md:p-2">
 		<h6 class="h6 mx-3">Rooms</h6>

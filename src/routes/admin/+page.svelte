@@ -15,5 +15,6 @@
 </Card>
 <div class="flex gap-1 justify-around">
 	<a class="btn variant-filled-primary" href="/admin/newroom">Create Room</a>
+	<a class="btn variant-filled-primary" href="/admin/join">Join Room</a>
 	<a class="btn variant-filled-primary" href="/admin/invite">Create Invites</a>
 </div>

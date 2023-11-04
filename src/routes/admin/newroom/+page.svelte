@@ -27,7 +27,6 @@
 
 	function handleSubmit(): void {
 		const idc = getCommitment();
-		formData.rateLimit = formData.rateLimit * 1000;
 		if (idc) {
 			createRoom(
 				$selectedServer,

@@ -1,12 +1,6 @@
 <script>
 	import ChatRoom from './ChatRoom.svelte';
 	import Sidebar from './Sidebar.svelte';
-	import { onMount } from 'svelte';
-	import { updateRooms } from '$lib/utils';
-
-	onMount(() => {
-		updateRooms();
-	});
 </script>
 
 <section id="chat-wrapper" class="bg-surface-50-900-token">

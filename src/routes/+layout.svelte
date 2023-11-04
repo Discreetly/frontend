@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import AppHeader from './AppHeader.svelte';
 	import Loading from '$lib/components/Utils/Loading.svelte';
-	import { selectedServer, alertQueue } from '$lib/stores';
+	import { selectedServer, alertQueue, numberServers } from '$lib/stores';
 	import { getServerList, isInputFieldFocused, setDefaultServers } from '$lib/utils/';
 	import { updateServer } from '$lib/utils/';
 	import { Drawer, getDrawerStore } from '@skeletonlabs/skeleton';
@@ -76,7 +76,7 @@
 				toastStore.trigger({
 					message: toast.data,
 					background: bg,
-					timeout: 5000,
+					timeout: 3500,
 					hoverable: true
 				});
 			}
@@ -92,7 +92,9 @@
 <Toast position="t" background="variant-filled-primary" />
 <Drawer position="top" padding="p-4" rounded="rounded-token">
 	{#if $drawerStore.id === 'roomselect'}
-		<h3 class="h5 p-2">Change Server:<SelectServer /></h3>
+		{#if $numberServers > 1}
+			<h3 class="h5 p-2">Change Server:<SelectServer /></h3>
+		{/if}
 		<h3 class="h5 p-2">Select Room:<SelectRoom /></h3>
 	{:else if $drawerStore.id === 'console'}
 		<Console />

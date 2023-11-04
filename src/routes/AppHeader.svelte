@@ -9,7 +9,6 @@
 
 	const settings: DrawerSettings = { id: 'roomselect' };
 
-	// Open the drawer:
 	function drawerOpen(): void {
 		drawerStore.open(settings);
 	}

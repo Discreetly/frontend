@@ -4,10 +4,10 @@
 	import TheWord from '$lib/components/Gateways/TheWord.svelte';
 	import SelectServer from '$lib/components/Server/SelectServer.svelte';
 	import Card from '$lib/components/Utils/Card.svelte';
-	import { configStore, serverStore } from '$lib/stores';
+	import { configStore, numberServers } from '$lib/stores';
 </script>
 
-{#if Object.keys($serverStore).length > 1}
+{#if $numberServers > 1}
 	<div class="variant-ghost-success p-4 rounded-token w-lg self-center">
 		<h3 class="h4">Select Server, or add a new Server:</h3>
 		<SelectServer />

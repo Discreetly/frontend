@@ -5,9 +5,12 @@ import { handleGatewayRequest } from './gatewayProcessor';
 
 export async function inviteCode(newCode: string): Promise<GatewayResultI> {
 	const result = await handleGatewayRequest({ code: newCode.toLowerCase() }, postInviteCode);
-	configStore.update((store) => {
-		store['signUpStatus']['inviteCode'] = '';
-		return store;
-	});
+	if (result) {
+		configStore.update((store) => {
+			store['signUpStatus']['inviteCode'] = '';
+			return store;
+		});
+	}
+
 	return result;
 }

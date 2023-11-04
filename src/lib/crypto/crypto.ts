@@ -17,7 +17,6 @@ function getSalt(): Uint8Array {
 
 	// Generate new salt if salt is not set
 	if (saltFromStore === '') {
-		console.debug('Making new salt');
 		window.crypto.getRandomValues(salt);
 
 		// Convert to hexadecimal string
@@ -27,7 +26,6 @@ function getSalt(): Uint8Array {
 
 		saltStore.set(saltString);
 	} else {
-		console.debug(`Restoring Salt: ${saltFromStore}`);
 		for (let i = 0; i < salt.length; i++) {
 			salt[i] = parseInt(saltFromStore.substring(i * 2, i * 2 + 2), 16);
 		}

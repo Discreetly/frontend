@@ -1,19 +1,19 @@
 <script lang="ts">
 	import AP from '$lib/components/ActionPoints/AP.svelte';
 	import Clock from '$lib/components/Utils/Clock.svelte';
-	import { currentSelectedRoom, configStore } from '$lib/stores';
+	import { currentSelectedRoom, configStore, rateLimitStore, messagesSent } from '$lib/stores';
 	import { ProgressBar } from '@skeletonlabs/skeleton';
 	import FullCircle from 'svelte-material-icons/Circle.svelte';
 	import Person from 'svelte-material-icons/Account.svelte';
 	import ExperienceMenu from './ExperienceMenu.svelte';
+
 	export let connected: boolean;
 	export let currentEpoch: number;
 	export let timeLeftInEpoch: string;
 	export let userMessageLimit: number;
 	export let roomRateLimit: number;
-	export let messagesLeft: () => number;
-	export let messageId: number;
 	export let onlineMembers: string;
+
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
 	$: encrypted = $currentSelectedRoom?.encrypted ?? false;
 	$: ephemeral = $currentSelectedRoom?.ephemeral ?? false;
@@ -64,7 +64,7 @@
 			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds`}
 		>
 			{#if $configStore.beta === true}<ExperienceMenu />{/if}
-			<AP health={messagesLeft()} maxHealth={userMessageLimit} />
+			<AP health={userMessageLimit - $messagesSent} maxHealth={userMessageLimit} />
 			{#if $configStore.anxietyBar === false}
 				<Clock time={timeToNextEpoch} maxTime={epochLengthSeconds} />
 			{/if}

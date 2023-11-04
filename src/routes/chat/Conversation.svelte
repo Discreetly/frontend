@@ -36,18 +36,16 @@
 	class="p-2 md:p-4 overflow-y-auto space-y-2 md:space-y-4"
 >
 	{#if $currentRoomMessages}
-		{#each $currentRoomMessages as bubble}
+		{#each $currentRoomMessages as msg}
 			<div class="flex flex-col items-start">
 				<div
 					class="card p-2 md:p-4 space-y-1 md:space-y-2 bg-surface-100-800-token border-1 border-secondary-500/30"
 				>
 					<header class="flex justify-between items-center text-xs md:text-sm">
-						<small class="opacity-50 text-surface-700-200-token mr-2 md:mr-4"
-							>{getTime(bubble)}</small
-						>
-						{#if bubble.epoch}
+						<small class="opacity-50 text-surface-700-200-token mr-2 md:mr-4">{getTime(msg)}</small>
+						{#if msg.epoch}
 							<small class="hidden md:block opacity-50 text-surface-700-200-token"
-								>epoch: {bubble.epoch}</small
+								>epoch: {msg.epoch}</small
 							>
 						{:else}
 							<small class="hidden md:block opacity-70 text-error-500-400-token"
@@ -55,8 +53,8 @@
 							>
 						{/if}
 					</header>
-					{#key bubble}
-						<BubbleText bubbleText={String(bubble.message)} />
+					{#key msg}
+						<BubbleText bubbleText={String(msg.message)} />
 					{/key}
 				</div>
 			</div>
