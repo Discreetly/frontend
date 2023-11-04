@@ -177,7 +177,7 @@
 			);
 
 			handleRateLimiting(currentEpoch, room.roomId!.toString());
-
+			msg.messageType = 'TEXT';
 			socket.emit('validateMessage', msg);
 			console.debug('Sending message: ', msg);
 			messageText = '';
