@@ -22,7 +22,7 @@ export async function handleGatewayRequest<T>(
 	}
 	let result;
 	try {
-		result = await apiFunction(server, { ...data, idc });
+		result = (await apiFunction(server, { ...data, idc })) as JoinResponseI;
 		console.debug('GATEWAY RESPONSE: ', result);
 		let acceptedRoomNames: string[];
 		if (!result.status) {

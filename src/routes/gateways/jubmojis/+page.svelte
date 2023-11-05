@@ -11,9 +11,8 @@
 			goto('/gateways');
 		} else {
 			const decodedProof = decodeURIComponent(encodedProof);
-			const stage1 = JSON.parse(decodedProof);
-			const stage2 = JSON.parse(stage1.serializedMembershipProof);
-			$configStore.signUpStatus.jubmojiProof = stage2;
+			const parsed = JSON.parse(decodedProof);
+			$configStore.signUpStatus.jubmojiProof = parsed.serializedMembershipProof;
 
 			if ($identityExists) {
 				goto('/gateways');
