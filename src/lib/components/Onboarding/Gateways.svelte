@@ -4,8 +4,7 @@
 	import TheWord from '$lib/components/Gateways/TheWord.svelte';
 	import SelectServer from '$lib/components/Server/SelectServer.svelte';
 	import Card from '$lib/components/Utils/Card.svelte';
-
-	import BullHorn from 'svelte-material-icons/BullHorn.svelte';
+	import BullHorn from 'svelte-material-icons/Bullhorn.svelte';
 	import { configStore, numberServers } from '$lib/stores';
 </script>
 
