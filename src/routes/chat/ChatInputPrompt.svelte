@@ -5,7 +5,8 @@
 		rateLimitStore,
 		roomKeyStore,
 		alertQueue,
-		identityExists
+		identityExists,
+		configStore
 	} from '$lib/stores';
 	import { genProof } from '$lib/crypto/rlnProver';
 	import type { Socket } from 'socket.io-client';
@@ -111,7 +112,7 @@
 		keyStore: any,
 		roomKeyStore: any
 	): Promise<string> {
-		if (!roomKeyStore[roomId]) {
+		if ($currentSelectedRoom.encrypted == 'AES' && !roomKeyStore[roomId]) {
 			throw new Error('ROOM IS ENCRYPTED BUT NO PASSWORD WAS FOUND');
 		}
 		if (!keyStore) {
@@ -157,7 +158,7 @@
 
 			let messageToSend: string = messageText;
 
-			if (room.encrypted) {
+			if (room.encrypted === 'AES') {
 				messageToSend = await handleEncryptedMessage(
 					messageText,
 					room.roomId!.toString(),
@@ -233,7 +234,9 @@
 			on:click={sendMessage}
 		>
 			<Send />
-			{messagesLeft()}
+			{#if $configStore.beta}
+				<span class="ps-1">{messagesLeft()}</span>
+			{/if}
 		</button>
 	</div>
 </section>

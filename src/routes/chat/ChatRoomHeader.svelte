@@ -15,8 +15,8 @@
 	export let onlineMembers: string;
 
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
-	$: encrypted = $currentSelectedRoom?.encrypted ?? false;
-	$: ephemeral = $currentSelectedRoom?.ephemeral ?? false;
+	$: encrypted = $currentSelectedRoom?.encrypted == 'AES' ?? false;
+	$: ephemeral = $currentSelectedRoom?.ephemeral == 'EPHEMERAL' ?? false;
 	$: roomName = $currentSelectedRoom?.name ?? 'Select Room';
 	$: epochLengthSeconds = roomRateLimit / 1000;
 	$: timeToNextEpoch = epochLengthSeconds - +timeLeftInEpoch;
@@ -29,17 +29,17 @@
 		<div class="flex flex-row">
 			<span class="place-self-center mr-2">
 				{#if connected}
-					<FullCircle class="w-4 h-4 text-green-500" />
+					<FullCircle class="w-4 h-4 text-green-500" title="Connected to Server" />
 				{:else}
-					<FullCircle class="w-4 h-4 text-error-500" />
+					<FullCircle class="w-4 h-4 text-error-500" title="Not Connected to Server" />
 				{/if}
 			</span>
 			<h2 class="h5 text-secondary-800-100-token" title={roomId}>
 				{#if encrypted}
-					🔒
+					<span title="Room is encrypted">🔒</span>
 				{/if}
 				{#if ephemeral}
-					⏳
+					<span title="Room is ephemeral">⏳</span>
 				{/if}
 				{roomName}
 			</h2>
