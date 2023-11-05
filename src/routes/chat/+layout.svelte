@@ -6,6 +6,7 @@
 
 	onMount(() => {
 		if (!$identityExists) {
+			console.warn('Identity not detected, redirecting to signup page from /chat');
 			goto('/signup');
 		}
 		if (!Object.keys($serverStore).length) {

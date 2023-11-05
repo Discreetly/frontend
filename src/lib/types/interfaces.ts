@@ -44,6 +44,7 @@ export interface SignUpStatusI {
 	completedSignup: boolean;
 	identityBackedUp: boolean;
 	inviteCode?: string;
+	jubmojiProof?: JubmojiProofI;
 }
 
 export interface RoomFormData {
@@ -61,4 +62,10 @@ export interface RoomFormData {
 export interface SNARKProof {
 	proof: object;
 	publicSignals: string[];
+}
+
+export interface JubmojiProofI {
+	R: string;
+	msgHash: string;
+	zkp: SNARKProof;
 }

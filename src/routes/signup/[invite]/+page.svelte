@@ -9,7 +9,11 @@
 
 	onMount(() => {
 		if ($identityExists) {
-			goto('/settings#join-more');
+			console.warn('Invite code saved, routing to /gateways from /signup/[inviteCode]');
+			goto('/gateways');
+		} else {
+			console.warn('Identity not detected, redirecting to signup page from /signup/[inviteCode]');
+			goto('/signup');
 		}
 	});
 </script>

@@ -1,5 +1,5 @@
 import type { MessageI, ServerI } from 'discreetly-interfaces';
-import type { IdentityStoreI, Invites, JoinResponseI, RoomI } from '$lib/types';
+import type { IdentityStoreI, Invites, JoinResponseI, JubmojiProofI, RoomI } from '$lib/types';
 import { Prover } from 'idc-nullifier';
 import type { Identity } from '@semaphore-protocol/identity';
 import { get, getAuth, post, postAuth } from './api';
@@ -81,6 +81,17 @@ export async function postTheWord(
 	data: { proof: object; idc: string }
 ): Promise<JoinResponseI> {
 	const response = post([serverUrl, 'gateway/theword/join'], data) as unknown as JoinResponseI;
+	if (!response.status || !response.roomIds) {
+		throw new Error('Response does not match JoinResponseI interface');
+	}
+	return response;
+}
+
+export async function postJubmojis(
+	serverUrl: string,
+	data: { proof: JubmojiProofI; idc: string }
+): Promise<JoinResponseI> {
+	const response = post([serverUrl, 'gateway/jubmojis/join'], data) as unknown as JoinResponseI;
 	if (!response.status || !response.roomIds) {
 		throw new Error('Response does not match JoinResponseI interface');
 	}

@@ -28,8 +28,17 @@
 					<span>Sign Up</span>
 				</Button>
 			{:else}
-				It looks like you are already signed up!
-				<Button link="/chat" cls="variant-ghost-success">Go Chat</Button>
+				<Button
+					link="https://discord.gg/brJQ36KVxk"
+					cls="variant-ghost-tertiary btn-lg m-2 sm:m-3 px-8 min-w-[12rem]"
+				>
+					<span><Help /></span>
+					<span>Join Our Discord</span></Button
+				>
+				<Button link="/chat" cls="variant-ghost-success  btn-lg m-2 sm:m-3 px-8 min-w-[12rem]">
+					<span><Mask /></span>
+					<span>Go Chat</span>
+				</Button>
 			{/if}
 		</div>
 	</div>

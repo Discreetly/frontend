@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { inviteCode } from '$lib/gateways/inviteCode';
-	import { alertQueue } from '$lib/stores';
+	import { alertQueue, configStore } from '$lib/stores';
+	import { onMount } from 'svelte';
 	export let code = '';
 	export let buttonText = 'Submit';
 	export let hideInput = false;
@@ -78,6 +79,11 @@
 			event.preventDefault();
 		}
 	}
+	onMount(() => {
+		if (code == $configStore.signUpStatus.inviteCode) {
+			addCode(code);
+		}
+	});
 </script>
 
 {#if !hideInput}

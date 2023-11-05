@@ -32,8 +32,7 @@
 	}
 
 	onMount(() => {
-		scrollChatBottom('instant', 1);
-		console.log($currentRoomMessages);
+		scrollChatBottom('instant', 10);
 	});
 </script>
 

@@ -76,7 +76,7 @@
 			<div class="grid grid-flow-rows gap-7 my-5 max-w-md mx-auto">
 				{#each createdCodes as code}
 					<div class="grid grid-flow-rows gap-7 my-5 max-w-md mx-auto">
-						<i class="text-center">https://app.discreetly.chat/join/{Object.values(code)}</i>
+						<i class="text-center">https://app.discreetly.chat/signup/{Object.values(code)}</i>
 					</div>
 				{/each}
 			</div>
