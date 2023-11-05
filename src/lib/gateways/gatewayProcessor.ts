@@ -20,13 +20,16 @@ export async function handleGatewayRequest<T>(
 		alertQueue.enqueue(`Please Create an Identity`, 'error');
 		return null;
 	}
-
+	let result;
 	try {
-		const result = (await apiFunction(server, { ...data, idc })) as JoinResponseI;
+		result = await apiFunction(server, { ...data, idc });
 		console.debug('GATEWAY RESPONSE: ', result);
-
 		let acceptedRoomNames: string[];
-
+		if (!result.status) {
+			alertQueue.enqueue('Error joining room, no status given', 'error');
+			console.warn(result);
+			return null;
+		}
 		switch (result.status) {
 			case 'valid':
 				acceptedRoomNames = await updateRooms(server, result.roomIds);

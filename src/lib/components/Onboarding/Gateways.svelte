@@ -3,6 +3,7 @@
 	import InviteCodeGateway from '$lib/components/Gateways/InviteCode.svelte';
 	import TheWord from '$lib/components/Gateways/TheWord.svelte';
 	import SelectServer from '$lib/components/Server/SelectServer.svelte';
+	import JubmojiGateway from '$lib/components/Gateways/Jubmojis.svelte';
 	import Card from '$lib/components/Utils/Card.svelte';
 	import BullHorn from 'svelte-material-icons/Bullhorn.svelte';
 	import { configStore, numberServers } from '$lib/stores';
@@ -45,6 +46,7 @@
 		<svelte:fragment slot="description"
 			>Prove your collection and get access to special rooms</svelte:fragment
 		>
+		<JubmojiGateway />
 	</Card>
 	<Card>
 		<svelte:fragment slot="header">Join via Ethereum</svelte:fragment>

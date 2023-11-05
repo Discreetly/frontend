@@ -80,7 +80,7 @@
 		}
 	}
 	onMount(() => {
-		if (code == $configStore.signUpStatus.inviteCode) {
+		if (code == $configStore.signUpStatus.inviteCode && code.length >= 7) {
 			addCode(code);
 		}
 	});

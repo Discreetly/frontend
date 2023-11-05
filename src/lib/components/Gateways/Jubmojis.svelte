@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 
 	let loading = false;
+	$: proof = $configStore.signUpStatus.jubmojiProof;
 
 	function validateProof(proof: JubmojiProofI) {
 		loading = true;
@@ -33,10 +34,10 @@
 	});
 </script>
 
-{#if $configStore.signUpStatus.jubmojiProof}
-	<h3 class="h4">Proof Found!</h3>
+{#if proof}
+	<h3 class="h4 mb-2">Proof Found!</h3>
 	{#if !loading}
-		<div class="btn variant-ghost-secondary" on:click={() => validateProof(proof)}>
+		<div class="btn variant-filled-success" on:click={() => proof && validateProof(proof)}>
 			<Creation class="mr-2" />Prove Your Power<MagicStaff />
 		</div>
 	{:else}

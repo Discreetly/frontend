@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import { configStore, identityExists } from '$lib/stores';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
@@ -9,18 +10,16 @@
 			console.error('No proof provided');
 			goto('/gateways');
 		} else {
-			const p = {
-				zkp: {},
-				R: '',
-				msghash: ''
-			};
 			const decodedProof = decodeURIComponent(encodedProof);
-			const step1 = JSON.parse(decodedProof);
-			const step2 = JSON.parse(step1.serializedMembershipProof);
-			p.zkp = step1.zkp;
-			p.R = step2.serializedMembershipProof.R;
-			p.msghash = step2.serializedMembershipProof.msghash;
-			step2.$configStore.signUpStatus.jubmojiProof = p;
+			const stage1 = JSON.parse(decodedProof);
+			const stage2 = JSON.parse(stage1.serializedMembershipProof);
+			$configStore.signUpStatus.jubmojiProof = stage2;
+
+			if ($identityExists) {
+				goto('/gateways');
+			} else {
+				goto('/signup');
+			}
 		}
 	});
 </script>

@@ -9,6 +9,7 @@
 	import Container from '$lib/components/Utils/Container.svelte';
 	import { identityExists } from '$lib/stores';
 	import AnxietyBar from './ui/AnxietyBar.svelte';
+	import SelectServer from '$lib/components/Server/SelectServer.svelte';
 </script>
 
 <Container heading="Manage Settings">
@@ -43,4 +44,12 @@
 			<AnxietyBar />
 		</Container>
 	{/if}
+	<Container>
+		<svelte:fragment slot="header">
+			<h3 class="h3 flex flex-row gap-2 items-center mb-3">
+				<Eye /> Select Your Server
+			</h3></svelte:fragment
+		>
+		<SelectServer />
+	</Container>
 </Container>
