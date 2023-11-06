@@ -2,6 +2,7 @@
 	import { inviteCode } from '$lib/gateways/inviteCode';
 	import { alertQueue, configStore } from '$lib/stores';
 	import { onMount } from 'svelte';
+	import Loading from '$lib/components/Utils/Loading.svelte';
 	export let code = '';
 	export let buttonText = 'Submit';
 	export let hideInput = false;
@@ -107,7 +108,8 @@
 		on:click={() => addCode(code)}>{buttonText}</button
 	>
 {:else}
-	<p class="italic">Loading...</p>
+	<div class="text-primary">Going Anon, please wait...</div>
+	<Loading />
 {/if}
 
 {#if err}
