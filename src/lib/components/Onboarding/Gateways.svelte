@@ -53,7 +53,11 @@
 		<svelte:fragment slot="description"
 			>Are you a genesis staker? Stateful works funder? Join the conversation!
 		</svelte:fragment>
-		<EthereumGroupGateway />
+		{#if $configStore.beta}
+			<EthereumGroupGateway />
+		{:else}
+			<i>Coming soon...</i>
+		{/if}
 	</Card>
 	<Card>
 		<svelte:fragment slot="header"
