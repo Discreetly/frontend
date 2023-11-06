@@ -33,7 +33,7 @@
 				formData.roomName,
 				$configStore.apiUsername as string,
 				$configStore.apiPassword as string,
-				formData.rateLimit,
+				formData.rateLimit * 1000,
 				formData.messageLimit,
 				formData.claimCodes,
 				[idc],

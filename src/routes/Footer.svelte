@@ -68,9 +68,9 @@
 	});
 </script>
 
+<!--
 <div class="card p-4 w-72 shadow-xl" data-popup="popupMenu">
 	<nav class="list-nav">
-		<!-- (optionally you can provide a label here) -->
 		<ul>
 			<li id="will-close">
 				<a href="/about">
@@ -104,7 +104,7 @@
 		</ul>
 	</nav>
 	<div class="arrow bg-surface-100-800-token" />
-</div>
+</div> -->
 <TabGroup
 	justify="justify-center"
 	active="variant-filled-primary"
@@ -149,12 +149,11 @@
 		</TabAnchor>
 	{/if}
 	<a
+		href="/menu"
 		class="tab-anchor text-center cursor-pointer transition-colors duration-100 flex-1 lg:flex-none px-4 py-2 rounded-tl-container-token rounded-tr-container-token hover:variant-soft-primary"
 		title="Menu"
 	>
-		<div use:popup={popupMenu}>
-			<Menu class="rail-icon" />
-			<span>Menu</span>
-		</div>
+		<Menu class="rail-icon" />
+		<span>Menu</span>
 	</a>
 </TabGroup>
