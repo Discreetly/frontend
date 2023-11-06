@@ -5,6 +5,7 @@
 	import { theWordRequest } from '$lib/gateways/theWord';
 	let files: FileList;
 	let loading = false;
+	let acceptedRoomNames: string[] = [];
 
 	function theWordHandler(proof: any) {
 		loading = true;
@@ -60,5 +61,13 @@
 	</section>
 	{#if loading}
 		<Loading />
+	{/if}
+	{#if acceptedRoomNames.length > 0}
+		<p class="text-center mt-2">You've been added to:</p>
+		<div class="my-2">
+			{#each acceptedRoomNames as name}
+				<ins class="ins border-y border-success-800">{name}</ins>
+			{/each}
+		</div>
 	{/if}
 </div>

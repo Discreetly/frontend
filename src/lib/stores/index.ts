@@ -197,8 +197,12 @@ export const numberServers = derived(serverStore, ($serverStore) => {
 export const messagesSent = derived(
 	[currentSelectedRoom, rateLimitStore],
 	([$currentSelectedRoom, $rateLimitStore]) => {
-		if ($currentSelectedRoom.roomId.toString() in $rateLimitStore) {
-			return $rateLimitStore[$currentSelectedRoom.roomId.toString()].messagesSent;
+		if ($currentSelectedRoom && $rateLimitStore) {
+			if ($currentSelectedRoom.roomId.toString() in $rateLimitStore) {
+				return $rateLimitStore[$currentSelectedRoom.roomId.toString()].messagesSent;
+			} else {
+				return 0;
+			}
 		} else {
 			return 0;
 		}

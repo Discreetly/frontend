@@ -80,22 +80,14 @@ export async function postTheWord(
 	serverUrl: string,
 	data: { proof: object; idc: string }
 ): Promise<JoinResponseI> {
-	const response = post([serverUrl, 'gateway/theword/join'], data) as unknown as JoinResponseI;
-	if (!response.status || !response.roomIds) {
-		throw new Error('Response does not match JoinResponseI interface');
-	}
-	return response;
+	return (await post([serverUrl, 'gateway/theword/join'], data)) as Promise<JoinResponseI>;
 }
 
 export async function postJubmojis(
 	serverUrl: string,
 	data: { proof: JubmojiProofI; idc: string }
 ): Promise<JoinResponseI> {
-	const response = post([serverUrl, 'gateway/jubmojis/join'], data) as unknown as JoinResponseI;
-	if (!response.status || !response.roomIds) {
-		throw new Error('Response does not match JoinResponseI interface');
-	}
-	return response;
+	return (await post([serverUrl, 'gateway/jubmojis/join'], data)) as Promise<JoinResponseI>;
 }
 
 export async function getMessages(serverUrl: string, roomId: string) {
