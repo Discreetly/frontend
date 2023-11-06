@@ -64,7 +64,7 @@
 	onMount(() => {
 		setTimeout(() => {
 			drawerStore.close();
-		}, 10);
+		}, 25);
 	});
 </script>
 
@@ -150,10 +150,11 @@
 	{/if}
 	<a
 		class="tab-anchor text-center cursor-pointer transition-colors duration-100 flex-1 lg:flex-none px-4 py-2 rounded-tl-container-token rounded-tr-container-token hover:variant-soft-primary"
-		use:popup={popupMenu}
 		title="Menu"
 	>
-		<Menu class="rail-icon" />
-		<span>Menu</span>
+		<div use:popup={popupMenu}>
+			<Menu class="rail-icon" />
+			<span>Menu</span>
+		</div>
 	</a>
 </TabGroup>
