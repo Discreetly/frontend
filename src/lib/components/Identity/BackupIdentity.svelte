@@ -36,10 +36,25 @@
 			>Download Identity Backup as JSON</a
 		>
 		{#if !revealIdentity}
-			<div class="btn variant-ghost-success" on:click={reveal}>Show Identity</div>
+			<div
+				class="btn variant-ghost-success"
+				on:click={reveal}
+			>
+				Show Identity
+			</div>
 		{:else}
-			<div class="btn variant-ghost-success" on:click={reveal}>Hide Identity</div>
-			<textarea id="reveleadIdentity" class="textarea text-sm" rows="9" value={id} />
+			<div
+				class="btn variant-ghost-success"
+				on:click={reveal}
+			>
+				Hide Identity
+			</div>
+			<textarea
+				id="reveleadIdentity"
+				class="textarea text-sm"
+				rows="9"
+				value={id}
+			/>
 		{/if}
 	{:else if $identityExists == 'encrypted'}
 		<p class="h5 text-primary-500">

@@ -11,8 +11,14 @@
 	}
 </script>
 
-<form on:submit|preventDefault={() => onSubmit()} class="flex flex-col w-full">
-	<label for="setPasswordInput" class="label" />
+<form
+	on:submit|preventDefault={() => onSubmit()}
+	class="flex flex-col w-full"
+>
+	<label
+		for="setPasswordInput"
+		class="label"
+	/>
 	<input
 		id="setPasswordInput"
 		type="password"

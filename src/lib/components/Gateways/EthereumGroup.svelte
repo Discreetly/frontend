@@ -82,7 +82,10 @@
 <div class="flex flex-col gap-3 justify-between">
 	<div>
 		<h3 class="h4 mb-2"><span class="text-success-500">Step 1:</span> Connect your wallet</h3>
-		<button bind:this={btnEl} class="btn variant-outline-tertiary">Connect</button>
+		<button
+			bind:this={btnEl}
+			class="btn variant-outline-tertiary">Connect</button
+		>
 	</div>
 	{#if isConnected}
 		<div>
@@ -100,7 +103,11 @@
 					<span class="text-success-500">Step 2:</span> Sign your Identity Commitment to prove ownership
 					of this address
 				</h3>
-				<button on:click={proveOwnership} id="btn" class="btn variant-outline-success">Sign</button>
+				<button
+					on:click={proveOwnership}
+					id="btn"
+					class="btn variant-outline-success">Sign</button
+				>
 			</div>
 		{:else if loadingRooms}
 			<p>Loading rooms...</p>

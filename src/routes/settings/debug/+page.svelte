@@ -47,7 +47,10 @@
 </script>
 
 <div class="p-4">
-	<div id="status" class="flex flex-col gap-5">
+	<div
+		id="status"
+		class="flex flex-col gap-5"
+	>
 		<div>
 			<h2 class="h3">configStore</h2>
 			<div>Completed Signup: {JSON.stringify($configStore.signUpStatus.completedSignup)}</div>
@@ -103,8 +106,16 @@
 	</div>
 
 	<div class="border-t py-2 my-5">
-		<button class="btn variant-outline-primary m-4" on:click={triggerAlert}>Test Alert</button>
-		<select class="select" name="alertType" id="alertType" bind:value={t}>
+		<button
+			class="btn variant-outline-primary m-4"
+			on:click={triggerAlert}>Test Alert</button
+		>
+		<select
+			class="select"
+			name="alertType"
+			id="alertType"
+			bind:value={t}
+		>
 			{#each c as choice}
 				<option value={choice}>{choice}</option>
 			{/each}

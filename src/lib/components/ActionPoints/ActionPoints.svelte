@@ -10,7 +10,11 @@
 	$: emptycircles = maxHealth - health;
 </script>
 
-<Ratings value={health} max={maxHealth} spacing="space-x-0">
+<Ratings
+	value={health}
+	max={maxHealth}
+	spacing="space-x-0"
+>
 	<svelte:fragment slot="empty">
 		<CircleEmpty class="w-4 h-4 text-surface-600-300-token" />
 	</svelte:fragment>

@@ -46,7 +46,10 @@
 
 <div class="flex flex-col place-content-center max-w-sm m-auto pt-5">
 	<div class="border-b border-spacing-3 pb-5 mb-5">
-		<button on:click={getRooms} class="btn variant-outline-primary">Get Rooms</button>
+		<button
+			on:click={getRooms}
+			class="btn variant-outline-primary">Get Rooms</button
+		>
 		<button
 			on:click={joinRooms}
 			class="btn variant-outline-primary"
@@ -72,11 +75,19 @@
 			<svelte:fragment slot="content"
 				><label class="label">
 					<span>Api Username</span>
-					<input type="text" class="input" bind:value={$configStore.apiUsername} />
+					<input
+						type="text"
+						class="input"
+						bind:value={$configStore.apiUsername}
+					/>
 				</label>
 				<label class="label">
 					<span>Api Password</span>
-					<input type="password" class="input" bind:value={$configStore.apiPassword} />
+					<input
+						type="password"
+						class="input"
+						bind:value={$configStore.apiPassword}
+					/>
 				</label></svelte:fragment
 			>
 		</AccordionItem>

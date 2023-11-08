@@ -88,7 +88,10 @@
 </script>
 
 {#if !hideInput}
-	<label class="label" for="inviteCode">
+	<label
+		class="label"
+		for="inviteCode"
+	>
 		<span class="h5">Enter Invite Code:</span>
 		<input
 			class="input"

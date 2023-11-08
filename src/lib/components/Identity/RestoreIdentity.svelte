@@ -122,6 +122,9 @@
 				placeholder="Paste your Identity Here"
 			/></label
 		>
-		<a class="btn btn-sm variant-ringed-success mb-5" on:click={recoverFromJSON}>Recover</a>
+		<a
+			class="btn btn-sm variant-ringed-success mb-5"
+			on:click={recoverFromJSON}>Recover</a
+		>
 	</section>
 </div>

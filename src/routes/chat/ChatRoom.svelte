@@ -142,7 +142,10 @@
 </script>
 
 {#if $currentSelectedRoom}
-	<div id="chat" class="grid grid-rows-[auto,1fr,auto]">
+	<div
+		id="chat"
+		class="grid grid-rows-[auto,1fr,auto]"
+	>
 		<ChatRoomHeader
 			{connected}
 			{currentEpoch}
@@ -153,16 +156,34 @@
 		/>
 		{#if $configStore.experience == Experiences.Chat}
 			{#key $currentSelectedRoom.roomId}
-				<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
+				<Conversation
+					bind:scrollChatBottom={scrollChatToBottom}
+					{roomRateLimit}
+				/>
 			{/key}
-			<InputPrompt {socket} {connected} {currentEpoch} {userMessageLimit} {roomId} />
+			<InputPrompt
+				{socket}
+				{connected}
+				{currentEpoch}
+				{userMessageLimit}
+				{roomId}
+			/>
 		{:else if $configStore.experience == Experiences.Draw}
 			<Draw />
 		{:else}
 			{#key $currentSelectedRoom.roomId}
-				<Conversation bind:scrollChatBottom={scrollChatToBottom} {roomRateLimit} />
+				<Conversation
+					bind:scrollChatBottom={scrollChatToBottom}
+					{roomRateLimit}
+				/>
 			{/key}
-			<InputPrompt {socket} {connected} {currentEpoch} {userMessageLimit} {roomId} />
+			<InputPrompt
+				{socket}
+				{connected}
+				{currentEpoch}
+				{userMessageLimit}
+				{roomId}
+			/>
 		{/if}
 		<!-- Conversation -->
 
@@ -171,8 +192,9 @@
 {:else}
 	<div class="grid place-content-center">
 		<h6 class="h2 text-center mb-10">You aren't in any rooms...yet</h6>
-		<a href="https://discord.gg/brJQ36KVxk" class="h2 btn btn-sm variant-ringed-secondary"
-			>Join our Discord for help</a
+		<a
+			href="https://discord.gg/brJQ36KVxk"
+			class="h2 btn btn-sm variant-ringed-secondary">Join our Discord for help</a
 		>
 	</div>
 {/if}

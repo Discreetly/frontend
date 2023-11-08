@@ -43,36 +43,60 @@
 </script>
 
 <AppRail height="h-full">
-	<AppRailAnchor href="/about" selected={$page.url.pathname === '/about'} title="About">
+	<AppRailAnchor
+		href="/about"
+		selected={$page.url.pathname === '/about'}
+		title="About"
+	>
 		<svelte:fragment slot="lead"><Information class="rail-icon" /></svelte:fragment>
 		<span>About</span>
 	</AppRailAnchor>
 
 	{#if $identityExists}
-		<AppRailAnchor href="/chat" selected={$page.url.pathname === '/chat'} title="Chat">
+		<AppRailAnchor
+			href="/chat"
+			selected={$page.url.pathname === '/chat'}
+			title="Chat"
+		>
 			<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
 			<span>Chat</span>
 		</AppRailAnchor>
 
-		<AppRailAnchor href="/gateways" selected={$page.url.pathname === '/gateways'} title="About">
+		<AppRailAnchor
+			href="/gateways"
+			selected={$page.url.pathname === '/gateways'}
+			title="About"
+		>
 			<svelte:fragment slot="lead"><Plus class="rail-icon" /></svelte:fragment>
 			<span>Join More</span>
 		</AppRailAnchor>
 
 		{#if $configStore.beta}
-			<AppRailAnchor href="/console" selected={$page.url.pathname === '/console'} title="About">
+			<AppRailAnchor
+				href="/console"
+				selected={$page.url.pathname === '/console'}
+				title="About"
+			>
 				<svelte:fragment slot="lead"><Console class="rail-icon" /></svelte:fragment>
 				<span>Console</span>
 			</AppRailAnchor>
 		{/if}
 		{#if $configStore.apiUsername && $configStore.apiPassword}
-			<AppRailAnchor href="/admin" selected={$page.url.pathname === '/admin'} title="About">
+			<AppRailAnchor
+				href="/admin"
+				selected={$page.url.pathname === '/admin'}
+				title="About"
+			>
 				<svelte:fragment slot="lead"><ShieldCrown class="rail-icon" /></svelte:fragment>
 				<span>Admin</span>
 			</AppRailAnchor>
 		{/if}
 	{:else}
-		<AppRailAnchor href="/signup" selected={$page.url.pathname === '/signup'} title="Sign Up">
+		<AppRailAnchor
+			href="/signup"
+			selected={$page.url.pathname === '/signup'}
+			title="Sign Up"
+		>
 			<svelte:fragment slot="lead"><Mask class="rail-icon" /></svelte:fragment>
 			<span>Sign Up</span>
 		</AppRailAnchor>
@@ -83,14 +107,20 @@
 			<!---PadLock-->
 			{#if $passwordSet}
 				{#if $keyStore instanceof CryptoKey}
-					<AppRailAnchor on:click={lock} title="Unlocked, click to lock">
+					<AppRailAnchor
+						on:click={lock}
+						title="Unlocked, click to lock"
+					>
 						<svelte:fragment slot="lead">
 							<LockOpen class="rail-icon text-warning-300-600-token" />
 						</svelte:fragment>
 						<span>Lock</span>
 					</AppRailAnchor>
 				{:else}
-					<AppRailAnchor on:click={unlock} title="Locked">
+					<AppRailAnchor
+						on:click={unlock}
+						title="Locked"
+					>
 						<svelte:fragment slot="lead">
 							<Lock class="rail-icon text-success-500" />
 						</svelte:fragment>

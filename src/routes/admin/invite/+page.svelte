@@ -66,9 +66,16 @@
 </script>
 
 <div class="flex flex-col place-content-center max-w-sm m-auto pt-5">
-	<div id="qr" class="flex flex-col gap-12 place-content-center">
+	<div
+		id="qr"
+		class="flex flex-col gap-12 place-content-center"
+	>
 		<div>
-			<canvas class="variant-soft-secondary" width="250" height="250" />
+			<canvas
+				class="variant-soft-secondary"
+				width="250"
+				height="250"
+			/>
 			<p>no code generated yet</p>
 		</div>
 	</div>
@@ -98,7 +105,12 @@
 			<svelte:fragment slot="content"
 				><label class="label">
 					<span># Codes: {numCodes}</span>
-					<input type="range" min="1" max="5" bind:value={numCodes} />
+					<input
+						type="range"
+						min="1"
+						max="5"
+						bind:value={numCodes}
+					/>
 				</label></svelte:fragment
 			>
 		</AccordionItem>
@@ -107,7 +119,12 @@
 			<svelte:fragment slot="content"
 				><label class="label">
 					<span># Uses: {usesLeft ? usesLeft : 'Unlimited'}</span>
-					<input type="range" min="0" max="50" bind:value={usesLeft} />
+					<input
+						type="range"
+						min="0"
+						max="50"
+						bind:value={usesLeft}
+					/>
 				</label></svelte:fragment
 			>
 		</AccordionItem>
@@ -116,7 +133,12 @@
 			<svelte:fragment slot="content"
 				><label class="label">
 					<span>Expiration: {daysFromNow} day(s) ({formatRelative(expiresAt, new Date())})</span>
-					<input type="range" min="1" max="14" bind:value={daysFromNow} />
+					<input
+						type="range"
+						min="1"
+						max="14"
+						bind:value={daysFromNow}
+					/>
 				</label></svelte:fragment
 			>
 		</AccordionItem>
@@ -143,11 +165,19 @@
 			<svelte:fragment slot="content"
 				><label class="label">
 					<span>Api Username</span>
-					<input type="text" class="input" bind:value={$configStore.apiUsername} />
+					<input
+						type="text"
+						class="input"
+						bind:value={$configStore.apiUsername}
+					/>
 				</label>
 				<label class="label">
 					<span>Api Password</span>
-					<input type="password" class="input" bind:value={$configStore.apiPassword} />
+					<input
+						type="password"
+						class="input"
+						bind:value={$configStore.apiPassword}
+					/>
 				</label></svelte:fragment
 			>
 		</AccordionItem>

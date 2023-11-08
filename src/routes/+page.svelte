@@ -23,7 +23,10 @@
 					<span><Help /></span>
 					<span>Join Our Discord</span></Button
 				>
-				<Button link="/signup" cls="variant-ghost-primary btn-lg m-2 sm:m-3 px-8 min-w-[12rem]">
+				<Button
+					link="/signup"
+					cls="variant-ghost-primary btn-lg m-2 sm:m-3 px-8 min-w-[12rem]"
+				>
 					<span><Mask /></span>
 					<span>Sign Up</span>
 				</Button>
@@ -35,7 +38,10 @@
 					<span><Help /></span>
 					<span>Join Our Discord</span></Button
 				>
-				<Button link="/chat" cls="variant-ghost-success  btn-lg m-2 sm:m-3 px-8 min-w-[12rem]">
+				<Button
+					link="/chat"
+					cls="variant-ghost-success  btn-lg m-2 sm:m-3 px-8 min-w-[12rem]"
+				>
 					<span><Mask /></span>
 					<span>Go Chat</span>
 				</Button>

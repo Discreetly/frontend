@@ -47,7 +47,11 @@
 		<h3 class="h4">Delete Your Identity & Reset Application</h3>
 	</header>
 	<section class="px-4 pt-4">
-		<input type="checkbox" id="checkbox" class="mx-2 p-1" />
+		<input
+			type="checkbox"
+			id="checkbox"
+			class="mx-2 p-1"
+		/>
 		<span class="ms-2"
 			>I promise I backed up my identity, or I really want to destroy it forever.</span
 		>

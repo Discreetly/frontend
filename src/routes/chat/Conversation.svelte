@@ -64,13 +64,13 @@
 					<footer class="flex justify-between items-center text-xs md:text-sm pb-1">
 						<small class="opacity-50 text-surface-600-300-token mr-2 md:mr-4">{getTime(msg)}</small>
 						{#if msg.epoch}
-							<small class="hidden md:block opacity-50 text-surface-500-400-token"
-								>epoch: {msg.epoch}</small
-							>
+							<small class="hidden md:block opacity-50 text-surface-500-400-token">
+								epoch: {msg.epoch}
+							</small>
 						{:else}
-							<small class="hidden md:block opacity-70 text-error-500-400-token"
-								>SYSTEM MESSAGE</small
-							>
+							<small class="hidden md:block opacity-70 text-error-500-400-token">
+								SYSTEM MESSAGE
+							</small>
 						{/if}
 					</footer>
 				</div>

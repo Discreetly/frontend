@@ -4,6 +4,10 @@
 	export let text: string | undefined = '';
 </script>
 
-<a href={link} class="btn px-4 d-inline-flex align-items-center {cls}" type="button">
+<a
+	href={link}
+	class="btn px-4 d-inline-flex align-items-center {cls}"
+	type="button"
+>
 	<slot>{text}</slot>
 </a>

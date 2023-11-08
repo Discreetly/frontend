@@ -28,7 +28,10 @@
 			<TrashCan />
 		</button>
 	</header>
-	<section class="p-4 overflow-y-scroll overflow-x-hidden" bind:this={elemChat}>
+	<section
+		class="p-4 overflow-y-scroll overflow-x-hidden"
+		bind:this={elemChat}
+	>
 		{#each $consoleStore.messages as line, idx}
 			<p class={line.type}>{line.message}</p>
 		{/each}

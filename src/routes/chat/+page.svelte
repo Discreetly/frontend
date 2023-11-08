@@ -3,7 +3,10 @@
 	import Sidebar from './Sidebar.svelte';
 </script>
 
-<section id="chat-wrapper" class="bg-surface-50-900-token">
+<section
+	id="chat-wrapper"
+	class="bg-surface-50-900-token"
+>
 	<Sidebar />
 	<ChatRoom />
 </section>

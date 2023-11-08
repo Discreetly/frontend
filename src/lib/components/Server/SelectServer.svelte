@@ -27,9 +27,17 @@
 </script>
 
 <div class="input-group input-group-divider grid-cols-[1fr_auto]">
-	<select class="select" bind:value={$selectedServer} title="Choose a server" id="selectServer">
+	<select
+		class="select"
+		bind:value={$selectedServer}
+		title="Choose a server"
+		id="selectServer"
+	>
 		{#each Object.entries($serverStore) as [key, s]}
-			<option value={key} title={key}>{s.name}</option>
+			<option
+				value={key}
+				title={key}>{s.name}</option
+			>
 		{/each}
 	</select>
 	<button

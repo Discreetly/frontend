@@ -4,7 +4,10 @@
 	import { numberServers } from '$lib/stores';
 </script>
 
-<div id="sidebar" class="hidden sm:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
+<div
+	id="sidebar"
+	class="hidden sm:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30"
+>
 	<!-- Header -->
 	{#if $numberServers > 1}
 		<header class="border-b border-surface-500/30 p-1">

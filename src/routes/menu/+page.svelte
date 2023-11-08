@@ -15,13 +15,13 @@
 				<li id="will-close">
 					<a href="/about">
 						<Information />
-						<span class="flex-auto">About</span>
+						<span class="flex-auto"> About </span>
 					</a>
 				</li>
 				{#if $identityExists}
 					<li id="will-close">
-						<a href="/gateways"
-							><Plus />
+						<a href="/gateways">
+							<Plus />
 							<span class="flex-auto">Join More</span>
 						</a>
 					</li>

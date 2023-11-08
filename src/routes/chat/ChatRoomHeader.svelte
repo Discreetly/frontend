@@ -29,12 +29,21 @@
 		<div class="flex flex-row">
 			<span class="place-self-center mr-2">
 				{#if connected}
-					<FullCircle class="w-4 h-4 text-green-500" title="Connected to Server" />
+					<FullCircle
+						class="w-4 h-4 text-green-500"
+						title="Connected to Server"
+					/>
 				{:else}
-					<FullCircle class="w-4 h-4 text-error-500" title="Not Connected to Server" />
+					<FullCircle
+						class="w-4 h-4 text-error-500"
+						title="Not Connected to Server"
+					/>
 				{/if}
 			</span>
-			<h2 class="h5 text-secondary-800-100-token" title={roomId}>
+			<h2
+				class="h5 text-secondary-800-100-token"
+				title={roomId}
+			>
 				{#if encrypted}
 					<span title="Room is encrypted">🔒</span>
 				{/if}
@@ -68,14 +77,23 @@
 			)}/${epochLengthSeconds}s]`}
 		>
 			{#if $configStore.beta === true}<ExperienceMenu />{/if}
-			<AP health={userMessageLimit - $messagesSent} maxHealth={userMessageLimit} />
+			<AP
+				health={userMessageLimit - $messagesSent}
+				maxHealth={userMessageLimit}
+			/>
 			{#if $configStore.anxietyBar === false}
-				<Clock time={timeToNextEpoch} maxTime={epochLengthSeconds} />
+				<Clock
+					time={timeToNextEpoch}
+					maxTime={epochLengthSeconds}
+				/>
 			{/if}
 		</div>
 	</div>
 	{#if $configStore.anxietyBar === true}
-		<ProgressBar value={timeToNextEpoch} max={epochLengthSeconds} />
+		<ProgressBar
+			value={timeToNextEpoch}
+			max={epochLengthSeconds}
+		/>
 	{/if}
 </header>
 

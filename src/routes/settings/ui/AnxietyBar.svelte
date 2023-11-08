@@ -31,7 +31,12 @@
 				epoch. This was hidden because it gives some users anxiety, but we wanted to leave it as an
 				option for those that think its fun.
 			</p>
-			<select id="anxiety-bar" class="select py-4" size="2" bind:value={$configStore.anxietyBar}>
+			<select
+				id="anxiety-bar"
+				class="select py-4"
+				size="2"
+				bind:value={$configStore.anxietyBar}
+			>
 				<option value={true}>Anxiety On</option>
 				<option value={false}>Anxiety Off (Default)</option>
 			</select>
@@ -45,7 +50,12 @@
 					<span class="place-self-center mr-2">
 						<FullCircle class="w-4 h-4 text-green-500" />
 					</span>
-					<h2 class="h5 text-secondary-800-100-token" title="Example Room">Example Room</h2>
+					<h2
+						class="h5 text-secondary-800-100-token"
+						title="Example Room"
+					>
+						Example Room
+					</h2>
 					<div class="hidden sm:block ms-2 text-xs font-mono self-center">
 						[{timeToNextEpoch.toFixed(1)}/{epochLengthSeconds}s]
 					</div>
@@ -63,14 +73,23 @@
 					class="flex flex-row place-content-center"
 					title={`These are action points, you get 4 messages every 20 seconds`}
 				>
-					<AP health={4} maxHealth={6} />
+					<AP
+						health={4}
+						maxHealth={6}
+					/>
 					{#if $configStore.anxietyBar === false}
-						<Clock time={timeToNextEpoch} maxTime={epochLengthSeconds} />
+						<Clock
+							time={timeToNextEpoch}
+							maxTime={epochLengthSeconds}
+						/>
 					{/if}
 				</div>
 			</div>
 			{#if $configStore.anxietyBar === true}
-				<ProgressBar value={timeToNextEpoch} max={epochLengthSeconds} />
+				<ProgressBar
+					value={timeToNextEpoch}
+					max={epochLengthSeconds}
+				/>
 			{/if}
 		</header>
 	</section>

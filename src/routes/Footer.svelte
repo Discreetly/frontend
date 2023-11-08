@@ -68,8 +68,10 @@
 	});
 </script>
 
-<!--
-<div class="card p-4 w-72 shadow-xl" data-popup="popupMenu">
+<div
+	class="card p-4 w-72 shadow-xl"
+	data-popup="popupMenu"
+>
 	<nav class="list-nav">
 		<ul>
 			<li id="will-close">
@@ -104,7 +106,7 @@
 		</ul>
 	</nav>
 	<div class="arrow bg-surface-100-800-token" />
-</div> -->
+</div>
 <TabGroup
 	justify="justify-center"
 	active="variant-filled-primary"
@@ -112,13 +114,20 @@
 	flex="flex-1 lg:flex-none"
 	class="bg-surface-100-800-token w-full"
 	>{#if $identityExists}
-		<TabAnchor href="/chat" selected={$page.url.pathname === '/chat'} title="Chat">
-			<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
-			<span>Chat</span>
-		</TabAnchor>
-
-		{#if $page.url.pathname === '/chat'}
-			<TabAnchor on:click={drawerOpen} title="Select Room">
+		{#if $page.url.pathname !== '/chat'}
+			<TabAnchor
+				href="/chat"
+				selected={$page.url.pathname === '/chat'}
+				title="Chat"
+			>
+				<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
+				<span>Chat</span>
+			</TabAnchor>
+		{:else}
+			<TabAnchor
+				on:click={drawerOpen}
+				title="Select Room"
+			>
 				<svelte:fragment slot="lead"><Door class="rail-icon" /></svelte:fragment>
 				<span>Select Room</span>
 			</TabAnchor>
@@ -126,14 +135,20 @@
 		{#if loaded}
 			{#if $passwordSet}
 				{#if $keyStore instanceof CryptoKey}
-					<TabAnchor on:click={lock} title="Unlocked, click to lock">
+					<TabAnchor
+						on:click={lock}
+						title="Unlocked, click to lock"
+					>
 						<svelte:fragment slot="lead">
 							<LockOpen class="rail-icon text-warning-300-600-token" />
 						</svelte:fragment>
 						<span>Lock</span>
 					</TabAnchor>
 				{:else}
-					<TabAnchor on:click={unlock} title="Locked">
+					<TabAnchor
+						on:click={unlock}
+						title="Locked"
+					>
 						<svelte:fragment slot="lead">
 							<Lock class="rail-icon text-success-500" />
 						</svelte:fragment>
@@ -143,15 +158,19 @@
 			{/if}
 		{/if}
 	{:else}
-		<TabAnchor href="/signup" selected={$page.url.pathname === '/signup'} title="SignUp">
+		<TabAnchor
+			href="/signup"
+			selected={$page.url.pathname === '/signup'}
+			title="SignUp"
+		>
 			<svelte:fragment slot="lead"><Mask class="rail-icon" /></svelte:fragment>
 			<span>SignUp</span>
 		</TabAnchor>
 	{/if}
 	<a
-		href="/menu"
 		class="tab-anchor text-center cursor-pointer transition-colors duration-100 flex-1 lg:flex-none px-4 py-2 rounded-tl-container-token rounded-tr-container-token hover:variant-soft-primary"
 		title="Menu"
+		use:popup={popupMenu}
 	>
 		<Menu class="rail-icon" />
 		<span>Menu</span>

@@ -33,15 +33,30 @@
 			<div class="border-t mt-3 pt-2 mb-2 sm:mb-4 flex flex-col place-items-center">
 				<div class="my-2">
 					<h6 class="h6 text-center mb-2">Demo</h6>
-					<AP {health} {maxHealth} />
+					<AP
+						{health}
+						{maxHealth}
+					/>
 				</div>
-				<RangeSlider name="range-slider" bind:value={health} max={maxHealth} step={1} ticked>
+				<RangeSlider
+					name="range-slider"
+					bind:value={health}
+					max={maxHealth}
+					step={1}
+					ticked
+				>
 					<div class="flex justify-between items-center">
 						<div class="font-bold">Health</div>
 						<div class="text-xs">{health} / {maxHealth}</div>
 					</div>
 				</RangeSlider>
-				<RangeSlider name="range-slider" bind:value={maxHealth} max={10} step={1} ticked>
+				<RangeSlider
+					name="range-slider"
+					bind:value={maxHealth}
+					max={10}
+					step={1}
+					ticked
+				>
 					<div class="flex justify-between items-center">
 						<div class="font-bold">Max Health</div>
 						<div class="text-xs">{maxHealth} / {10}</div>

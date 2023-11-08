@@ -40,7 +40,10 @@
 {#if proof}
 	<h3 class="h4 mb-2">Proof Found!</h3>
 	{#if !loading}
-		<div class="btn variant-filled-success" on:click={() => proof && validateProof(proof)}>
+		<div
+			class="btn variant-filled-success"
+			on:click={() => proof && validateProof(proof)}
+		>
 			<Creation class="mr-2" />Prove Your Power<MagicStaff />
 		</div>
 	{:else}
@@ -48,7 +51,9 @@
 		<Loading />
 	{/if}
 {:else}
-	<a class="btn variant-ghost-secondary" href="https://www.jubmoji.quest/powers"
+	<a
+		class="btn variant-ghost-secondary"
+		href="https://www.jubmoji.quest/powers"
 		><Creation class="mr-2" />Harness Your Power<MagicStaff /></a
 	>
 {/if}

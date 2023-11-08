@@ -16,7 +16,10 @@
 	}
 </script>
 
-<span on:click={nextExperience} class="flex flex-row ms-2 place-items-center">
+<span
+	on:click={nextExperience}
+	class="flex flex-row ms-2 place-items-center"
+>
 	{#if experience == Experiences.Chat}
 		<Palette class="w-5 h-5" />
 	{:else if experience == Experiences.Draw}

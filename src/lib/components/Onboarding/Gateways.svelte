@@ -15,7 +15,10 @@
 		<SelectServer />
 	</div>
 {/if}
-<div id="gateway-cards" class="grid">
+<div
+	id="gateway-cards"
+	class="grid"
+>
 	<Card>
 		<svelte:fragment slot="header">Join via invite code</svelte:fragment>
 		<svelte:fragment slot="description">If you were given an invite code, you can</svelte:fragment>
@@ -64,8 +67,10 @@
 			><span class="flex gap-3">The Word <BullHorn /></span></svelte:fragment
 		>
 		<svelte:fragment slot="description"
-			>Do you know <a class="link" target="_blank" href="https://github.com/Mach-34/the-word/"
-				>the word</a
+			>Do you know <a
+				class="link"
+				target="_blank"
+				href="https://github.com/Mach-34/the-word/">the word</a
 			>? Prove it.
 		</svelte:fragment>
 		<TheWord />

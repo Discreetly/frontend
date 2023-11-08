@@ -4,7 +4,7 @@
 
 	import { goto } from '$app/navigation';
 	import { Stepper, Step, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
-	import { createIdentity, addConsoleMessage, unlockPadlock } from '$lib/utils';
+	import { createIdentity, addConsoleMessage, unlockPadlock, getIdentityBackup } from '$lib/utils';
 	import Lock from 'svelte-material-icons/Lock.svelte';
 	import Introduction from '$lib/components/Onboarding/Introduction.svelte';
 	import SetPassword from '$lib/components/Security/SetPasswordInput.svelte';
@@ -17,6 +17,20 @@
 
 	const modalStore = getModalStore();
 	let restoreIdentity = false;
+
+	function createAndBackupIdentity() {
+		createIdentity();
+		$configStore.signUpStatus.identityBackedUp = true;
+		const id = getIdentityBackup();
+		const a = document.createElement('a');
+		const url = 'data:text/json;charset=utf-8,' + encodeURIComponent(id!);
+		a.href = url;
+		a.download = 'Discreetly_Identity.json';
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
 
 	function unlock() {
 		const modal: ModalSettings = {
@@ -95,7 +109,7 @@
 		{#if $identityExists == null}
 			<div class="flex flex-col gap-3">
 				<button
-					on:click={() => createIdentity()}
+					on:click={() => createAndBackupIdentity()}
 					class="btn btn-lg variant-ghost-success"
 					type="button"
 				>
@@ -108,7 +122,7 @@
 					class="btn variant-ghost-primary"
 					type="button"
 				>
-					<span><BackupRestore /></span>
+					<span id="backup"><BackupRestore /></span>
 					<span>Restore Identity</span>
 				</button>
 			</div>
@@ -121,8 +135,12 @@
 				<Lock class="h3 m-auto" />
 			</div>
 		{:else}
-			<p class="h4 text-center mt-5">
-				Backup your identity and then press next to continue, last step
+			<p class="text-xl text-center">
+				We have <span class="text-primary-500">downloaded your identity</span> for you
+				<span class="text-primary-500">save it somewhere safe</span>
+			</p>
+			<p class="text-xl text-center">
+				and then <span class="text-success-500">press next</span> to continue, last step
 			</p>
 			<Backup />
 		{/if}

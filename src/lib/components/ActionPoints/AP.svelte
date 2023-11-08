@@ -10,13 +10,28 @@
 </script>
 
 {#if $configStore.actionRepresentation == ActionRepresentationE.AP}
-	<AP {health} {maxHealth} />
+	<AP
+		{health}
+		{maxHealth}
+	/>
 {:else if $configStore.actionRepresentation == ActionRepresentationE.Hearts}
-	<Hearts {health} {maxHealth} />
+	<Hearts
+		{health}
+		{maxHealth}
+	/>
 {:else if $configStore.actionRepresentation == ActionRepresentationE.Shields}
-	<Shields {health} {maxHealth} />
+	<Shields
+		{health}
+		{maxHealth}
+	/>
 {:else if $configStore.actionRepresentation == ActionRepresentationE.Battery}
-	<Battery {health} {maxHealth} />
+	<Battery
+		{health}
+		{maxHealth}
+	/>
 {:else}
-	<AP {health} {maxHealth} />
+	<AP
+		{health}
+		{maxHealth}
+	/>
 {/if}

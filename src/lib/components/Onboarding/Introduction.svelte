@@ -10,25 +10,44 @@
 	{/if}
 
 	<p>
-		<b>True Anonymity</b> <span role="img" aria-label="Shield">🛡️</span> Chat without revealing your
-		identity, thanks to
-		<a class="link" href="semaphore.pse.dev">Semaphore</a>.
+		<b>True Anonymity</b>
+		<span
+			role="img"
+			aria-label="Shield">🛡️</span
+		>
+		Chat without revealing your identity, thanks to
+		<a
+			class="link"
+			href="semaphore.pse.dev">Semaphore</a
+		>.
 	</p>
 	<p>
-		<b>Zero-Knowledge Spam Prevention</b> <span role="img" aria-label="Detective">🕵️</span> Powered
-		by
-		<a class="link" href="https://rate-limiting-nullifier.github.io/rln-docs/"
-			>Rate Limiting Nullifier</a
+		<b>Zero-Knowledge Spam Prevention</b>
+		<span
+			role="img"
+			aria-label="Detective">🕵️</span
+		>
+		Powered by
+		<a
+			class="link"
+			href="https://rate-limiting-nullifier.github.io/rln-docs/">Rate Limiting Nullifier</a
 		>, an anti-spam technology that ensures everyone can participate fairly.
 	</p>
 	<p>
-		<b>Own Your Identity</b> <span role="img" aria-label="Lock">🔐</span> Be in full control of your
-		anonymity. Remember to
+		<b>Own Your Identity</b>
+		<span
+			role="img"
+			aria-label="Lock">🔐</span
+		>
+		Be in full control of your anonymity. Remember to
 		<i class="text-primary-500">backup your credentials</i>—once lost, they're irretrievable.
 	</p>
 	<p>
-		<b>Gated Communities</b> <span role="img" aria-label="Lock">🔏</span> Most communities can only be
-		joined once, use it wisely.
+		<b>Gated Communities</b>
+		<span
+			role="img"
+			aria-label="Lock">🔏</span
+		> Most communities can only be joined once, use it wisely.
 	</p>
 </Card>
 
