@@ -23,27 +23,23 @@
 </script>
 
 <header
-	class="flex flex-col text-xs md:text-base border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3"
->
+	class="flex flex-col text-xs md:text-base border-b border-surface-500/30 px-2 py-1 md:px-5 md:py-3">
 	<div class="flex flex-row justify-between place-items-center mb-2">
 		<div class="flex flex-row">
 			<span class="place-self-center mr-2">
 				{#if connected}
 					<FullCircle
 						class="w-4 h-4 text-green-500"
-						title="Connected to Server"
-					/>
+						title="Connected to Server" />
 				{:else}
 					<FullCircle
 						class="w-4 h-4 text-error-500"
-						title="Not Connected to Server"
-					/>
+						title="Not Connected to Server" />
 				{/if}
 			</span>
 			<h2
 				class="h5 text-secondary-800-100-token"
-				title={roomId}
-			>
+				title={roomId}>
 				{#if encrypted}
 					<span title="Room is encrypted">🔒</span>
 				{/if}
@@ -63,10 +59,9 @@
 				<span
 					class:connected
 					class="flex flex-row align-middle text-sm font-mono text-secondary-300-600-token"
-					title="Online Users"
-				>
+					title="Online Users">
 					<Person />
-					{onlineMembers}
+					~{onlineMembers}
 				</span>
 			{/if}
 		</div>
@@ -74,26 +69,22 @@
 			class="flex flex-row place-content-center"
 			title={`These are action points, you get ${userMessageLimit} every ${epochLengthSeconds} seconds. [${timeToNextEpoch.toFixed(
 				0
-			)}/${epochLengthSeconds}s]`}
-		>
+			)}/${epochLengthSeconds}s]`}>
 			{#if $configStore.beta === true}<ExperienceMenu />{/if}
 			<AP
 				health={userMessageLimit - $messagesSent}
-				maxHealth={userMessageLimit}
-			/>
+				maxHealth={userMessageLimit} />
 			{#if $configStore.anxietyBar === false}
 				<Clock
 					time={timeToNextEpoch}
-					maxTime={epochLengthSeconds}
-				/>
+					maxTime={epochLengthSeconds} />
 			{/if}
 		</div>
 	</div>
 	{#if $configStore.anxietyBar === true}
 		<ProgressBar
 			value={timeToNextEpoch}
-			max={epochLengthSeconds}
-		/>
+			max={epochLengthSeconds} />
 	{/if}
 </header>
 

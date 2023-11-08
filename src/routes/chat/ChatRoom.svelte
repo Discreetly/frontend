@@ -5,7 +5,8 @@
 		rateLimitStore,
 		selectedServer,
 		configStore,
-		currentRoomsStore
+		currentRoomsStore,
+		numberServers
 	} from '$lib/stores';
 	import { Experiences } from '$lib/types';
 	import { addMessageToRoom, getTimestampFromEpoch, updateMessages, updateRooms } from '$lib/utils';
@@ -17,6 +18,7 @@
 	import Conversation from './Conversation.svelte';
 	import Draw from './Draw.svelte';
 	import InputPrompt from './ChatInputPrompt.svelte';
+	import { randomInt } from 'crypto';
 
 	const toastStore = getToastStore();
 
@@ -119,7 +121,9 @@
 			}
 			socket.on('Members', (data: string) => {
 				console.debug(`Members Online: ${data}`);
-				onlineMembers = data;
+				const numVal = Number(data);
+				// rand is for you + noise to stop people from knowing exactly how many people are online, in case someone wants to refresh their session and get a new Session ID
+				onlineMembers = String('~' + numVal + randomInt(1, 3));
 			});
 
 			socket.on('systemBroadcast', (data: string) => {
@@ -144,46 +148,40 @@
 {#if $currentSelectedRoom}
 	<div
 		id="chat"
-		class="grid grid-rows-[auto,1fr,auto]"
-	>
+		class="grid grid-rows-[auto,1fr,auto]">
 		<ChatRoomHeader
 			{connected}
 			{currentEpoch}
 			{timeLeftInEpoch}
 			{userMessageLimit}
 			{roomRateLimit}
-			{onlineMembers}
-		/>
+			{onlineMembers} />
 		{#if $configStore.experience == Experiences.Chat}
 			{#key $currentSelectedRoom.roomId}
 				<Conversation
 					bind:scrollChatBottom={scrollChatToBottom}
-					{roomRateLimit}
-				/>
+					{roomRateLimit} />
 			{/key}
 			<InputPrompt
 				{socket}
 				{connected}
 				{currentEpoch}
 				{userMessageLimit}
-				{roomId}
-			/>
+				{roomId} />
 		{:else if $configStore.experience == Experiences.Draw}
 			<Draw />
 		{:else}
 			{#key $currentSelectedRoom.roomId}
 				<Conversation
 					bind:scrollChatBottom={scrollChatToBottom}
-					{roomRateLimit}
-				/>
+					{roomRateLimit} />
 			{/key}
 			<InputPrompt
 				{socket}
 				{connected}
 				{currentEpoch}
 				{userMessageLimit}
-				{roomId}
-			/>
+				{roomId} />
 		{/if}
 		<!-- Conversation -->
 
@@ -194,8 +192,7 @@
 		<h6 class="h2 text-center mb-10">You aren't in any rooms...yet</h6>
 		<a
 			href="https://discord.gg/brJQ36KVxk"
-			class="h2 btn btn-sm variant-ringed-secondary">Join our Discord for help</a
-		>
+			class="h2 btn btn-sm variant-ringed-secondary">Join our Discord for help</a>
 	</div>
 {/if}
 
