@@ -18,7 +18,7 @@
 		Chat without revealing your identity, thanks to
 		<a
 			class="link"
-			href="semaphore.pse.dev">Semaphore</a
+			href="https://semaphore.pse.dev">Semaphore</a
 		>.
 	</p>
 	<p>
