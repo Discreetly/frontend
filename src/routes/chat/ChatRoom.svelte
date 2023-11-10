@@ -113,11 +113,7 @@
 		});
 
 		socket.on('Members', (data: string) => {
-			const numVal = Number(data);
-			// rand is for you + noise to stop people from knowing exactly how many people are online, in case someone wants to refresh their session and get a new Session ID
-			const rand = Math.floor(Math.random() * 2);
-			const val = numVal + rand;
-			onlineMembers = String('~' + val);
+			onlineMembers = data;
 		});
 
 		socket.on('systemBroadcast', (data: string) => {

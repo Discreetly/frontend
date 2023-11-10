@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import BubbleText from './BubbleText.svelte';
 	import { minidenticon } from 'minidenticons';
-	import { bubbleBgFromSessionId, colorFromSessionId } from '$lib/utils/color';
+	import { bubbleBgFromSessionId } from '$lib/utils/color';
 
 	export let roomRateLimit: number;
 
@@ -39,21 +39,18 @@
 <section
 	id="conversation"
 	bind:this={elemChat}
-	class="p-2 md:p-4 overflow-y-auto space-y-2 md:space-y-4"
->
+	class="p-2 md:p-4 overflow-y-auto space-y-2 md:space-y-4">
 	{#if $currentRoomMessages}
 		{#each $currentRoomMessages as msg}
 			<div class="flex flex-col items-start">
 				<div
 					class="card px-2 md:px-3 space-y-1 md:space-y-2 border border-surface-500/30 border-x-transparent"
-					style={bubbleBgFromSessionId(msg.sessionId)}
-				>
+					style={bubbleBgFromSessionId(msg.sessionId)}>
 					<div class="pt-2 md:pt-4 flex gap-2 md:gap-3 pr-1">
 						{#if msg.sessionId}
 							<div
 								title="avatar"
-								class="flex-none w-[2.5rem] h-[2.5rem] bg-surface-500/40 rounded-full p-1"
-							>
+								class="flex-none w-[2.5rem] h-[2.5rem] bg-surface-500/40 rounded-full p-1">
 								{@html getAvatar(msg.sessionId)}
 							</div>
 						{/if}

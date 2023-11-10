@@ -104,7 +104,6 @@ export function addMessageToRoom(roomId: string, data: MessageI) {
 		if (typeof data.proof === 'string') {
 			data.proof = JSON.parse(data.proof as string);
 		}
-
 		if (!data.epoch) {
 			data.epoch = getEpochFromTimestamp(
 				get(currentSelectedRoom).rateLimit!,

@@ -16,21 +16,22 @@ interface IdentityData extends IdentityStoreI {
 export async function getIdentityRoomIds(server: string): Promise<string[]> {
 	const prover = new Prover('idcNullifier/circuit.wasm', 'idcNullifier/final.zkey');
 	const id = getIdentity() as IdentityData;
+	const idForProof: Partial<IdentityData> = {};
 	if (id) {
 		const timestamp = BigInt(Date.now());
-		id.trapdoor = id._trapdoor;
-		id.nullifier = id._nullifier;
-		id.secret = id._secret;
-		id.commitment = id._commitment;
+		idForProof.trapdoor = id._trapdoor;
+		idForProof.nullifier = id._nullifier;
+		idForProof.secret = id._secret;
+		idForProof.commitment = id._commitment;
 
 		// Proves you know the identity secret with a timestamp so this proof can't be replayed
 		prover
 			.generateProof({
-				identity: id as unknown as Identity,
+				identity: idForProof as unknown as Identity,
 				externalNullifier: timestamp
 			})
-			.then((proof) => {
-				return post([server, `identity/${id._commitment}`], proof) as Promise<string[]>;
+			.then(async (proof) => {
+				return (await post([server, `identity/${id._commitment}`], proof)) as Promise<string[]>;
 			});
 	} else {
 		alertQueue.enqueue('No identity found when fetching rooms', 'error');
