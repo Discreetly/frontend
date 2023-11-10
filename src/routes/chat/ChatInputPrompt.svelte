@@ -13,7 +13,6 @@
 	import { getIdentity, clearMessageHistory } from '$lib/utils';
 	import Send from 'svelte-material-icons/Send.svelte';
 	import { decrypt, encrypt } from '$lib/crypto/crypto';
-	import { onMount } from 'svelte';
 
 	export let socket: Socket;
 	export let connected: boolean;
@@ -198,7 +197,7 @@
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {
-		if (['Enter'].includes(event.key)) {
+		if (['Enter'].includes(event.key) && !event.shiftKey) {
 			const value = (event.currentTarget as HTMLInputElement).value;
 			event.preventDefault();
 			if (value.startsWith('/')) {
@@ -223,16 +222,14 @@
 			placeholder={placeholderText()}
 			rows="1"
 			on:keydown={onPromptKeydown}
-			disabled={!canSendMessage}
-		/>
+			disabled={!canSendMessage} />
 		<button
 			class:hidden={!canSendMessage}
 			class={canSendMessage && messageText
 				? 'border-none text-xs md:text-base variant-soft-success'
 				: 'border-none text-xs md:text-base variant-soft-secondary'}
 			disabled={!canSendMessage}
-			on:click={sendMessage}
-		>
+			on:click={sendMessage}>
 			<Send />
 			{#if $configStore.beta}
 				<span class="ps-1">{messagesLeft()}</span>

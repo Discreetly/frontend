@@ -18,7 +18,6 @@
 	import Conversation from './Conversation.svelte';
 	import Draw from './Draw.svelte';
 	import InputPrompt from './ChatInputPrompt.svelte';
-	import { randomInt } from 'crypto';
 
 	const toastStore = getToastStore();
 
@@ -78,8 +77,9 @@
 		socket.on('connect', () => {
 			connected = true;
 			const engine = socket.io.engine;
-
-			updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
+			if ($currentSelectedRoom?.ephemeral == 'PERSISTENT') {
+				updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
+			}
 			if ($configStore.experience == Experiences.Chat) {
 				scrollChatToBottom();
 			}
@@ -112,6 +112,19 @@
 			console.debug('chat websocket error', err.message);
 		});
 
+		socket.on('Members', (data: string) => {
+			const numVal = Number(data);
+			// rand is for you + noise to stop people from knowing exactly how many people are online, in case someone wants to refresh their session and get a new Session ID
+			const rand = Math.floor(Math.random() * 2);
+			const val = numVal + rand;
+			onlineMembers = String('~' + val);
+		});
+
+		socket.on('systemBroadcast', (data: string) => {
+			toastStore.trigger({ message: data, timeout: 3000 });
+			console.debug('Received System Message: ', data);
+		});
+
 		socket.on('messageBroadcast', (data: MessageI) => {
 			console.debug('Received Message: ', data);
 			const roomId = data.roomId?.toString();
@@ -119,19 +132,6 @@
 				addMessageToRoom(roomId, data);
 				scrollChatToBottom();
 			}
-			socket.on('Members', (data: string) => {
-				console.debug(`Members Online: ${data}`);
-				const numVal = Number(data);
-				// rand is for you + noise to stop people from knowing exactly how many people are online, in case someone wants to refresh their session and get a new Session ID
-				onlineMembers = String('~' + numVal + randomInt(1, 3));
-			});
-
-			socket.on('systemBroadcast', (data: string) => {
-				toastStore.trigger({ message: data, timeout: 3000 });
-				console.debug('Received System Message: ', data);
-			});
-
-			scrollChatToBottom();
 		});
 
 		epochUpdater = setInterval(() => {

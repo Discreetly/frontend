@@ -41,9 +41,9 @@ function updateRoomStore(rooms: RoomI[], serverURL: string = get(selectedServer)
 	});
 }
 
-async function getRoomIdsIfEmpty(server: string, roomIds: string[]): Promise<string[]> {
+async function getRoomIdsByIdentity(server: string, roomIds: string[]): Promise<string[]> {
 	const idc = getCommitment();
-	if (roomIds.length < 1 && idc) {
+	if (idc) {
 		return await getRoomIdsByIdentityCommitment(server);
 	}
 	return roomIds;
@@ -66,7 +66,7 @@ export async function updateRooms(
 	server: string = get(selectedServer),
 	roomIds: string[] = []
 ): Promise<string[]> {
-	roomIds = await getRoomIdsIfEmpty(server, roomIds);
+	roomIds = await getRoomIdsByIdentity(server, roomIds);
 	if (roomIds.length > 0) {
 		const rooms = await fetchRoomsByIds(server, roomIds);
 		const acceptedRoomNames = extractRoomNames(rooms);
@@ -85,6 +85,7 @@ export async function updateRooms(
 }
 
 export function updateMessages(server: string, roomId: string) {
+	console.debug('updating messages');
 	getMessages(server, roomId).then((messages) => {
 		messageStore.update((store) => {
 			store[roomId] = messages;
@@ -112,14 +113,20 @@ export function addMessageToRoom(roomId: string, data: MessageI) {
 		}
 
 		// Add the new message
+		const test = [...currentStore[roomId]];
+		console.log('oldmsgs', test);
+		console.log('newmsg', data);
+
 		currentStore[roomId] = [...currentStore[roomId], data];
+		console.log('allmsgs', currentStore[roomId]);
 
 		// Trim messages to the last 500
 		if (currentStore[roomId].length > 500) {
 			currentStore[roomId] = currentStore[roomId].slice(-500);
 		}
-
-		return { ...currentStore };
+		const result = { ...currentStore };
+		console.log(result);
+		return result;
 	});
 }
 

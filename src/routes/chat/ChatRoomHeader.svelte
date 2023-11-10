@@ -61,7 +61,7 @@
 					class="flex flex-row align-middle text-sm font-mono text-secondary-300-600-token"
 					title="Online Users">
 					<Person />
-					~{onlineMembers}
+					{onlineMembers}
 				</span>
 			{/if}
 		</div>
