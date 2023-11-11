@@ -96,9 +96,35 @@ export const saltStore = storable('', 'salt');
  * !WARN NEVER CHANGE THE STORE TYPE OR YOU RISK EXPOSING THE KEY
  */
 export const keyStore = writable({} as keyStoreI);
+
+/**
+ * @description This is the in memory cryptokeys derived from the
+ * room specific passwords stored in roomPassStore, which is encrypted in local storage
+ * so keyStore is used to decrypt roomPassStore, which is used to decrypt each rooms
+ * roomKeyStore, which is then used to decrypt messages in each corresponding room
+ */
 export const roomKeyStore = writable({} as roomKeyStoreI);
 
 export const alertQueue = queueable([]);
+
+export const roomPasswordSet = derived(
+	[currentSelectedRoom, roomPassStore],
+	([$currentSelectedRoom, $roomPassStore]) => {
+		if ($currentSelectedRoom.encrypted == 'AES') {
+			if ($roomPassStore[$currentSelectedRoom.roomId.toString()]) {
+				if ($roomPassStore[$currentSelectedRoom.roomId.toString()].length > 0) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+);
 
 /**
  * @description Configuration store, stores the user's settings

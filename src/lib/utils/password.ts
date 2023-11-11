@@ -7,11 +7,13 @@ import {
 	keyStore,
 	identityExists,
 	alertQueue,
-	roomPassStore
+	roomPassStore,
+	selectedServer
 } from '$lib/stores';
 import { encryptIdentity } from './identity';
 import type { IdentityStoreI } from '$lib/types';
 import { updateRooms } from '.';
+import { postCheckRoomPassword, postSetRoomPassword } from '$lib/services/server';
 
 export async function setPassword(password: string): Promise<'success' | string> {
 	const hashedPassword = await hashPassword(password);
@@ -78,4 +80,40 @@ export async function unlockPadlock(password: string) {
 		alertQueue.enqueue('Incorrect Password', 'warning');
 		keyStore.set(null);
 	}
+}
+
+export async function enterRoomPassword(password: string, roomId: string): Promise<boolean> {
+	const hashedSaltedPassword = await hashPassword(password + roomId);
+	if (hashedSaltedPassword) {
+		postCheckRoomPassword(get(selectedServer), roomId, hashedSaltedPassword).then((res) => {
+			if (res) {
+				roomPassStore.update((roomPass) => {
+					roomPass[roomId] = { password, hashedSaltedPassword };
+					return roomPass;
+				});
+				return true;
+			} else {
+				return false;
+			}
+		});
+	}
+	return false;
+}
+
+export async function setRoomPassword(password: string, roomId: string): Promise<boolean> {
+	const hashedSaltedPassword = await hashPassword(password + roomId);
+	if (hashedSaltedPassword) {
+		postSetRoomPassword(get(selectedServer), roomId, hashedSaltedPassword).then((res) => {
+			if (res) {
+				roomPassStore.update((roomPass) => {
+					roomPass[roomId] = { password, hashedSaltedPassword };
+					return roomPass;
+				});
+				return true;
+			} else {
+				return false;
+			}
+		});
+	}
+	return false;
 }

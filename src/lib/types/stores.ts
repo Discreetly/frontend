@@ -55,10 +55,15 @@ export interface consoleStoreI {
 	};
 }
 
+// keyed by the roomId, encrypted in localstorage
 export interface roomPassStoreI {
-	[key: string]: string;
+	[key: string]: {
+		password: string;
+		hashedSaltedPassword: string;
+	};
 }
 
+// keyed by the roomId, only in memory
 export interface roomKeyStoreI {
 	[key: string]: CryptoKey;
 }

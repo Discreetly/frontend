@@ -37,7 +37,6 @@ function updateRoomStore(rooms: RoomI[], serverURL: string = get(selectedServer)
 			}
 			newStore[roomId] = { ...room, server: serverURL };
 		});
-		console.debug(newStore);
 		return newStore;
 	});
 	// Update the serverStore
@@ -142,8 +141,6 @@ export function addMessageToRoom(roomId: string, data: MessageI) {
 		}
 
 		// Add the new message
-		const test = [...currentStore[roomId]];
-
 		currentStore[roomId] = [...currentStore[roomId], data];
 
 		// Trim messages to the last 500

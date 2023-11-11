@@ -158,3 +158,55 @@ export async function createInvite(
 export async function getAllRooms(serverUrl: string, username: string, password: string) {
 	return getAuth([serverUrl, `admin/rooms`], username, password) as Promise<RoomI[]>;
 }
+
+interface CheckResponse {
+	success: boolean;
+	message?: string;
+	// include other properties as needed
+}
+
+export async function postCheckRoomPassword(
+	serverUrl: string,
+	roomId: string,
+	passwordHash: string
+): Promise<boolean> {
+	const response = (await post([serverUrl, `room/checkpasswordhash/${roomId}`], {
+		passwordHash
+	})) as CheckResponse;
+	return Boolean(response.success);
+}
+
+export async function postSetRoomPassword(
+	serverUrl: string,
+	roomId: string,
+	passwordHash: string
+): Promise<boolean> {
+	const prover = new Prover('idcNullifier/circuit.wasm', 'idcNullifier/final.zkey');
+	const id = getIdentity() as IdentityData;
+	const idForProof: Partial<IdentityData> = {};
+	if (id) {
+		const timestamp = BigInt(Date.now());
+		idForProof.trapdoor = id._trapdoor;
+		idForProof.nullifier = id._nullifier;
+		idForProof.secret = id._secret;
+		idForProof.commitment = id._commitment;
+
+		// Proves you know the identity secret with a timestamp so this proof can't be replayed
+		prover
+			.generateProof({
+				identity: idForProof as unknown as Identity,
+				externalNullifier: timestamp
+			})
+			.then(async (proof) => {
+				const response = (await post([serverUrl, `room/setpassword/${roomId}`], {
+					passwordHash,
+					proof
+				})) as CheckResponse;
+				return response.success;
+			});
+	} else {
+		alertQueue.enqueue('No identity found when fetching rooms', 'error');
+		return false;
+	}
+	return false;
+}

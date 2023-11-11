@@ -6,8 +6,9 @@
 		selectedServer,
 		configStore,
 		currentRoomsStore,
-		numberServers
+		roomPasswordSet
 	} from '$lib/stores';
+	import RoomPassword from './RoomPassword.svelte';
 	import { Experiences } from '$lib/types';
 	import { addMessageToRoom, getTimestampFromEpoch, updateMessages, updateRooms } from '$lib/utils';
 	import { getToastStore } from '@skeletonlabs/skeleton';
@@ -150,43 +151,47 @@
 </script>
 
 {#if $currentSelectedRoom}
-	<div
-		id="chat"
-		class="grid grid-rows-[auto,1fr,auto]">
-		<ChatRoomHeader
-			{connected}
-			{currentEpoch}
-			{timeLeftInEpoch}
-			{userMessageLimit}
-			{roomRateLimit}
-			{onlineMembers} />
-		{#if $configStore.experience == Experiences.Chat}
-			{#key $currentSelectedRoom.roomId}
-				<Conversation {roomRateLimit} />
-			{/key}
-			<InputPrompt
-				{socket}
+	{#if $roomPasswordSet}
+		<div
+			id="chat"
+			class="grid grid-rows-[auto,1fr,auto]">
+			<ChatRoomHeader
 				{connected}
 				{currentEpoch}
+				{timeLeftInEpoch}
 				{userMessageLimit}
-				{roomId} />
-		{:else if $configStore.experience == Experiences.Draw}
-			<Draw />
-		{:else}
-			{#key $currentSelectedRoom.roomId}
-				<Conversation {roomRateLimit} />
-			{/key}
-			<InputPrompt
-				{socket}
-				{connected}
-				{currentEpoch}
-				{userMessageLimit}
-				{roomId} />
-		{/if}
-		<!-- Conversation -->
+				{roomRateLimit}
+				{onlineMembers} />
+			{#if $configStore.experience == Experiences.Chat}
+				{#key $currentSelectedRoom.roomId}
+					<Conversation {roomRateLimit} />
+				{/key}
+				<InputPrompt
+					{socket}
+					{connected}
+					{currentEpoch}
+					{userMessageLimit}
+					{roomId} />
+			{:else if $configStore.experience == Experiences.Draw}
+				<Draw />
+			{:else}
+				{#key $currentSelectedRoom.roomId}
+					<Conversation {roomRateLimit} />
+				{/key}
+				<InputPrompt
+					{socket}
+					{connected}
+					{currentEpoch}
+					{userMessageLimit}
+					{roomId} />
+			{/if}
+			<!-- Conversation -->
 
-		<!-- Prompt -->
-	</div>
+			<!-- Prompt -->
+		</div>
+	{:else}
+		<div><RoomPassword {roomId} /></div>
+	{/if}
 {:else}
 	<div class="grid place-content-center">
 		<h6 class="h2 text-center mb-10">You aren't in any rooms...yet</h6>
