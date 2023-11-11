@@ -58,7 +58,7 @@
 			{#if connected && onlineMembers !== '?'}
 				<span
 					class:connected
-					class="flex flex-row align-middle text-sm font-mono text-secondary-300-600-token"
+					class="flex flex-row items-center gap-1 text-sm font-mono text-secondary-300-600-token"
 					title="Online Users">
 					<Person />
 					{onlineMembers}
