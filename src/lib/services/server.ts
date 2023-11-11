@@ -150,7 +150,7 @@ export async function createInvite(
 	if (roomIds.length > 0) {
 		data['roomIds'] = roomIds;
 	} else {
-		data['all'] = true;
+		data['all'] = false;
 	}
 	return postAuth([serverUrl, `admin/addcode`], data, username, password) as Promise<Invites>;
 }
