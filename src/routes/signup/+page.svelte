@@ -74,8 +74,7 @@
 	}}
 	buttonCompleteLabel="Lets Go Chat Anon"
 	buttonNext="variant-filled-success"
-	buttonComplete="variant-filled-success"
->
+	buttonComplete="variant-filled-success">
 	<Step class="px-10">
 		<svelte:fragment slot="header"
 			><h2 class="h2 text-center">Welcome to Discreetly</h2>
@@ -111,8 +110,7 @@
 				<button
 					on:click={() => createAndBackupIdentity()}
 					class="btn btn-lg variant-ghost-success"
-					type="button"
-				>
+					type="button">
 					<span><Mask /></span>
 					<span>Generate New Identity</span>
 					<span><Magic /></span>
@@ -120,8 +118,7 @@
 				<button
 					on:click={() => (restoreIdentity = !restoreIdentity)}
 					class="btn variant-ghost-primary"
-					type="button"
-				>
+					type="button">
 					<span id="backup"><BackupRestore /></span>
 					<span>Restore Identity</span>
 				</button>
@@ -147,8 +144,7 @@
 	</Step>
 	<Step>
 		<svelte:fragment slot="header"
-			><div class="h3 text-center">Join Communities</div></svelte:fragment
-		>
+			><div class="h3 text-center">Join Communities</div></svelte:fragment>
 		<Gateways />
 	</Step>
 </Stepper>

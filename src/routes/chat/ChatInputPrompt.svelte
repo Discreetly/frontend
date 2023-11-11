@@ -53,7 +53,8 @@
 		}
 		return 'Write a message...';
 	};
-	$: canSendMessage = connected && !sendingMessage && $identityExists == 'safe';
+	$: canSendMessage =
+		connected && !sendingMessage && ($identityExists == 'safe' || $identityExists == 'unsafe');
 
 	function checkStatus(): boolean {
 		if (!connected) {
