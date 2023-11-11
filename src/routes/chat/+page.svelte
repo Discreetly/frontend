@@ -5,8 +5,7 @@
 
 <section
 	id="chat-wrapper"
-	class="bg-surface-50-900-token"
->
+	class="bg-surface-50-900-token">
 	<Sidebar />
 	<ChatRoom />
 </section>
@@ -14,6 +13,7 @@
 <style>
 	#chat-wrapper {
 		height: 100%;
+		max-height: calc(100vh - var(--header-height));
 		display: grid;
 		grid-template-columns: minmax(250px, 17%) 1fr;
 		grid-template-rows: auto;

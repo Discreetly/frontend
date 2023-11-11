@@ -91,13 +91,11 @@
 <Modal />
 <Toast
 	position="t"
-	background="variant-filled-primary"
-/>
+	background="variant-filled-primary" />
 <Drawer
 	position="top"
 	padding="p-4"
-	rounded="rounded-token"
->
+	rounded="rounded-token">
 	{#if $drawerStore.id === 'roomselect'}
 		{#if $numberServers > 1}
 			<h3 class="h5 p-2">Change Server:<SelectServer /></h3>
@@ -109,9 +107,8 @@
 </Drawer>
 
 <div
-	class="w-full h-screen"
-	id="pagewrapper"
->
+	class="w-full h-screen max-h-screen"
+	id="pagewrapper">
 	<div id="headerwrapper"><AppHeader /></div>
 	<main>
 		<slot class="flex flex-col justify-center">
@@ -123,8 +120,7 @@
 	</div>
 	<div
 		id="sidebar"
-		class="hidden lg:block"
-	>
+		class="hidden lg:block">
 		<Sidebar {loaded} />
 	</div>
 </div>
@@ -140,6 +136,7 @@
 	}
 	#headerwrapper {
 		grid-area: header;
+		max-height: var(--header-height);
 		position: sticky;
 		top: 0;
 		z-index: 1;

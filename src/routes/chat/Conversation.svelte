@@ -11,11 +11,28 @@
 
 	let elemChat: HTMLElement;
 
-	// For some reason, eslint thinks ScrollBehavior is undefined...
-	// eslint-disable-next-line no-undef
-	export function scrollChatBottom(behavior: ScrollBehavior = 'smooth', delay = 1): void {
+	$: {
+		if ($currentRoomMessages) {
+			try {
+				scrollChatBottom('instant');
+			} catch {
+				console.warn('Could not scroll to bottom');
+			}
+		}
+	}
+
+	function scrollChatBottom(behavior: ScrollBehavior = 'smooth', delay = 20, count = 0): void {
+		if (count > 10) {
+			console.warn('scrollChatBottom: elemChat is not defined after multiple attempts, giving up');
+			return;
+		}
+
 		setTimeout(() => {
-			elemChat.scrollTo({ top: elemChat.scrollHeight, behavior });
+			if (!elemChat) {
+				scrollChatBottom(behavior, delay * 4, count + 1);
+			} else {
+				elemChat.scrollTo({ top: elemChat.scrollHeight, behavior });
+			}
 		}, delay);
 	}
 
@@ -32,7 +49,13 @@
 	}
 
 	onMount(() => {
-		scrollChatBottom('instant', 10);
+		scrollChatBottom('instant');
+		document.addEventListener('scrollChat', (e: Event) => {
+			const customEvent = e as CustomEvent;
+			const behavior = customEvent.detail.behavior ? customEvent.detail.behavior : 'smooth';
+			const delay = customEvent.detail.delay ? customEvent.detail.delay : 20;
+			scrollChatBottom(behavior, delay);
+		});
 	});
 </script>
 

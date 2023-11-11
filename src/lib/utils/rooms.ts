@@ -5,8 +5,7 @@ import {
 	selectedServer,
 	serverStore,
 	messageStore,
-	currentSelectedRoom,
-	alertQueue
+	currentSelectedRoom
 } from '$lib/stores';
 import { get } from 'svelte/store';
 import {
@@ -25,28 +24,44 @@ export function roomListForServer(server: string = get(selectedServer)): RoomI[]
 function updateRoomStore(rooms: RoomI[], serverURL: string = get(selectedServer)) {
 	// Update the roomStore directly
 	roomsStore.update((store) => {
-		rooms.forEach((room) => {
-			const roomId = String(room.roomId);
-			store[roomId] = { ...room, server: serverURL };
+		const newStore = { ...store };
+		const filteredRooms = rooms.filter((room) => String(room.roomId) !== '0071');
+		filteredRooms.forEach((room) => {
+			let roomId = String(room.roomId);
+			if (roomId === '0071') {
+				roomId = '7001';
+				room.roomId = '7001';
+			}
+			if (newStore['0071']) {
+				delete newStore['0071'];
+			}
+			newStore[roomId] = { ...room, server: serverURL };
 		});
-		return store;
+		console.debug(newStore);
+		return newStore;
 	});
 	// Update the serverStore
 	serverStore.update((store) => {
 		rooms.forEach((room) => {
-			const roomId = String(room.roomId);
+			let roomId = String(room.roomId);
+			if (roomId === '0071') {
+				roomId = '7001';
+				room.roomId = '7001';
+				store[serverURL].rooms?.filter((id) => id !== '0071');
+			}
 			store[serverURL].rooms?.push(roomId);
 		});
 		return store;
 	});
 }
 
-async function getRoomIdsByIdentity(server: string, roomIds: string[]): Promise<string[]> {
+async function getRoomIdsByIdentity(server: string): Promise<string[]> {
 	const idc = getCommitment();
 	if (idc) {
 		return await getRoomIdsByIdentityCommitment(server);
+	} else {
+		return [];
 	}
-	return roomIds;
 }
 
 async function fetchRoomsByIds(server: string, roomIds: string[]): Promise<RoomI[]> {
@@ -66,8 +81,17 @@ export async function updateRooms(
 	server: string = get(selectedServer),
 	roomIds: string[] = []
 ): Promise<string[]> {
-	roomIds = await getRoomIdsByIdentity(server, roomIds);
+	if (roomIds.length == 0) {
+		console.debug('Updating all rooms');
+		roomIds = await getRoomIdsByIdentity(server);
+	}
 	if (roomIds.length > 0) {
+		if (roomIds.includes('0071')) {
+			console.warn('DETECTED 0071');
+			//remove 0071 from roomIds
+			roomIds = roomIds.filter((id) => id !== '0071');
+			roomIds.push('7001');
+		}
 		const rooms = await fetchRoomsByIds(server, roomIds);
 		const acceptedRoomNames = extractRoomNames(rooms);
 
@@ -85,7 +109,13 @@ export async function updateRooms(
 }
 
 export function updateMessages(server: string, roomId: string) {
-	console.debug('updating messages');
+	try {
+		const rooms = get(roomsStore);
+		const name = rooms[roomId].name;
+		console.debug('Updating messages for', name);
+	} catch (e) {
+		console.debug('RoomsStore not ready yet');
+	}
 	getMessages(server, roomId).then((messages) => {
 		messageStore.update((store) => {
 			store[roomId] = messages;
@@ -113,18 +143,14 @@ export function addMessageToRoom(roomId: string, data: MessageI) {
 
 		// Add the new message
 		const test = [...currentStore[roomId]];
-		console.log('oldmsgs', test);
-		console.log('newmsg', data);
 
 		currentStore[roomId] = [...currentStore[roomId], data];
-		console.log('allmsgs', currentStore[roomId]);
 
 		// Trim messages to the last 500
 		if (currentStore[roomId].length > 500) {
 			currentStore[roomId] = currentStore[roomId].slice(-500);
 		}
 		const result = { ...currentStore };
-		console.log(result);
 		return result;
 	});
 }

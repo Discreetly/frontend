@@ -21,7 +21,11 @@
 
 	const toastStore = getToastStore();
 
-	let scrollChatToBottom: () => {};
+	// Define a custom event
+	let scrollChatEvent = new CustomEvent('scrollChat', {
+		detail: { behavior: 'smooth', delay: 20 }
+	});
+
 	let socket: Socket;
 	let connected: boolean = false;
 	let lastRoom = '';
@@ -73,6 +77,10 @@
 	}
 
 	onMount(() => {
+		if (!$currentSelectedRoom) {
+			$currentSelectedRoom = $currentRoomsStore[0];
+		}
+		console.debug('Chat room mounted with', $currentSelectedRoom?.roomId.toString());
 		socket = io($selectedServer);
 		socket.on('connect', () => {
 			connected = true;
@@ -81,7 +89,7 @@
 				updateMessages($selectedServer, $currentSelectedRoom?.roomId.toString());
 			}
 			if ($configStore.experience == Experiences.Chat) {
-				scrollChatToBottom();
+				document.dispatchEvent(scrollChatEvent);
 			}
 
 			engine.once('upgrade', () => {
@@ -126,7 +134,7 @@
 			const roomId = data.roomId?.toString();
 			if (roomId) {
 				addMessageToRoom(roomId, data);
-				scrollChatToBottom();
+				document.dispatchEvent(scrollChatEvent);
 			}
 		});
 
@@ -154,9 +162,7 @@
 			{onlineMembers} />
 		{#if $configStore.experience == Experiences.Chat}
 			{#key $currentSelectedRoom.roomId}
-				<Conversation
-					bind:scrollChatBottom={scrollChatToBottom}
-					{roomRateLimit} />
+				<Conversation {roomRateLimit} />
 			{/key}
 			<InputPrompt
 				{socket}
@@ -168,9 +174,7 @@
 			<Draw />
 		{:else}
 			{#key $currentSelectedRoom.roomId}
-				<Conversation
-					bind:scrollChatBottom={scrollChatToBottom}
-					{roomRateLimit} />
+				<Conversation {roomRateLimit} />
 			{/key}
 			<InputPrompt
 				{socket}
@@ -194,7 +198,7 @@
 
 <style>
 	#chat {
-		max-height: calc(100vh - 56px);
+		max-height: calc(100vh - var(--header-height));
 		grid-area: chat;
 	}
 </style>

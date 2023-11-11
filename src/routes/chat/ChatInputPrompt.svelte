@@ -20,6 +20,10 @@
 	export let userMessageLimit: number;
 	export let roomId: string;
 
+	let scrollChatEvent = new CustomEvent('scrollChat', {
+		detail: { behavior: 'smooth', delay: 20 }
+	});
+
 	let messageText = '';
 	let sendingMessage: boolean = false;
 	$: messagesLeft = () => {
@@ -193,6 +197,7 @@
 		} finally {
 			sendingMessage = false;
 			document.getElementById('prompt')?.focus();
+			document.dispatchEvent(scrollChatEvent);
 		}
 	}
 

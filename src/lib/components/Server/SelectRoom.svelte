@@ -8,7 +8,6 @@
 
 	function setRoom(roomId: string) {
 		$selectedRoom[$selectedServer] = roomId;
-		updateMessages($selectedServer, roomId);
 		drawerStore.close();
 		goto('/chat');
 	}
@@ -25,8 +24,7 @@
 			}}
 			title={`id: ${room.roomId},
 epoch length(s): ${(room.rateLimit ? room.rateLimit : 1) / 1000},
-'message limit': ${room.userMessageLimit}`}
-		>
+'message limit': ${room.userMessageLimit}`}>
 			<span class="flex-auto">
 				<dt>{room.name}</dt>
 				<dd class="hidden sm:block"><small>Members: ~{room.identities?.length ?? '?'}</small></dd>
