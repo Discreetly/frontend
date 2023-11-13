@@ -54,7 +54,6 @@
 						}
 					})
 					.catch((err) => {
-						console.log(err);
 						addConsoleMessage(err, 'error');
 					});
 				break;
@@ -161,5 +160,4 @@
 	class="input py-1 px-2"
 	type="text"
 	{placeholder}
-	on:keypress={handleInput}
-/>
+	on:keypress={handleInput} />

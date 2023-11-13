@@ -16,7 +16,7 @@
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				console.warn(err);
 				alertQueue.enqueue(`Unexpected error: ${err.message}`, 'error');
 			})
 			.finally(() => {
@@ -55,9 +55,7 @@
 				class="px-2"
 				name="the-word-proof.json"
 				bind:files
-				on:change={onChangeHandler}
-			/></label
-		>
+				on:change={onChangeHandler} /></label>
 	</section>
 	{#if loading}
 		<Loading />

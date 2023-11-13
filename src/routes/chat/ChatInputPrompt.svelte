@@ -1,9 +1,7 @@
 <script lang="ts">
 	import {
 		currentSelectedRoom,
-		keyStore,
 		rateLimitStore,
-		roomKeyStore,
 		alertQueue,
 		identityExists,
 		configStore
@@ -12,13 +10,16 @@
 	import type { Socket } from 'socket.io-client';
 	import { getIdentity, clearMessageHistory } from '$lib/utils';
 	import Send from 'svelte-material-icons/Send.svelte';
-	import { decrypt, encrypt } from '$lib/crypto/crypto';
+	import { encrypt } from '$lib/crypto/crypto';
+	import { onMount } from 'svelte';
 
 	export let socket: Socket;
 	export let connected: boolean;
 	export let currentEpoch: number;
 	export let userMessageLimit: number;
 	export let roomId: string;
+	export let getKey: () => Promise<CryptoKey>;
+	let key: CryptoKey;
 
 	let scrollChatEvent = new CustomEvent('scrollChat', {
 		detail: { behavior: 'smooth', delay: 20 }
@@ -111,27 +112,12 @@
 	}
 
 	// Helper function to handle encrypted room messages
-	async function handleEncryptedMessage(
-		messageText: string,
-		roomId: string,
-		keyStore: any,
-		roomKeyStore: any
-	): Promise<string> {
-		if ($currentSelectedRoom.encrypted == 'AES' && !roomKeyStore[roomId]) {
-			throw new Error('ROOM IS ENCRYPTED BUT NO PASSWORD WAS FOUND');
-		}
-		if (!keyStore) {
-			throw new Error('NO KEYSTORE FOUND');
-		}
-
-		const key = await decrypt(roomKeyStore[roomId], keyStore);
-		if (!key) {
-			throw new Error('NO KEY FOUND');
-		}
-		const encryptedMessage = await encrypt(messageText, key as unknown as CryptoKey);
+	async function handleEncryptedMessage(messageText: string, roomId: string): Promise<string> {
+		const encryptedMessage = await encrypt(messageText, key);
 		if (encryptedMessage == null) {
 			throw new Error('ENCRYPTION FAILED');
 		} else {
+			console.debug(encryptedMessage);
 			return encryptedMessage;
 		}
 	}
@@ -164,12 +150,7 @@
 			let messageToSend: string = messageText;
 
 			if (room.encrypted === 'AES') {
-				messageToSend = await handleEncryptedMessage(
-					messageText,
-					room.roomId!.toString(),
-					$keyStore,
-					$roomKeyStore
-				);
+				messageToSend = await handleEncryptedMessage(messageText, room.roomId!.toString());
 			}
 
 			const msg = await genProof(
@@ -215,6 +196,12 @@
 			}
 		}
 	}
+
+	onMount(() => {
+		getKey().then((k) => {
+			key = k;
+		});
+	});
 </script>
 
 <section class="border-t border-surface-500/30 p-2 md:p-4 !border-dashed">

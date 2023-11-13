@@ -6,12 +6,12 @@
 
 	$: if (room.encrypted) {
 		if ($roomPassStore[room.roomId.toString()] && $keyStore) {
-			console.log('Room is encrypted and encrypted password is stored');
-			decrypt($roomPassStore[room.roomId.toString()], $keyStore);
+			console.debug('Room is encrypted and encrypted password is stored');
+			decrypt($roomPassStore[room.roomId.toString()].password, $keyStore);
 		} else {
-			console.log('Room is encrypted and password is not stored');
+			console.debug('Room is encrypted and password is not stored');
 		}
 	} else {
-		console.log('Room is not encrypted');
+		console.debug('Room is not encrypted');
 	}
 </script>

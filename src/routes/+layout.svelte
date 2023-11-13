@@ -30,7 +30,7 @@
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	onMount(async () => {
-		console.log('Starting Up Application');
+		console.info('Starting Up Application');
 		if (getServerList().length === 0) {
 			setDefaultServers();
 		}
@@ -45,7 +45,7 @@
 						drawerStore.close();
 					}
 				} else {
-					console.log('Input field focused, not opening console');
+					console.debug('Input field focused, not opening console');
 				}
 			}
 		});

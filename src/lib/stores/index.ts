@@ -65,7 +65,7 @@ export const pixelStore = sessionable({} as pixelStoreI, 'pixelmaps');
 /**
  * @description Stores the encrypted key for each room keyed by the roomId
  */
-export const roomPassStore = encryptable({} as roomPassStoreI, 'roomKey');
+export const roomPassStore = encryptable({} as roomPassStoreI, 'roomPasses');
 
 /**
  * @description Derived Store: The messages of the currently selected room

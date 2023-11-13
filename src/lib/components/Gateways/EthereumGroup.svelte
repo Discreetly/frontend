@@ -63,7 +63,6 @@
 				loadingRooms = true;
 				getEthAddressRoomNames($selectedServer, address)
 					.then((groupNames) => {
-						console.log(groupNames);
 						loadingRooms = false;
 						groups = groupNames;
 					})
@@ -84,8 +83,7 @@
 		<h3 class="h4 mb-2"><span class="text-success-500">Step 1:</span> Connect your wallet</h3>
 		<button
 			bind:this={btnEl}
-			class="btn variant-outline-tertiary">Connect</button
-		>
+			class="btn variant-outline-tertiary">Connect</button>
 	</div>
 	{#if isConnected}
 		<div>
@@ -106,8 +104,7 @@
 				<button
 					on:click={proveOwnership}
 					id="btn"
-					class="btn variant-outline-success">Sign</button
-				>
+					class="btn variant-outline-success">Sign</button>
 			</div>
 		{:else if loadingRooms}
 			<p>Loading rooms...</p>

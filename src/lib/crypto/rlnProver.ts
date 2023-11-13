@@ -132,7 +132,7 @@ async function genProof(
 	);
 
 	const proof = prover.generateProof(proofInputs).then((proof: RLNFullProof) => {
-		console.log('Proof generated!');
+		console.info('Proof generated!');
 		const msg: MessageI = {
 			messageId: proof.snarkProof.publicSignals.nullifier.toString(),
 			message: message,

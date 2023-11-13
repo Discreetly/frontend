@@ -11,7 +11,7 @@
 		const parent = canvas.parentElement;
 		const parentWidth = parent!.clientWidth;
 		const parentHeight = parent!.clientHeight - 150;
-		console.log(parentWidth, parentHeight);
+		console.debug(parentWidth, parentHeight);
 		let height, width;
 
 		if (parentHeight < parentWidth / aspectRatio) {
@@ -24,7 +24,7 @@
 
 		canvas.width = width;
 		canvas.height = height;
-		console.log(canvas.height, canvas.width);
+		console.debug(canvas.height, canvas.width);
 	}
 
 	onMount(() => {
@@ -53,5 +53,4 @@
 	id="drawing-canvas"
 	width="250"
 	height="250"
-	class="border border-surface-300-600-token m-1 sm:m-3"
-/>
+	class="border border-surface-300-600-token m-1 sm:m-3" />

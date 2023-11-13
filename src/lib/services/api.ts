@@ -128,3 +128,23 @@ export async function getAuth(
 		throw new Error(`Failed to post to ${url}`);
 	}
 }
+
+/**
+ * @description - makes a get request to the api
+ * @param {string[] | string} urlParts - the url parts to be joined to form the url
+ * @param {object} data - the data to be sent to the api
+ * @returns {object} - the response from the api
+ * @throws {Error} - if the request fails
+ */
+export async function postRaw(urlParts: string[] | string, data: object): Promise<Response> {
+	const url = cleanURL(urlParts);
+	const res = await fetch(url, {
+		method: 'POST',
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data)
+	});
+	return res;
+}

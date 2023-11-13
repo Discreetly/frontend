@@ -4,6 +4,7 @@
 		identityExists,
 		identityKeyStore,
 		identityStore,
+		roomPassStore,
 		lockStateStore,
 		passwordSet,
 		roomsStore,
@@ -49,8 +50,7 @@
 <div class="p-4">
 	<div
 		id="status"
-		class="flex flex-col gap-5"
-	>
+		class="flex flex-col gap-5">
 		<div>
 			<h2 class="h3">configStore</h2>
 			<div>Completed Signup: {JSON.stringify($configStore.signUpStatus.completedSignup)}</div>
@@ -103,19 +103,20 @@
 				<div class="ms-4">membershipType: {membershipType}</div>
 			{/each}
 		</div>
+		<div>
+			roomPassStore: {JSON.stringify($roomPassStore)}
+		</div>
 	</div>
 
 	<div class="border-t py-2 my-5">
 		<button
 			class="btn variant-outline-primary m-4"
-			on:click={triggerAlert}>Test Alert</button
-		>
+			on:click={triggerAlert}>Test Alert</button>
 		<select
 			class="select"
 			name="alertType"
 			id="alertType"
-			bind:value={t}
-		>
+			bind:value={t}>
 			{#each c as choice}
 				<option value={choice}>{choice}</option>
 			{/each}

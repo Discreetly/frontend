@@ -12,7 +12,7 @@
 
 	async function getRooms() {
 		if (username && password) {
-			console.log('getting rooms');
+			console.debug('getting rooms');
 			rooms = await getAllRooms($selectedServer, username, password);
 		}
 	}
@@ -39,7 +39,7 @@
 		} else {
 			selectedRoomIds = selectedRoomIds.filter((id) => id !== roomId);
 		}
-		console.log(selectedRoomIds);
+		console.debug('selectedRoomIds', selectedRoomIds);
 	}
 </script>
 

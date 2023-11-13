@@ -6,9 +6,10 @@
 	import * as emoji from 'node-emoji';
 
 	export let bubbleText: string;
+
 	let formattedText = '';
 
-	onMount(() => {
+	onMount(async () => {
 		// Only render text on the frontend because DOMPurify
 		// needs access to the DOM.
 		formattedText = formatText(bubbleText);

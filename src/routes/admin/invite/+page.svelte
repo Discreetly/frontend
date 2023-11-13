@@ -29,7 +29,7 @@
 	}
 
 	async function newCodes(numCodes: number) {
-		console.log(`Requesting ${numCodes} codes`);
+		console.debug(`Requesting ${numCodes} codes`);
 		const canvasContainer = document.getElementById('qr');
 		canvasContainer?.replaceChildren();
 		if (usesLeft == 0) {
@@ -44,7 +44,6 @@
 			expiresAt,
 			usesLeft
 		);
-		console.log(resp);
 		const codes = resp.codes;
 		codes.forEach((code) => {
 			makeInviteQRCode(code.claimcode);
@@ -68,14 +67,12 @@
 <div class="flex flex-col place-content-center max-w-sm m-auto pt-5">
 	<div
 		id="qr"
-		class="flex flex-col gap-12 place-content-center"
-	>
+		class="flex flex-col gap-12 place-content-center">
 		<div>
 			<canvas
 				class="variant-soft-secondary"
 				width="250"
-				height="250"
-			/>
+				height="250" />
 			<p>no code generated yet</p>
 		</div>
 	</div>
@@ -83,8 +80,7 @@
 		class="btn my-12 variant-soft-primary text-center items-center"
 		on:click={() => {
 			newCodes(numCodes);
-		}}
-	>
+		}}>
 		{#if numCodes > 1}
 			Generate New Codes
 		{:else}
@@ -109,10 +105,8 @@
 						type="range"
 						min="1"
 						max="5"
-						bind:value={numCodes}
-					/>
-				</label></svelte:fragment
-			>
+						bind:value={numCodes} />
+				</label></svelte:fragment>
 		</AccordionItem>
 		<AccordionItem>
 			<svelte:fragment slot="summary">Number of Uses Per Code</svelte:fragment>
@@ -123,10 +117,8 @@
 						type="range"
 						min="0"
 						max="50"
-						bind:value={usesLeft}
-					/>
-				</label></svelte:fragment
-			>
+						bind:value={usesLeft} />
+				</label></svelte:fragment>
 		</AccordionItem>
 		<AccordionItem>
 			<svelte:fragment slot="summary">Expiration</svelte:fragment>
@@ -137,10 +129,8 @@
 						type="range"
 						min="1"
 						max="14"
-						bind:value={daysFromNow}
-					/>
-				</label></svelte:fragment
-			>
+						bind:value={daysFromNow} />
+				</label></svelte:fragment>
 		</AccordionItem>
 		<AccordionItem>
 			<svelte:fragment slot="summary">Rooms</svelte:fragment>
@@ -152,13 +142,11 @@
 								type="checkbox"
 								value={room.roomId}
 								on:change={updateRoomList}
-								checked={roomIds.includes(String(room.roomId))}
-							/>
+								checked={roomIds.includes(String(room.roomId))} />
 							<span title={String(room.roomId)}>{room.name}</span>
 						</label>
 					{/each}
-				</div></svelte:fragment
-			>
+				</div></svelte:fragment>
 		</AccordionItem>
 		<AccordionItem>
 			<svelte:fragment slot="summary">API</svelte:fragment>
@@ -168,18 +156,15 @@
 					<input
 						type="text"
 						class="input"
-						bind:value={$configStore.apiUsername}
-					/>
+						bind:value={$configStore.apiUsername} />
 				</label>
 				<label class="label">
 					<span>Api Password</span>
 					<input
 						type="password"
 						class="input"
-						bind:value={$configStore.apiPassword}
-					/>
-				</label></svelte:fragment
-			>
+						bind:value={$configStore.apiPassword} />
+				</label></svelte:fragment>
 		</AccordionItem>
 	</Accordion>
 </div>

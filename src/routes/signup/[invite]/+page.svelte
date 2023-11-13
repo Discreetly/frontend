@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 
 	$configStore.signUpStatus.inviteCode = $page.params.invite;
-	console.log(`Invited with code: ${$page.params.invite}`);
+	console.info(`Invited with code: ${$page.params.invite}`);
 
 	onMount(() => {
 		if ($identityExists) {

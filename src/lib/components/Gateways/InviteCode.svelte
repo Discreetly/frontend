@@ -20,7 +20,7 @@
 				}
 			})
 			.catch((err) => {
-				console.log(err);
+				console.warn(err);
 				alertQueue.enqueue(`Unexpected error: ${err.message}`, 'error');
 			})
 			.finally(() => {
@@ -90,8 +90,7 @@
 {#if !hideInput}
 	<label
 		class="label"
-		for="inviteCode"
-	>
+		for="inviteCode">
 		<span class="h5">Enter Invite Code:</span>
 		<input
 			class="input"
@@ -99,8 +98,7 @@
 			placeholder="Invite Code"
 			id="inviteCode"
 			bind:value={code}
-			on:keydown={(event) => inviteCodeKeyPress(event)}
-		/>
+			on:keydown={(event) => inviteCodeKeyPress(event)} />
 	</label>
 {/if}
 {#if !loading}
@@ -108,8 +106,7 @@
 		class="btn variant-ghost-success mt-3"
 		type="button"
 		disabled={!code}
-		on:click={() => addCode(code)}>{buttonText}</button
-	>
+		on:click={() => addCode(code)}>{buttonText}</button>
 {:else}
 	<div class="text-primary">Going Anon, please wait...</div>
 	<Loading />
@@ -120,8 +117,7 @@
 		<div>
 			If you are having trouble and would like help, please message us on <a
 				href="https://discord.gg/brJQ36KVxk"
-				class="underline link">Discord</a
-			>
+				class="underline link">Discord</a>
 		</div>
 	</aside>
 {/if}

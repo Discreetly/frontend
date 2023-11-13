@@ -32,7 +32,7 @@ export function createIdentity(
 							alertQueue.enqueue('Identity Created! Congrats on your new journey', 'success');
 							return 'created';
 						} else {
-							console.log(get(identityExists));
+							console.warn(get(identityExists));
 							alertQueue.enqueue('Error creating identity!!!', 'error');
 							return 'error';
 						}

@@ -34,6 +34,9 @@
 	<a
 		class="btn variant-filled-primary"
 		href="/admin/addAdmin">Add Room Admin</a>
+	<a
+		class="btn variant-filled-warning"
+		href="/settings/debug">Debug</a>
 </div>
 
 <style>

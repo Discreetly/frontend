@@ -6,7 +6,10 @@
 		selectedServer,
 		configStore,
 		currentRoomsStore,
-		roomPasswordSet
+		roomPasswordSet,
+		identityExists,
+		roomKeyStore,
+		roomPassStore
 	} from '$lib/stores';
 	import RoomPassword from './RoomPassword.svelte';
 	import { Experiences } from '$lib/types';
@@ -19,6 +22,7 @@
 	import Conversation from './Conversation.svelte';
 	import Draw from './Draw.svelte';
 	import InputPrompt from './ChatInputPrompt.svelte';
+	import { deriveKey } from '$lib/crypto/crypto';
 
 	const toastStore = getToastStore();
 
@@ -58,6 +62,20 @@
 	}
 
 	$: updateRooms($selectedServer, [roomId]);
+
+	async function getKey(): Promise<CryptoKey> {
+		let key: CryptoKey;
+		if (!$roomPassStore[roomId]) {
+			throw new Error('ROOM IS ENCRYPTED BUT NO PASSWORD WAS FOUND');
+		}
+		if (!$roomKeyStore[roomId]) {
+			key = await deriveKey($roomPassStore[roomId].password);
+			$roomKeyStore[roomId] = key;
+		} else {
+			key = $roomKeyStore[roomId];
+		}
+		return key;
+	}
 
 	function updateEpoch() {
 		if ($currentSelectedRoom === undefined) {
@@ -143,6 +161,7 @@
 			updateEpoch();
 		}, 100);
 	});
+
 	onDestroy(() => {
 		unsubscribeStore();
 		socket.emit('leavingRoom', $currentSelectedRoom?.roomId);
@@ -164,31 +183,39 @@
 				{onlineMembers} />
 			{#if $configStore.experience == Experiences.Chat}
 				{#key $currentSelectedRoom.roomId}
-					<Conversation {roomRateLimit} />
+					<Conversation
+						{roomRateLimit}
+						{getKey} />
 				{/key}
 				<InputPrompt
 					{socket}
 					{connected}
 					{currentEpoch}
 					{userMessageLimit}
-					{roomId} />
+					{roomId}
+					{getKey} />
 			{:else if $configStore.experience == Experiences.Draw}
 				<Draw />
 			{:else}
 				{#key $currentSelectedRoom.roomId}
-					<Conversation {roomRateLimit} />
+					<Conversation
+						{roomRateLimit}
+						{getKey} />
 				{/key}
 				<InputPrompt
 					{socket}
 					{connected}
 					{currentEpoch}
 					{userMessageLimit}
-					{roomId} />
+					{roomId}
+					{getKey} />
 			{/if}
 			<!-- Conversation -->
 
 			<!-- Prompt -->
 		</div>
+	{:else if $identityExists == 'encrypted'}
+		<h3 class="h3 my-5 text-center text-primary-500">Unlock your credentials to see this room.</h3>
 	{:else}
 		<div><RoomPassword {roomId} /></div>
 	{/if}

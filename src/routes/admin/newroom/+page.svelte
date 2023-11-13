@@ -43,10 +43,10 @@
 				formData.bandadaGroupId,
 				formData.bandadaApiKey
 			).then((res) => {
-				console.log(res);
+				console.debug(res);
 				submitted = true;
 				createdCodes = res.claimCodes;
-				console.log(createdCodes);
+				console.info(createdCodes);
 			});
 		} else {
 			alertQueue.enqueue('You must create an identity before creating a room', 'error');
@@ -62,8 +62,7 @@
 			handleSubmit();
 		}}
 		buttonNext="variant-filled-surface-50-900-token"
-		buttonComplete="variant-filled-success"
-	>
+		buttonComplete="variant-filled-success">
 		<RoomName {formData} />
 		<MembershipType {formData} />
 		<RateLimit {formData} />

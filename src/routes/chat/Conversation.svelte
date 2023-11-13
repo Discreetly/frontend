@@ -6,8 +6,11 @@
 	import BubbleText from './BubbleText.svelte';
 	import { minidenticon } from 'minidenticons';
 	import { bubbleBgFromSessionId } from '$lib/utils/color';
+	import { decrypt } from '$lib/crypto/crypto';
 
 	export let roomRateLimit: number;
+	export let getKey: () => Promise<CryptoKey>;
+	let key: CryptoKey;
 
 	let elemChat: HTMLElement;
 
@@ -18,6 +21,21 @@
 			} catch {
 				console.warn('Could not scroll to bottom');
 			}
+		}
+	}
+
+	async function decryptText(text: string): Promise<string> {
+		if (!key) {
+			return getKey().then(async (k) => {
+				key = k;
+				const result = await decrypt(text, key);
+				return result ? result : text;
+			});
+		} else if (key) {
+			const result = await decrypt(text, key);
+			return result ? result : text;
+		} else {
+			return text;
 		}
 	}
 
@@ -56,6 +74,9 @@
 			const delay = customEvent.detail.delay ? customEvent.detail.delay : 20;
 			scrollChatBottom(behavior, delay);
 		});
+		getKey().then((k) => {
+			key = k;
+		});
 	});
 </script>
 
@@ -78,7 +99,14 @@
 							</div>
 						{/if}
 						{#key msg}
-							<BubbleText bubbleText={String(msg.message)} />
+							{#await decryptText(String(msg.message))}
+								<p>Decrypting...</p>
+							{:then decryptedText}
+								<BubbleText bubbleText={decryptedText} />
+							{:catch error}
+								<BubbleText bubbleText={String(msg.message)} />
+								<!-- You can customize this error state -->
+							{/await}
 						{/key}
 					</div>
 					<footer class="flex justify-between items-center text-xs md:text-sm pb-1">

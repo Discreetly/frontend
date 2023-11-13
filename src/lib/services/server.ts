@@ -2,7 +2,7 @@ import type { MessageI, ServerI } from 'discreetly-interfaces';
 import type { IdentityStoreI, Invites, JoinResponseI, JubmojiProofI, RoomI } from '$lib/types';
 import { Prover } from 'idc-nullifier';
 import type { Identity } from '@semaphore-protocol/identity';
-import { get, getAuth, post, postAuth } from './api';
+import { get, getAuth, post, postAuth, postRaw } from './api';
 import { getIdentity } from '$lib/utils';
 import { alertQueue } from '$lib/stores';
 
@@ -193,6 +193,22 @@ export async function postCheckRoomPassword(
 	return Boolean(response.success);
 }
 
+export async function postDoesRoomPasswordExist(
+	serverUrl: string,
+	roomId: string
+): Promise<boolean> {
+	const response = await postRaw([serverUrl, `room/checkpasswordhash/${roomId}`], {
+		passwordHash: 'passwordHash'
+	});
+	if (response.status == 200 && (response.json() as unknown as CheckResponse).success == false) {
+		return false;
+	} else if (response.status == 400) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 export async function postSetRoomPassword(
 	serverUrl: string,
 	roomId: string,
@@ -207,7 +223,6 @@ export async function postSetRoomPassword(
 		idForProof.nullifier = id._nullifier;
 		idForProof.secret = id._secret;
 		idForProof.commitment = id._commitment;
-
 		// Proves you know the identity secret with a timestamp so this proof can't be replayed
 		prover
 			.generateProof({

@@ -8,7 +8,8 @@ import {
 	identityExists,
 	alertQueue,
 	roomPassStore,
-	selectedServer
+	selectedServer,
+	roomKeyStore
 } from '$lib/stores';
 import { encryptIdentity } from './identity';
 import type { IdentityStoreI } from '$lib/types';
@@ -75,6 +76,17 @@ export async function unlockPadlock(password: string) {
 			identityKeyStore.read();
 			roomPassStore.read();
 			updateRooms();
+			console.debug('Unlocking rooms');
+			setTimeout(() => {
+				const roomPasses = get(roomPassStore);
+				Object.keys(roomPasses).forEach(async (roomId) => {
+					const roomKey = await deriveKey(roomPasses[roomId].password);
+					roomKeyStore.update((roomKeys) => {
+						roomKeys[roomId] = roomKey;
+						return roomKeys;
+					});
+				});
+			}, 50);
 		});
 	} else {
 		alertQueue.enqueue('Incorrect Password', 'warning');
@@ -85,11 +97,16 @@ export async function unlockPadlock(password: string) {
 export async function enterRoomPassword(password: string, roomId: string): Promise<boolean> {
 	const hashedSaltedPassword = await hashPassword(password + roomId);
 	if (hashedSaltedPassword) {
-		postCheckRoomPassword(get(selectedServer), roomId, hashedSaltedPassword).then((res) => {
+		postCheckRoomPassword(get(selectedServer), roomId, hashedSaltedPassword).then(async (res) => {
 			if (res) {
 				roomPassStore.update((roomPass) => {
 					roomPass[roomId] = { password, hashedSaltedPassword };
 					return roomPass;
+				});
+				const key = await deriveKey(password);
+				roomKeyStore.update((roomKeys) => {
+					roomKeys[roomId] = key;
+					return roomKeys;
 				});
 				return true;
 			} else {
@@ -103,11 +120,16 @@ export async function enterRoomPassword(password: string, roomId: string): Promi
 export async function setRoomPassword(password: string, roomId: string): Promise<boolean> {
 	const hashedSaltedPassword = await hashPassword(password + roomId);
 	if (hashedSaltedPassword) {
-		postSetRoomPassword(get(selectedServer), roomId, hashedSaltedPassword).then((res) => {
+		postSetRoomPassword(get(selectedServer), roomId, hashedSaltedPassword).then(async (res) => {
 			if (res) {
 				roomPassStore.update((roomPass) => {
 					roomPass[roomId] = { password, hashedSaltedPassword };
 					return roomPass;
+				});
+				const key = await deriveKey(password);
+				roomKeyStore.update((roomKeys) => {
+					roomKeys[roomId] = key;
+					return roomKeys;
 				});
 				return true;
 			} else {
