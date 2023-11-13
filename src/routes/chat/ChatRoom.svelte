@@ -69,7 +69,7 @@
 			throw new Error('ROOM IS ENCRYPTED BUT NO PASSWORD WAS FOUND');
 		}
 		if (!$roomKeyStore[roomId]) {
-			key = await deriveKey($roomPassStore[roomId].password);
+			key = await deriveKey($roomPassStore[roomId].password, roomId);
 			$roomKeyStore[roomId] = key;
 		} else {
 			key = $roomKeyStore[roomId];

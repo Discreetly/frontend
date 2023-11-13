@@ -39,12 +39,12 @@ function getSalt(): Uint8Array {
  * @param {string} password - The password to derive the encryption key from.
  * @returns {Promise<CryptoKey>} - Returns the derived key as a Promise.
  */
-export async function deriveKey(password: string): Promise<CryptoKey> {
+export async function deriveKey(password: string, saltString?: string): Promise<CryptoKey> {
 	// TextEncoder will be used for converting strings to byte arrays
 	const textEncoder = new TextEncoder();
 
 	// Salt for PBKDF2 stored in local storage
-	const salt = getSalt();
+	const salt = saltString ? textEncoder.encode(saltString) : getSalt();
 
 	// Importing the password as a cryptographic key
 	const passwordKey = await window.crypto.subtle.importKey(
