@@ -112,7 +112,7 @@ export const roomPasswordSet = derived(
 	([$currentSelectedRoom, $roomPassStore]) => {
 		if ($currentSelectedRoom.encrypted == 'AES') {
 			if ($roomPassStore[$currentSelectedRoom.roomId.toString()]) {
-				if ($roomPassStore[$currentSelectedRoom.roomId.toString()].length > 0) {
+				if ($roomPassStore[$currentSelectedRoom.roomId.toString()].password.length > 0) {
 					return true;
 				} else {
 					return false;

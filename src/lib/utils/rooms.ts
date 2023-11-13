@@ -108,19 +108,23 @@ export async function updateRooms(
 }
 
 export function updateMessages(server: string, roomId: string) {
+	let ephemeral: 'PERSISTENT' | 'EPHEMERAL' | undefined;
 	try {
 		const rooms = get(roomsStore);
 		const name = rooms[roomId].name;
+		ephemeral = rooms[roomId].ephemeral;
 		console.debug('Updating messages for', name);
 	} catch (e) {
 		console.debug('RoomsStore not ready yet');
 	}
-	getMessages(server, roomId).then((messages) => {
-		messageStore.update((store) => {
-			store[roomId] = messages;
-			return store;
+	if (ephemeral == 'PERSISTENT') {
+		getMessages(server, roomId).then((messages) => {
+			messageStore.update((store) => {
+				store[roomId] = messages;
+				return store;
+			});
 		});
-	});
+	}
 }
 
 export function addMessageToRoom(roomId: string, data: MessageI) {

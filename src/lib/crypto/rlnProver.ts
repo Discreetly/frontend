@@ -86,7 +86,7 @@ async function genProof(
 	admin = false
 ): Promise<MessageI> {
 	const roomId = typeof room.roomId === 'bigint' ? room.roomId.toString() : String(room.roomId);
-	await updateRooms(get(selectedServer), [roomId]);
+	const updated = await updateRooms(get(selectedServer), [roomId]);
 	room = get(roomsStore)[roomId];
 	const RLN_IDENTIFIER = BigInt(roomId);
 	const userMessageLimit = BigInt(messageLimit);
@@ -97,6 +97,7 @@ async function genProof(
 	const commitment = admin ? identityCommitment : rateCommitment;
 
 	let merkleProof: MerkleProof;
+
 	switch (room.membershipType) {
 		case 'IDENTITY_LIST':
 			merkleProof = await merkleProofFromRoom(roomId, RLN_IDENTIFIER, commitment);
@@ -129,7 +130,8 @@ async function genProof(
 	console.info(
 		`Generating proof: epoch ${epoch}, message ID ${messageId}, message hash ${messageHash}`
 	);
-	return prover.generateProof(proofInputs).then((proof: RLNFullProof) => {
+
+	const proof = prover.generateProof(proofInputs).then((proof: RLNFullProof) => {
 		console.log('Proof generated!');
 		const msg: MessageI = {
 			messageId: proof.snarkProof.publicSignals.nullifier.toString(),
@@ -140,6 +142,7 @@ async function genProof(
 		};
 		return msg;
 	});
+	return proof;
 }
 
 export { genProof };

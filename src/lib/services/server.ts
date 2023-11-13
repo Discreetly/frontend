@@ -92,6 +92,7 @@ export async function postJubmojis(
 }
 
 export async function getMessages(serverUrl: string, roomId: string) {
+	console.debug('Fetching messages for', roomId);
 	return get([serverUrl, `room/${roomId}/messages`]) as Promise<MessageI[]>;
 }
 
@@ -153,6 +154,22 @@ export async function createInvite(
 		data['all'] = false;
 	}
 	return postAuth([serverUrl, `admin/addcode`], data, username, password) as Promise<Invites>;
+}
+
+interface AddAdminData {
+	idc: string;
+}
+
+export async function addAdmin(
+	serverUrl: string,
+	username: string,
+	password: string,
+	roomId: string,
+	adminIdc: string
+) {
+	const data: AddAdminData = { idc: adminIdc };
+
+	return postAuth([serverUrl, `admin/${roomId}/addAdmin`], data, username, password);
 }
 
 export async function getAllRooms(serverUrl: string, username: string, password: string) {

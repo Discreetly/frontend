@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { getAllRooms, createInvite } from '$lib/services/server';
 	import { inviteCode } from '$lib/gateways/inviteCode';
-	import { selectedServer, configStore, currentRoomsStore } from '$lib/stores';
+	import { selectedServer, configStore } from '$lib/stores';
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
-	import { formatRelative } from 'date-fns';
 	import type { RoomI } from '$lib/types';
 
 	let rooms: RoomI[] = [];
@@ -48,13 +47,11 @@
 	<div class="border-b border-spacing-3 pb-5 mb-5">
 		<button
 			on:click={getRooms}
-			class="btn variant-outline-primary">Get Rooms</button
-		>
+			class="btn variant-outline-primary">Get Rooms</button>
 		<button
 			on:click={joinRooms}
 			class="btn variant-outline-primary"
-			disabled={selectedRoomIds.length == 1}>Join Rooms</button
-		>
+			disabled={selectedRoomIds.length == 1}>Join Rooms</button>
 
 		<h4 class="h4 my-5">Rooms:</h4>
 		{#each rooms as room}
@@ -63,8 +60,7 @@
 					type="checkbox"
 					value={room.roomId}
 					on:change={updateRoomList}
-					checked={selectedRoomIds.includes(String(room.roomId))}
-				/>
+					checked={selectedRoomIds.includes(String(room.roomId))} />
 				<span title={String(room.roomId)}>{room.name}</span>
 			</label>
 		{/each}
@@ -78,18 +74,15 @@
 					<input
 						type="text"
 						class="input"
-						bind:value={$configStore.apiUsername}
-					/>
+						bind:value={$configStore.apiUsername} />
 				</label>
 				<label class="label">
 					<span>Api Password</span>
 					<input
 						type="password"
 						class="input"
-						bind:value={$configStore.apiPassword}
-					/>
-				</label></svelte:fragment
-			>
+						bind:value={$configStore.apiPassword} />
+				</label></svelte:fragment>
 		</AccordionItem>
 	</Accordion>
 </div>
