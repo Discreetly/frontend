@@ -164,6 +164,7 @@
 
 			handleRateLimiting(currentEpoch, room.roomId!.toString());
 			msg.messageType = 'TEXT';
+			msg.encrypted = room.encrypted;
 
 			socket.emit('validateMessage', msg);
 			console.debug('Sending message: ', msg);

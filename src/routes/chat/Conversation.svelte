@@ -93,8 +93,8 @@
 					<div class="pt-2 md:pt-4 flex gap-2 md:gap-3 pr-1">
 						{#if msg.sessionId}
 							<div
-								title="avatar"
-								class="flex-none w-[2.5rem] h-[2.5rem] bg-surface-500/40 rounded-full p-1">
+								class="flex-none w-[2.5rem] h-[2.5rem] bg-surface-500/40 rounded-full p-1"
+								title={String(msg.sessionId)}>
 								{@html getAvatar(msg.sessionId)}
 							</div>
 						{/if}
@@ -102,17 +102,29 @@
 							{#await decryptText(String(msg.message))}
 								<p>Decrypting...</p>
 							{:then decryptedText}
-								<BubbleText bubbleText={decryptedText} />
+								<span
+									title="Encrypted Message"
+									class="secure">
+									<BubbleText bubbleText={decryptedText} />
+								</span>
 							{:catch error}
-								<BubbleText bubbleText={String(msg.message)} />
+								<span
+									title="Not Encrypted Message"
+									class="insecure">
+									<BubbleText bubbleText={String(msg.message)} />
+								</span>
 								<!-- You can customize this error state -->
 							{/await}
 						{/key}
 					</div>
 					<footer class="flex justify-between items-center text-xs md:text-sm pb-1">
-						<small class="opacity-50 text-surface-600-300-token mr-2 md:mr-4">{getTime(msg)}</small>
+						<small
+							class="opacity-50 text-surface-600-300-token mr-2 md:mr-4"
+							title={String(msg.timeStamp)}>{getTime(msg)}</small>
 						{#if msg.epoch}
-							<small class="hidden md:block opacity-50 text-surface-500-400-token">
+							<small
+								class="hidden md:block opacity-50 text-surface-500-400-token"
+								title={JSON.stringify(msg.proof)}>
 								epoch: {msg.epoch}
 							</small>
 						{:else}
@@ -130,5 +142,11 @@
 <style>
 	#conversation {
 		overflow: scroll;
+	}
+
+	.secure {
+		display: flex;
+		flex-direction: row;
+		align-self: center;
 	}
 </style>
