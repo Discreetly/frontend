@@ -37,6 +37,7 @@
 	let onlineMembers = '?';
 	let epochUpdater: NodeJS.Timeout;
 	let currentEpoch = 0;
+	let key: CryptoKey | undefined = undefined;
 	$: timeLeftInEpoch = '0';
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
 	$: userMessageLimit = $currentSelectedRoom?.userMessageLimit ?? 1;
@@ -50,6 +51,9 @@
 
 	let unsubscribeStore = currentSelectedRoom.subscribe((currentValue) => {
 		updateMessages($selectedServer, roomId);
+		getKey().then((k) => {
+			key = k;
+		});
 	});
 
 	$: try {
@@ -160,6 +164,9 @@
 		epochUpdater = setInterval(() => {
 			updateEpoch();
 		}, 100);
+		getKey().then((k) => {
+			key = k;
+		});
 	});
 
 	onDestroy(() => {

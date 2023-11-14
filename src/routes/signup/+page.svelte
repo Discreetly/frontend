@@ -36,7 +36,7 @@
 		const modal: ModalSettings = {
 			type: 'prompt',
 			title: 'Unlock',
-			body: 'Enter your password to unlock your keystores',
+			body: 'Enter your code to unlock your keystores',
 			value: '',
 			valueAttr: { type: 'password', minlength: 4, required: true },
 			response: async (r: string) => {

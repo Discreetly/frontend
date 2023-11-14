@@ -25,7 +25,7 @@
 		const modal: ModalSettings = {
 			type: 'prompt',
 			title: 'Unlock',
-			body: 'Enter your password to unlock your keystores',
+			body: 'Enter your code to unlock your keystores',
 			value: '',
 			valueAttr: { type: 'password', minlength: 4, required: true },
 			response: async (r: string) => {
@@ -46,8 +46,7 @@
 	<AppRailAnchor
 		href="/about"
 		selected={$page.url.pathname === '/about'}
-		title="About"
-	>
+		title="About">
 		<svelte:fragment slot="lead"><Information class="rail-icon" /></svelte:fragment>
 		<span>About</span>
 	</AppRailAnchor>
@@ -56,8 +55,7 @@
 		<AppRailAnchor
 			href="/chat"
 			selected={$page.url.pathname === '/chat'}
-			title="Chat"
-		>
+			title="Chat">
 			<svelte:fragment slot="lead"><Chat class="rail-icon" /></svelte:fragment>
 			<span>Chat</span>
 		</AppRailAnchor>
@@ -65,8 +63,7 @@
 		<AppRailAnchor
 			href="/gateways"
 			selected={$page.url.pathname === '/gateways'}
-			title="About"
-		>
+			title="About">
 			<svelte:fragment slot="lead"><Plus class="rail-icon" /></svelte:fragment>
 			<span>Join More</span>
 		</AppRailAnchor>
@@ -75,8 +72,7 @@
 			<AppRailAnchor
 				href="/console"
 				selected={$page.url.pathname === '/console'}
-				title="About"
-			>
+				title="About">
 				<svelte:fragment slot="lead"><Console class="rail-icon" /></svelte:fragment>
 				<span>Console</span>
 			</AppRailAnchor>
@@ -85,8 +81,7 @@
 			<AppRailAnchor
 				href="/admin"
 				selected={$page.url.pathname === '/admin'}
-				title="About"
-			>
+				title="About">
 				<svelte:fragment slot="lead"><ShieldCrown class="rail-icon" /></svelte:fragment>
 				<span>Admin</span>
 			</AppRailAnchor>
@@ -95,8 +90,7 @@
 		<AppRailAnchor
 			href="/signup"
 			selected={$page.url.pathname === '/signup'}
-			title="Sign Up"
-		>
+			title="Sign Up">
 			<svelte:fragment slot="lead"><Mask class="rail-icon" /></svelte:fragment>
 			<span>Sign Up</span>
 		</AppRailAnchor>
@@ -109,8 +103,7 @@
 				{#if $keyStore instanceof CryptoKey}
 					<AppRailAnchor
 						on:click={lock}
-						title="Unlocked, click to lock"
-					>
+						title="Unlocked, click to lock">
 						<svelte:fragment slot="lead">
 							<LockOpen class="rail-icon text-warning-300-600-token" />
 						</svelte:fragment>
@@ -119,8 +112,7 @@
 				{:else}
 					<AppRailAnchor
 						on:click={unlock}
-						title="Locked"
-					>
+						title="Locked">
 						<svelte:fragment slot="lead">
 							<Lock class="rail-icon text-success-500" />
 						</svelte:fragment>
@@ -133,8 +125,7 @@
 				<AppRailAnchor
 					href="/settings"
 					selected={$page.url.pathname === '/settings'}
-					title="Settings"
-				>
+					title="Settings">
 					<svelte:fragment slot="lead"><Settings class="rail-icon" /></svelte:fragment>
 					<span>Settings</span>
 				</AppRailAnchor>
