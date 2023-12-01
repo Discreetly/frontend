@@ -1,17 +1,17 @@
 <script lang="ts">
-	import { currentRoomMessages } from '$lib/stores';
+	import { currentRoomMessages, roomKeyStore, roomPassStore } from '$lib/stores';
 	import { getEpochFromTimestamp, getTimestampFromEpoch } from '$lib/utils/rateLimit';
 	import type { MessageI } from 'discreetly-interfaces';
 	import { onMount } from 'svelte';
 	import BubbleText from './BubbleText.svelte';
 	import { minidenticon } from 'minidenticons';
 	import { bubbleBgFromSessionId } from '$lib/utils/color';
-	import { decrypt } from '$lib/crypto/crypto';
+	import { decrypt, deriveKey } from '$lib/crypto/crypto';
 
 	export let roomRateLimit: number;
 	export let getKey: () => Promise<CryptoKey>;
+		export let roomId: string;
 	let key: CryptoKey;
-
 	let elemChat: HTMLElement;
 
 	$: {
@@ -26,15 +26,17 @@
 
 	async function decryptText(text: string): Promise<string> {
 		if (!key) {
-			return getKey().then(async (k) => {
-				key = k;
+			console.log('key does not exist')
+			key = await getKey();
 				const result = await decrypt(text, key);
 				return result ? result : text;
-			});
 		} else if (key) {
+			console.log('key exists')
+			key = await deriveKey($roomPassStore[roomId].password, roomId);
 			const result = await decrypt(text, key);
 			return result ? result : text;
 		} else {
+			console.log('key does not exist')
 			return text;
 		}
 	}
