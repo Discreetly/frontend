@@ -54,7 +54,6 @@
 		updateMessages($selectedServer, roomId);
 
 		getKey().then((k) => {
-			console.log(k);
 			key = k;
 		});
 	});

@@ -26,17 +26,14 @@
 
 	async function decryptText(text: string): Promise<string> {
 		if (!key) {
-			console.log('key does not exist')
 			key = await getKey();
 				const result = await decrypt(text, key);
 				return result ? result : text;
 		} else if (key) {
-			console.log('key exists')
 			key = await deriveKey($roomPassStore[roomId].password, roomId);
 			const result = await decrypt(text, key);
 			return result ? result : text;
 		} else {
-			console.log('key does not exist')
 			return text;
 		}
 	}
