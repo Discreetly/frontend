@@ -49,8 +49,10 @@
 		};
 	}
 
-	let unsubscribeStore = currentSelectedRoom.subscribe((currentValue) => {
+	let unsubscribeStore = currentSelectedRoom.subscribe(async (currentValue) => {
+		await Promise.resolve();
 		updateMessages($selectedServer, roomId);
+
 		getKey().then((k) => {
 			key = k;
 		});
@@ -192,7 +194,8 @@
 				{#key $currentSelectedRoom.roomId}
 					<Conversation
 						{roomRateLimit}
-						{getKey} />
+						{getKey}
+						{roomId} />
 				{/key}
 				<InputPrompt
 					{socket}
@@ -207,7 +210,8 @@
 				{#key $currentSelectedRoom.roomId}
 					<Conversation
 						{roomRateLimit}
-						{getKey} />
+						{getKey}
+						{roomId} />
 				{/key}
 				<InputPrompt
 					{socket}
