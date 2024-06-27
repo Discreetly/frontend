@@ -8,7 +8,6 @@
 		currentRoomsStore,
 		roomPasswordSet,
 		identityExists,
-		roomKeyStore,
 		roomPassStore
 	} from '$lib/stores';
 	import RoomPassword from './RoomPassword.svelte';
@@ -37,7 +36,7 @@
 	let onlineMembers = '?';
 	let epochUpdater: NodeJS.Timeout;
 	let currentEpoch = 0;
-	let key: CryptoKey | undefined = undefined;
+	let key: CryptoKey;
 	$: timeLeftInEpoch = '0';
 	$: roomId = $currentSelectedRoom?.roomId!.toString();
 	$: userMessageLimit = $currentSelectedRoom?.userMessageLimit ?? 1;
@@ -51,9 +50,9 @@
 
 	let unsubscribeStore = currentSelectedRoom.subscribe((currentValue) => {
 		updateMessages($selectedServer, roomId);
-		getKey().then((k) => {
-			key = k;
-		});
+		if ($currentSelectedRoom.encrypted === 'AES' && $identityExists === 'safe') {
+			getKey(roomId);
+		}
 	});
 
 	$: try {
@@ -67,18 +66,15 @@
 
 	$: updateRooms($selectedServer, [roomId]);
 
-	async function getKey(): Promise<CryptoKey> {
-		let key: CryptoKey;
-		if (!$roomPassStore[roomId]) {
-			throw new Error('ROOM IS ENCRYPTED BUT NO PASSWORD WAS FOUND');
-		}
-		if (!$roomKeyStore[roomId]) {
+	$: if ($currentSelectedRoom.encrypted == 'AES' && $identityExists == 'safe') {
+		getKey(roomId);
+	}
+
+	async function getKey(roomId: string) {
+		console.debug('Getting key for room', roomId);
+		if ($roomPassStore[roomId]) {
 			key = await deriveKey($roomPassStore[roomId].password, roomId);
-			$roomKeyStore[roomId] = key;
-		} else {
-			key = $roomKeyStore[roomId];
 		}
-		return key;
 	}
 
 	function updateEpoch() {
@@ -164,9 +160,6 @@
 		epochUpdater = setInterval(() => {
 			updateEpoch();
 		}, 100);
-		getKey().then((k) => {
-			key = k;
-		});
 	});
 
 	onDestroy(() => {
@@ -192,7 +185,8 @@
 				{#key $currentSelectedRoom.roomId}
 					<Conversation
 						{roomRateLimit}
-						{getKey} />
+						{key}
+						{roomId} />
 				{/key}
 				<InputPrompt
 					{socket}
@@ -200,14 +194,15 @@
 					{currentEpoch}
 					{userMessageLimit}
 					{roomId}
-					{getKey} />
+					{key} />
 			{:else if $configStore.experience == Experiences.Draw}
 				<Draw />
 			{:else}
 				{#key $currentSelectedRoom.roomId}
 					<Conversation
 						{roomRateLimit}
-						{getKey} />
+						{key}
+						{roomId} />
 				{/key}
 				<InputPrompt
 					{socket}
@@ -215,7 +210,7 @@
 					{currentEpoch}
 					{userMessageLimit}
 					{roomId}
-					{getKey} />
+					{key} />
 			{/if}
 			<!-- Conversation -->
 

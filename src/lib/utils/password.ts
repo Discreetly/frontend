@@ -86,7 +86,8 @@ export async function unlockPadlock(password: string) {
 						return roomKeys;
 					});
 				});
-			}, 50);
+				console.debug('Unlocked rooms');
+			}, 10);
 		});
 	} else {
 		alertQueue.enqueue('Incorrect Password', 'warning');

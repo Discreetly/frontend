@@ -92,7 +92,6 @@ export async function postJubmojis(
 }
 
 export async function getMessages(serverUrl: string, roomId: string) {
-	console.debug('Fetching messages for', roomId);
 	return get([serverUrl, `room/${roomId}/messages`]) as Promise<MessageI[]>;
 }
 

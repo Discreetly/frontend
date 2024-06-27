@@ -11,15 +11,13 @@
 	import { getIdentity, clearMessageHistory } from '$lib/utils';
 	import Send from 'svelte-material-icons/Send.svelte';
 	import { encrypt } from '$lib/crypto/crypto';
-	import { onMount } from 'svelte';
 
 	export let socket: Socket;
 	export let connected: boolean;
 	export let currentEpoch: number;
 	export let userMessageLimit: number;
 	export let roomId: string;
-	export let getKey: () => Promise<CryptoKey>;
-	let key: CryptoKey;
+	export let key: CryptoKey;
 
 	let scrollChatEvent = new CustomEvent('scrollChat', {
 		detail: { behavior: 'smooth', delay: 20 }
@@ -112,8 +110,11 @@
 	}
 
 	// Helper function to handle encrypted room messages
-	async function handleEncryptedMessage(messageText: string, roomId: string): Promise<string> {
-		const encryptedMessage = await encrypt(messageText, key);
+	async function handleEncryptedMessage(messageText: string): Promise<string> {
+		if (!key) {
+			throw new Error('NO KEY FOUND');
+		}
+		const encryptedMessage = await encrypt(messageText, await key);
 		if (encryptedMessage == null) {
 			throw new Error('ENCRYPTION FAILED');
 		} else {
@@ -150,7 +151,7 @@
 			let messageToSend: string = messageText;
 
 			if (room.encrypted === 'AES') {
-				messageToSend = await handleEncryptedMessage(messageText, room.roomId!.toString());
+				messageToSend = await handleEncryptedMessage(messageText);
 			}
 
 			const msg = await genProof(
@@ -197,12 +198,6 @@
 			}
 		}
 	}
-
-	onMount(() => {
-		getKey().then((k) => {
-			key = k;
-		});
-	});
 </script>
 
 <section class="border-t border-surface-500/30 p-2 md:p-4 !border-dashed">

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { currentRoomMessages } from '$lib/stores';
+	import { currentRoomMessages, currentSelectedRoom, identityExists } from '$lib/stores';
 	import { getEpochFromTimestamp, getTimestampFromEpoch } from '$lib/utils/rateLimit';
 	import type { MessageI } from 'discreetly-interfaces';
 	import { onMount } from 'svelte';
@@ -9,8 +9,8 @@
 	import { decrypt } from '$lib/crypto/crypto';
 
 	export let roomRateLimit: number;
-	export let getKey: () => Promise<CryptoKey>;
-	let key: CryptoKey;
+	export let key: CryptoKey;
+	export let roomId: string;
 
 	let elemChat: HTMLElement;
 
@@ -26,16 +26,10 @@
 
 	async function decryptText(text: string): Promise<string> {
 		if (!key) {
-			return getKey().then(async (k) => {
-				key = k;
-				const result = await decrypt(text, key);
-				return result ? result : text;
-			});
-		} else if (key) {
+			throw new Error('Key Doesnt Exist');
+		} else {
 			const result = await decrypt(text, key);
 			return result ? result : text;
-		} else {
-			return text;
 		}
 	}
 
@@ -74,9 +68,6 @@
 			const delay = customEvent.detail.delay ? customEvent.detail.delay : 20;
 			scrollChatBottom(behavior, delay);
 		});
-		getKey().then((k) => {
-			key = k;
-		});
 	});
 </script>
 
@@ -100,7 +91,7 @@
 						{/if}
 						{#key msg}
 							{#await decryptText(String(msg.message))}
-								<p>Decrypting...</p>
+								<BubbleText bubbleText={'Decrypting...'} />
 							{:then decryptedText}
 								<span
 									title="Encrypted Message"
