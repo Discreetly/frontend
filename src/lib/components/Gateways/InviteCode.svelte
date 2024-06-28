@@ -3,6 +3,7 @@
 	import { alertQueue, configStore } from '$lib/stores';
 	import { onMount } from 'svelte';
 	import Loading from '$lib/components/Utils/Loading.svelte';
+	import { goto } from '$app/navigation';
 	export let code = '';
 	export let buttonText = 'Submit';
 	export let hideInput = false;
@@ -11,20 +12,25 @@
 	let loading = false;
 	let err: string | undefined;
 
-	function addCode(code: string) {
+	function addCode(code: string): Promise<boolean> {
 		loading = true;
-		inviteCode(code)
+		return inviteCode(code)
 			.then((acceptedRoomNames) => {
 				if (acceptedRoomNames) {
 					acceptedRoomNames = acceptedRoomNames;
+					return true;
+				} else {
+					return false;
 				}
 			})
 			.catch((err) => {
 				console.warn(err);
 				alertQueue.enqueue(`Unexpected error: ${err.message}`, 'error');
+				return false;
 			})
 			.finally(() => {
 				loading = false;
+				return false;
 			});
 	}
 
@@ -82,7 +88,11 @@
 	}
 	onMount(() => {
 		if (code == $configStore.signUpStatus.inviteCode && code.length >= 7) {
-			addCode(code);
+			addCode(code).then((accepted: boolean) => {
+				if (accepted) {
+					goto('/chat');
+				}
+			});
 		}
 	});
 </script>

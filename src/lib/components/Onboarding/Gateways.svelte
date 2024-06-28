@@ -7,6 +7,7 @@
 	import Card from '$lib/components/Utils/Card.svelte';
 	import BullHorn from 'svelte-material-icons/Bullhorn.svelte';
 	import { configStore, numberServers } from '$lib/stores';
+	import Button from '../Utils/Button.svelte';
 </script>
 
 {#if $numberServers > 1}
@@ -17,8 +18,12 @@
 {/if}
 <div
 	id="gateway-cards"
-	class="grid"
->
+	class="grid">
+	<!-- <Button
+		cls="variant-filled-success"
+		link="/chat"
+		>Lets Go Chat Anon ►
+	</Button> -->
 	<Card>
 		<svelte:fragment slot="header">Join via invite code</svelte:fragment>
 		<svelte:fragment slot="description">If you were given an invite code, you can</svelte:fragment>
@@ -27,13 +32,11 @@
 	<Card>
 		<svelte:fragment slot="header">Join Alpha Testers</svelte:fragment>
 		<svelte:fragment slot="description"
-			>Test things out, let us know if you have any issues</svelte:fragment
-		>
+			>Test things out, let us know if you have any issues</svelte:fragment>
 		<InviteCodeGateway
 			code={'layer-spot-gravity-fossil'}
 			hideInput={true}
-			buttonText="Join Alpha Testers"
-		/>
+			buttonText="Join Alpha Testers" />
 	</Card>
 	<Card>
 		<svelte:fragment slot="header">Discord Bot</svelte:fragment>
@@ -41,14 +44,12 @@
 		<a
 			target="_blank"
 			href="https://discord.com/api/oauth2/authorize?client_id=1142162852132700200&permissions=2147483648&scope=bot"
-			class="btn variant-ghost-primary">Invite Discord Bot!</a
-		>
+			class="btn variant-ghost-primary">Invite Discord Bot!</a>
 	</Card>
 	<Card>
 		<svelte:fragment slot="header">Join via Jubmoji</svelte:fragment>
 		<svelte:fragment slot="description"
-			>Prove your collection and get access to special rooms</svelte:fragment
-		>
+			>Prove your collection and get access to special rooms</svelte:fragment>
 		<JubmojiGateway />
 	</Card>
 	<Card>
@@ -64,8 +65,7 @@
 	</Card>
 	<Card>
 		<svelte:fragment slot="header"
-			><span class="flex gap-3">The Word <BullHorn /></span></svelte:fragment
-		>
+			><span class="flex gap-3">The Word <BullHorn /></span></svelte:fragment>
 		<svelte:fragment slot="description"
 			>Do you know <a
 				class="link"

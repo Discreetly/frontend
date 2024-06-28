@@ -72,7 +72,7 @@
 	on:complete={() => {
 		goto('/chat');
 	}}
-	buttonCompleteLabel="Lets Go Chat Anon"
+	buttonCompleteLabel="Lets Go Chat Anon ►"
 	buttonNext="variant-filled-success"
 	buttonComplete="variant-filled-success">
 	<Step class="px-10">
